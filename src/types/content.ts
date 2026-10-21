@@ -299,7 +299,11 @@ export const ExperienceItemSchema = z.object({
   company: LocalizedSchema,
   role: BilingualObjectSchema,
   period: PeriodSchema,
-  highlights: z.array(BilingualObjectSchema),
+  // May be left empty (`highlights:`) or omitted; both mean "no highlights".
+  highlights: z
+    .array(BilingualObjectSchema)
+    .nullish()
+    .transform((value) => value ?? []),
 });
 
 export type ExperienceItem = z.infer<typeof ExperienceItemSchema>;
