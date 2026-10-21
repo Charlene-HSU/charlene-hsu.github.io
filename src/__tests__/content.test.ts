@@ -45,6 +45,18 @@ describe("Content schemas and references", () => {
     }
   });
 
+  it("only references nav pages from the footer", () => {
+    const site = SiteContentSchema.parse(loadYaml("site.yaml"));
+    const navIds = new Set<string>(site.nav.map((item) => item.id));
+    for (const id of site.footer.links) {
+      expect(navIds.has(id), `footer link "${id}" is in nav`).toBe(true);
+    }
+    expect(new Set(site.footer.links).size).toBe(site.footer.links.length);
+    if (site.footer.bottomLink.page) {
+      expect(navIds.has(site.footer.bottomLink.page)).toBe(true);
+    }
+  });
+
   it("has a route file for every nav page", () => {
     const site = SiteContentSchema.parse(loadYaml("site.yaml"));
     const routesDir = path.join(ROOT, "src/routes/$lang");

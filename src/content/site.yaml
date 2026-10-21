@@ -78,6 +78,26 @@ blogTags:
     en: Frontend
     zh-TW: 前端
 
+# Footer: which pages it lists, how many columns, and the link at the bottom right.
+footer:
+  # Page ids from `nav`, in the order they appear.
+  links:
+    - about
+    - skills
+    - experience
+    - projects
+    - blog
+    - friends
+    - contact
+  # Number of columns for the links (1–4). Phones show at most 2.
+  columns: 3
+  # Bottom-right link. Use `page` (an id from `nav`) or `url` (https:// or mailto:).
+  bottomLink:
+    page: contact
+    label:
+      en: Contact me
+      zh-TW: 聯絡我
+
 embedAllowlist: []
 
 ui:
@@ -337,15 +357,6 @@ ui:
     navHeading:
       en: Navigation
       zh-TW: 導覽
-    friendsHeading:
-      en: Friends
-      zh-TW: 友站
-    socialHeading:
-      en: Social
-      zh-TW: 社群
     license:
       en: Code licensed under MIT.
       zh-TW: 程式碼以 MIT 授權釋出。
-    sourceLink:
-      en: Source Code
-      zh-TW: 原始碼

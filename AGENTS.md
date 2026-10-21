@@ -46,18 +46,18 @@ React 19, Vite, Tailwind CSS v4, TypeScript, pnpm (npm, yarn and bun are blocked
 - Technical identifiers (route paths, anchor ids, CSS classes, state values) and calculated numbers may stay in code. Display labels for technical values belong in content.
 - YAML holds structured data (lists, dates, links, tags). Markdown holds long-form text (About, project descriptions, friend-link rules, blog posts).
 
-| File                 | Purpose                                                                                                |
-| -------------------- | ------------------------------------------------------------------------------------------------------ |
-| `site.yaml`          | Metadata, `nav` (single source for pages, navbar and footer), `blogTags`, UI strings, `embedAllowlist` |
-| `profile.yaml`       | Name, title, location, timezone, tagline, status, stats, `about`                                       |
-| `skills.yaml`        | Skill groups and the marquee list                                                                      |
-| `experience.yaml`    | Work and study history                                                                                 |
-| `projects.yaml`      | Projects, links and embeds                                                                             |
-| `friends.yaml`       | Friend sites and the link-exchange card                                                                |
-| `contact.yaml`       | Email and social links                                                                                 |
-| `md/`                | Markdown for About (`about.<lang>.md`) and projects (`projects/<id>.<lang>.md`)                        |
-| `blog/`              | Blog posts (`<slug>.<lang>.md`), one page each                                                         |
-| `.generated/og.json` | Cache written by `fetch-og`. Commit it. Never edit it by hand                                          |
+| File                 | Purpose                                                                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `site.yaml`          | Metadata, `nav` (single source for pages and the navbar), `footer` (links, columns, bottom-right link), `blogTags`, UI strings, `embedAllowlist` |
+| `profile.yaml`       | Name, title, location, timezone, tagline, status, stats, `about`                                                                                 |
+| `skills.yaml`        | Skill groups and the marquee list                                                                                                                |
+| `experience.yaml`    | Work and study history                                                                                                                           |
+| `projects.yaml`      | Projects, links and embeds                                                                                                                       |
+| `friends.yaml`       | Friend sites and the link-exchange card                                                                                                          |
+| `contact.yaml`       | Email and social links                                                                                                                           |
+| `md/`                | Markdown for About (`about.<lang>.md`) and projects (`projects/<id>.<lang>.md`)                                                                  |
+| `blog/`              | Blog posts (`<slug>.<lang>.md`), one page each                                                                                                   |
+| `.generated/og.json` | Cache written by `fetch-og`. Commit it. Never edit it by hand                                                                                    |
 
 Conventions:
 
@@ -104,7 +104,8 @@ The site is a set of static pages, not one long page. Each page is its own route
 
 ## Navigation and icons
 
-- `site.yaml` `nav` is the single source for the pages, the navbar and the footer links. Every page except Home has one entry: `id` (also the route segment, so `projects` → `/$lang/projects/`), `icon`, localized `label` and localized `description`. Adding a page means adding one entry, one route file and one section component.
+- `site.yaml` `nav` is the single source for the pages and the navbar; the footer picks from it. Every page except Home has one entry: `id` (also the route segment, so `projects` → `/$lang/projects/`), `icon`, localized `label` and localized `description`. Adding a page means adding one entry, one route file and one section component.
+- The footer is configured in `site.yaml` `footer`: `links` (nav ids, in order), `columns` (1–4; phones show at most two) and `bottomLink` (`page`, a nav id, or `url`, `https://` or `mailto:`, plus a localized `label`). Its bottom-left text is `ui.footer.license`. It has no friends or social columns.
 - Navbar links use `<Link>` and mark the current page with `aria-current="page"` and an active style (TanStack Router's `activeProps`, or `data-status="active"`). Blog post pages count as the Blog page. The brand link goes Home.
 - The hero has no page buttons; the navbar is the way to the other pages.
 - Icons are `lucide-react` names written in YAML and resolved through an allowlist mapping in code, so only used icons are bundled. Never import the whole icon set. Icons are decorative (`aria-hidden`); the label provides the text.

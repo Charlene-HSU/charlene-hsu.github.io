@@ -96,6 +96,22 @@ export const BlogSlugSchema = z
 
 export type NavItem = z.infer<typeof NavItemSchema>;
 
+export const FooterSchema = z.object({
+  links: z.array(PageIdSchema).min(1),
+  columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+  bottomLink: z
+    .object({
+      page: PageIdSchema.optional(),
+      url: HttpsOrMailtoSchema.optional(),
+      label: BilingualObjectSchema,
+    })
+    .refine((link) => (link.page === undefined) !== (link.url === undefined), {
+      message: "footer.bottomLink needs exactly one of `page` or `url`",
+    }),
+});
+
+export type FooterContent = z.infer<typeof FooterSchema>;
+
 export const SiteContentSchema = z.object({
   meta: z.object({
     siteName: BilingualObjectSchema,
@@ -106,6 +122,7 @@ export const SiteContentSchema = z.object({
   }),
   nav: z.array(NavItemSchema).min(1),
   blogTags: z.record(BlogTagIdSchema, BilingualObjectSchema),
+  footer: FooterSchema,
   embedAllowlist: z.array(z.string()),
   ui: z.object({
     brand: z.string().min(1),
@@ -231,10 +248,7 @@ export const SiteContentSchema = z.object({
     }),
     footer: z.object({
       navHeading: BilingualObjectSchema,
-      friendsHeading: BilingualObjectSchema,
-      socialHeading: BilingualObjectSchema,
       license: BilingualObjectSchema,
-      sourceLink: BilingualObjectSchema,
     }),
   }),
 });
