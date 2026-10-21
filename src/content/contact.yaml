@@ -1,9 +1,9 @@
 # TODO: Update email and social links with your own contact details
-email: you@example.com
+email: hsu960919@gmail.com
 links:
   - label: GitHub
     icon: github
-    url: https://github.com/you
-  - label: LinkedIn
-    icon: linkedin
+    url: https://github.com/Charlene-HSU
+  - label: Discord
+    icon: discord
     url: https://linkedin.com/in/you
