@@ -83,17 +83,17 @@ For a content update: edit the relevant file under `src/content/`, keep its stru
 
 The site is a set of static pages, not one long page. Each page is its own route with its own URL, title and metadata.
 
-| Page       | Route (per language) | Content                                                                                                                        |
-| ---------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Home       | `/$lang/`            | Hero (name, title, typewriter tagline), status and clock cards, tech marquee, shortcuts to recent or pinned projects and posts |
-| About      | `/$lang/about/`      | Stats and the About Markdown in a terminal window                                                                              |
-| Skills     | `/$lang/skills/`     | Skill groups in `Tabs`                                                                                                         |
-| Experience | `/$lang/experience/` | Work and study history                                                                                                         |
-| Projects   | `/$lang/projects/`   | Project tiles and detail panel (see [Projects](#projects-embeds-and-link-previews))                                            |
-| Blog       | `/$lang/blog/`       | Tag filter row, then the post list (see [Blog](#blog))                                                                         |
-| Blog post  | `/$lang/blog/$slug/` | One post                                                                                                                       |
-| Friends    | `/$lang/friends/`    | Friend cards and the link-exchange card                                                                                        |
-| Contact    | `/$lang/contact/`    | Email card and social links                                                                                                    |
+| Page       | Route (per language) | Content                                                                                                                                 |
+| ---------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Home       | `/$lang/`            | Hero (name, title, typewriter tagline), status and clock cards, shortcuts to recent or pinned projects and posts, then the tech marquee |
+| About      | `/$lang/about/`      | Stats and the About Markdown in a terminal window                                                                                       |
+| Skills     | `/$lang/skills/`     | Skill groups in `Tabs`                                                                                                                  |
+| Experience | `/$lang/experience/` | Work and study history                                                                                                                  |
+| Projects   | `/$lang/projects/`   | Project tiles and detail panel (see [Projects](#projects-embeds-and-link-previews))                                                     |
+| Blog       | `/$lang/blog/`       | Tag filter row, then the post list (see [Blog](#blog))                                                                                  |
+| Blog post  | `/$lang/blog/$slug/` | One post                                                                                                                                |
+| Friends    | `/$lang/friends/`    | Friend cards and the link-exchange card                                                                                                 |
+| Contact    | `/$lang/contact/`    | Email card and social links                                                                                                             |
 
 - Route files: `src/routes/$lang/index.tsx` (home), `about.tsx`, `skills.tsx`, `experience.tsx`, `projects.tsx`, `friends.tsx`, `contact.tsx`, `blog/index.tsx` and `blog/$slug.tsx` under `src/routes/$lang/`. Each route renders one section component from `src/components/sections/` and nothing else.
 - The router uses `trailingSlash: "always"`, so `to` paths end with `/` (`"/$lang/"`, `"/$lang/blog/"`, `"/$lang/blog/$slug/"`). Follow the paths the generated route tree type-checks.
@@ -124,7 +124,7 @@ The site is a set of static pages, not one long page. Each page is its own route
 
 ### Home shortcuts
 
-- Under the marquee, the home page links to projects and posts that were updated in the last `site.yaml` `shortcuts.recentDays` days (default 30), plus anything marked `pinned: true`. Pinned items come first, then newest first, at most `shortcuts.limit` items. With nothing to show, the block is not rendered.
+- Between the status cards and the marquee, the home page links to projects and posts that were updated in the last `site.yaml` `shortcuts.recentDays` days (default 30), plus anything marked `pinned: true`. Pinned items come first, then newest first, at most `shortcuts.limit` items. With nothing to show, the block is not rendered.
 - A project's date is `updated` (`YYYY-MM` or `YYYY-MM-DD`) in `projects.yaml`, falling back to `period.start`; a post's is `updated` in its front matter, falling back to `date`. `pinned: true` goes in the same places.
 - The logic lives in `src/lib/shortcuts.ts` (`getShortcuts`). Prerendered HTML uses the build time (`__BUILD_TIME__`, injected by `vite.config.ts`); after hydration the visitor's clock is used, so shortcuts expire without a rebuild.
 
