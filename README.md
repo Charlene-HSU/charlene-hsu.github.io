@@ -189,4 +189,4 @@ Architecture, design tokens and coding rules are in [`AGENTS.md`](./AGENTS.md). 
 
 ## License
 
-The code is MIT-licensed. Written content and images are © Charlene Hsu.
+The code is under the [MIT License](./LICENSE). Written content and images are © Charlene Hsu, all rights reserved.
