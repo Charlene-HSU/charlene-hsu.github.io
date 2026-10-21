@@ -37,7 +37,9 @@ if (rootElement) {
     </StrictMode>
   );
 
-  if (rootElement.hasChildNodes()) {
+  // 404.html was prerendered for a different path than the one requested, so it
+  // cannot be hydrated; render it from scratch instead.
+  if (rootElement.hasChildNodes() && rootElement.dataset.hydrate !== "false") {
     // Resolve the current route before hydrating so the first client render
     // matches the prerendered HTML.
     void router.load().then(() => {

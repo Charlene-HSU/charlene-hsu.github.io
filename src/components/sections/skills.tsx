@@ -6,7 +6,9 @@ import { useI18n } from "@/lib/i18n";
 
 export function SkillsSection() {
   const { t } = useI18n();
-  const defaultTab = skills.groups[0] ? t(skills.groups[0].name) : "";
+  // Tabs are keyed by position, not by the translated name, so the selection
+  // survives a language switch (the page is not remounted when `lang` changes).
+  const defaultTab = skills.groups.length > 0 ? 0 : undefined;
 
   return (
     <SectionShell
@@ -16,30 +18,24 @@ export function SkillsSection() {
     >
       <TabsRoot defaultValue={defaultTab}>
         <TabsList aria-label={t(site.ui.sections.skills.tabsAriaLabel)}>
-          {skills.groups.map((group) => {
-            const groupName = t(group.name);
-            return (
-              <TabsTab key={groupName} value={groupName}>
-                {groupName}
-              </TabsTab>
-            );
-          })}
+          {skills.groups.map((group, idx) => (
+            <TabsTab key={idx} value={idx}>
+              {t(group.name)}
+            </TabsTab>
+          ))}
         </TabsList>
 
-        {skills.groups.map((group) => {
-          const groupName = t(group.name);
-          return (
-            <TabsPanel key={groupName} value={groupName}>
-              <div className="flex flex-wrap gap-2.5">
-                {group.items.map((skill) => (
-                  <Badge key={skill} variant="outline" className="px-3 py-1.5 text-body">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </TabsPanel>
-          );
-        })}
+        {skills.groups.map((group, idx) => (
+          <TabsPanel key={idx} value={idx}>
+            <div className="flex flex-wrap gap-2.5">
+              {group.items.map((skill) => (
+                <Badge key={skill} variant="outline" className="px-3 py-1.5 text-body">
+                  {skill}
+                </Badge>
+              ))}
+            </div>
+          </TabsPanel>
+        ))}
       </TabsRoot>
     </SectionShell>
   );

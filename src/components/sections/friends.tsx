@@ -9,15 +9,23 @@ import { useToastManager } from "@/components/ui/toast";
 import { friends, getFriendAvatarAsset, getFriendBadgeAsset, site } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 
+function escapeHtmlAttr(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 export function FriendsSection() {
   const { t, tf } = useI18n();
   const toastManager = useToastManager();
 
   const copyToClipboard = async (value: string) => {
     try {
-      if (typeof navigator !== "undefined" && navigator.clipboard) {
-        await navigator.clipboard.writeText(value);
-      }
+      // Only confirm a copy that actually happened.
+      if (typeof navigator === "undefined" || !navigator.clipboard) return;
+      await navigator.clipboard.writeText(value);
       toastManager.add({
         title: t(site.ui.toast.copiedTitle),
         description: tf(site.ui.toast.copiedDescription, { value }),
@@ -29,7 +37,7 @@ export function FriendsSection() {
 
   const exchangeName = t(friends.exchange.name);
   const exchangeDesc = t(friends.exchange.description);
-  const badgeHtmlSnippet = `<a href="${friends.exchange.url}" target="_blank" rel="noopener noreferrer"><img src="${friends.exchange.badge ?? ""}" width="88" height="31" alt="${exchangeName}" /></a>`;
+  const badgeHtmlSnippet = `<a href="${escapeHtmlAttr(friends.exchange.url)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtmlAttr(friends.exchange.badge ?? "")}" width="88" height="31" alt="${escapeHtmlAttr(exchangeName)}" /></a>`;
 
   const exchangeFields = [
     {

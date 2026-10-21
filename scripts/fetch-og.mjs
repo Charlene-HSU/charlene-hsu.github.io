@@ -24,28 +24,45 @@ export function normalizeUrl(rawUrl) {
   return parsed.toString();
 }
 
+function isPrivateIpv4(ip) {
+  const [a, b] = ip.split(".").map(Number);
+  return (
+    a === 0 ||
+    a === 10 ||
+    a === 127 ||
+    (a === 100 && b >= 64 && b <= 127) ||
+    (a === 169 && b === 254) ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168) ||
+    a >= 224
+  );
+}
+
+/** The IPv4 address inside an IPv4-mapped IPv6 address (`::ffff:a.b.c.d` or `::ffff:7f00:1`). */
+function mappedIpv4(lowerIpv6) {
+  const match = lowerIpv6.match(/^(?:0{0,4}:){0,4}:?(?:0{0,4}:)?ffff:(.+)$/);
+  if (!match) return null;
+  const tail = match[1];
+  if (net.isIPv4(tail)) return tail;
+  const hex = tail.match(/^([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
+  if (!hex) return null;
+  const high = parseInt(hex[1], 16);
+  const low = parseInt(hex[2], 16);
+  return [high >> 8, high & 0xff, low >> 8, low & 0xff].join(".");
+}
+
 export function isPrivateOrLoopbackIp(ip) {
   const version = net.isIP(ip);
   if (version === 4) {
-    const parts = ip.split(".").map(Number);
-    const [a, b] = parts;
-    if (
-      a === 0 ||
-      a === 10 ||
-      a === 127 ||
-      (a === 100 && b >= 64 && b <= 127) ||
-      (a === 169 && b === 254) ||
-      (a === 172 && b >= 16 && b <= 31) ||
-      (a === 192 && b === 168) ||
-      a >= 224
-    ) {
-      return true;
-    }
-    return false;
+    return isPrivateIpv4(ip);
   }
   if (version === 6) {
     const lower = ip.toLowerCase();
-    if (
+    const mapped = mappedIpv4(lower);
+    if (mapped) {
+      return isPrivateIpv4(mapped);
+    }
+    return (
       lower === "::1" ||
       lower === "::" ||
       lower.startsWith("fc") ||
@@ -53,14 +70,8 @@ export function isPrivateOrLoopbackIp(ip) {
       lower.startsWith("fe8") ||
       lower.startsWith("fe9") ||
       lower.startsWith("fea") ||
-      lower.startsWith("feb") ||
-      lower.startsWith("::ffff:127.") ||
-      lower.startsWith("::ffff:10.") ||
-      lower.startsWith("::ffff:192.168.")
-    ) {
-      return true;
-    }
-    return false;
+      lower.startsWith("feb")
+    );
   }
   return true;
 }
@@ -94,34 +105,45 @@ export async function assertSafeHostname(hostname, lookupFn = dns.lookup) {
   }
 }
 
-function decodeHtmlEntities(str) {
+const NAMED_ENTITIES = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  nbsp: "\u00a0",
+};
+
+export function decodeHtmlEntities(str) {
+  // One pass, so `&amp;lt;` becomes `&lt;` rather than `<`.
   return str
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&#x27;/g, "'")
+    .replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, body) => {
+      if (body[0] === "#") {
+        const code =
+          body[1] === "x" || body[1] === "X" ? parseInt(body.slice(2), 16) : Number(body.slice(1));
+        return Number.isInteger(code) && code > 0 && code <= 0x10ffff
+          ? String.fromCodePoint(code)
+          : match;
+      }
+      return NAMED_ENTITIES[body.toLowerCase()] ?? match;
+    })
     .trim();
 }
 
 export function extractOgMetadata(html, fallbackDomain) {
+  // An attribute value in either quote style; the other quote may appear inside it.
+  const quoted = `(?:"([^"]*)"|'([^']*)')`;
+
   const getMetaContent = (attrName, attrValue) => {
     const escaped = attrValue.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const regex1 = new RegExp(
-      `<meta[^>]+${attrName}=["']${escaped}["'][^>]+content=["']([^"']+)["'][^>]*>`,
-      "i",
-    );
-    const match1 = html.match(regex1);
-    if (match1?.[1]) return decodeHtmlEntities(match1[1]);
-
-    const regex2 = new RegExp(
-      `<meta[^>]+content=["']([^"']+)["'][^>]+${attrName}=["']${escaped}["'][^>]*>`,
-      "i",
-    );
-    const match2 = html.match(regex2);
-    if (match2?.[1]) return decodeHtmlEntities(match2[1]);
-
+    const key = `${attrName}=["']${escaped}["']`;
+    const regex1 = new RegExp(`<meta[^>]+${key}[^>]+content=${quoted}[^>]*>`, "i");
+    const regex2 = new RegExp(`<meta[^>]+content=${quoted}[^>]+${key}[^>]*>`, "i");
+    for (const regex of [regex1, regex2]) {
+      const match = html.match(regex);
+      const value = match?.[1] ?? match?.[2];
+      if (value) return decodeHtmlEntities(value);
+    }
     return undefined;
   };
 
@@ -295,6 +317,9 @@ export async function runFetchOg({ forceRefresh = false } = {}) {
   }
 
   const urls = collectAllTargetUrls();
+  // Rebuilt from the current content, so links removed from the site drop out of the cache.
+  const previous = cache;
+  cache = {};
 
   for (const rawUrl of urls) {
     let normalized;
@@ -304,7 +329,7 @@ export async function runFetchOg({ forceRefresh = false } = {}) {
       continue;
     }
 
-    const existing = cache[normalized] ?? cache[rawUrl];
+    const existing = previous[normalized] ?? previous[rawUrl];
     if (!forceRefresh && isCacheEntryFresh(existing)) {
       cache[normalized] = existing;
       continue;

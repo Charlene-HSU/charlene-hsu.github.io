@@ -9,13 +9,30 @@ import { getMarkdownAsset } from "@/lib/content";
 import { useI18n, type Lang } from "@/lib/i18n";
 import { cn, type WithClassName } from "@/lib/utils";
 
+function textOf(children: ReactNode): string {
+  return Children.toArray(children)
+    .map((child) => {
+      if (typeof child === "string" || typeof child === "number") return String(child);
+      if (isValidElement<{ children?: ReactNode }>(child)) return textOf(child.props.children);
+      return "";
+    })
+    .join("");
+}
+
 function slugifyHeading(children: ReactNode): string {
-  const raw = Children.toArray(children)
-    .map((child) => (typeof child === "string" || typeof child === "number" ? String(child) : ""))
-    .join(" ")
-    .trim()
-    .toLowerCase();
+  const raw = textOf(children).trim().toLowerCase();
   return raw.replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "section";
+}
+
+/** Returns a heading-id generator that adds `-2`, `-3`, … to repeated slugs. */
+function createHeadingIds(): (children: ReactNode) => string {
+  const seen = new Map<string, number>();
+  return (children) => {
+    const base = slugifyHeading(children);
+    const count = (seen.get(base) ?? 0) + 1;
+    seen.set(base, count);
+    return count === 1 ? base : `${base}-${count}`;
+  };
 }
 
 function getStandaloneUrl(children: ReactNode): string | null {
@@ -42,27 +59,60 @@ function getStandaloneUrl(children: ReactNode): string | null {
   return null;
 }
 
-/** A link inside the site: `#anchor` stays on the current page, anything else goes home. */
-function InternalLink({
+const linkClassName =
+  "text-blue underline underline-offset-4 hover:text-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue";
+
+function isExternalHref(href: string): boolean {
+  return /^(https?:\/\/|mailto:)/i.test(href);
+}
+
+/**
+ * A Markdown link. External URLs open in a new tab; `#anchor` stays on the
+ * current page; a site path such as `/en/blog/hello-world/` goes to that page;
+ * anything else goes home.
+ */
+function MarkdownLink({
   href,
   lang,
-  className,
   children,
 }: {
-  href: string;
+  href: string | undefined;
   lang: Lang;
-  className: string;
   children: ReactNode;
 }) {
+  if (!href) return <span>{children}</span>;
+  if (isExternalHref(href)) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn("inline-flex items-center gap-1", linkClassName)}
+      >
+        <span>{children}</span>
+        <ExternalLink className="size-3.5 shrink-0" aria-hidden="true" />
+      </a>
+    );
+  }
   if (href.startsWith("#")) {
     return (
-      <Link to="./" hash={href.slice(1)} className={className}>
+      <Link to="./" hash={href.slice(1)} className={linkClassName}>
+        {children}
+      </Link>
+    );
+  }
+  if (href.startsWith("/")) {
+    const [pathAndSearch, hash] = href.split("#", 2);
+    const [pathname] = pathAndSearch.split("?", 1);
+    return (
+      // Paths written in content are only known at runtime, so the router cannot type-check them.
+      <Link to={pathname as never} hash={hash} className={linkClassName}>
         {children}
       </Link>
     );
   }
   return (
-    <Link to="/$lang/" params={{ lang }} className={className}>
+    <Link to="/$lang/" params={{ lang }} className={linkClassName}>
       {children}
     </Link>
   );
@@ -88,31 +138,11 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
       ),
       ul: ({ children }) => <ul className="list-disc space-y-1 pl-5">{children}</ul>,
       li: ({ children }) => <li className="text-paragraph text-gray">{children}</li>,
-      a: ({ href, children }) => {
-        if (!href) return <span>{children}</span>;
-        if (href.startsWith("https://") || href.startsWith("mailto:")) {
-          return (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-blue underline underline-offset-4 hover:text-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
-            >
-              <span>{children}</span>
-              <ExternalLink className="size-3.5 shrink-0" aria-hidden="true" />
-            </a>
-          );
-        }
-        return (
-          <InternalLink
-            href={href}
-            lang={lang}
-            className="text-blue underline underline-offset-4 hover:text-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
-          >
-            {children}
-          </InternalLink>
-        );
-      },
+      a: ({ href, children }) => (
+        <MarkdownLink href={href} lang={lang}>
+          {children}
+        </MarkdownLink>
+      ),
     };
 
     return (
@@ -127,10 +157,11 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
     );
   }
 
+  const headingId = createHeadingIds();
   const components: Components = {
     h1: ({ children }) => (
       <h2
-        id={slugifyHeading(children)}
+        id={headingId(children)}
         className="pt-4 font-mono text-h1 font-bold text-foreground first:pt-0"
       >
         {children}
@@ -138,7 +169,7 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
     ),
     h2: ({ children }) => (
       <h3
-        id={slugifyHeading(children)}
+        id={headingId(children)}
         className="pt-3 font-mono text-h2 font-bold text-foreground first:pt-0"
       >
         {children}
@@ -146,7 +177,7 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
     ),
     h3: ({ children }) => (
       <h4
-        id={slugifyHeading(children)}
+        id={headingId(children)}
         className="pt-2 font-mono text-lead font-bold text-foreground first:pt-0"
       >
         {children}
@@ -159,31 +190,11 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
       }
       return <p className="font-sans text-paragraph text-foreground/90">{children}</p>;
     },
-    a: ({ href, children }) => {
-      if (!href) return <span>{children}</span>;
-      if (href.startsWith("https://") || href.startsWith("http://") || href.startsWith("mailto:")) {
-        return (
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-blue underline underline-offset-4 hover:text-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
-          >
-            <span>{children}</span>
-            <ExternalLink className="size-3.5 shrink-0" aria-hidden="true" />
-          </a>
-        );
-      }
-      return (
-        <InternalLink
-          href={href}
-          lang={lang}
-          className="text-blue underline underline-offset-4 hover:text-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
-        >
-          {children}
-        </InternalLink>
-      );
-    },
+    a: ({ href, children }) => (
+      <MarkdownLink href={href} lang={lang}>
+        {children}
+      </MarkdownLink>
+    ),
     strong: ({ children }) => <strong className="font-bold text-foreground">{children}</strong>,
     del: ({ children }) => <del className="text-gray line-through">{children}</del>,
     ul: ({ children }) => (

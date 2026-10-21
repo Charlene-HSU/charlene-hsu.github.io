@@ -28,6 +28,7 @@ export const CACHE_TTL_MS: number;
 export function normalizeUrl(rawUrl: string): string;
 export function isPrivateOrLoopbackIp(ip: string): boolean;
 export function assertSafeHostname(hostname: string, lookupFn?: LookupFn): Promise<void>;
+export function decodeHtmlEntities(str: string): string;
 export function extractOgMetadata(html: string, fallbackDomain: string): OgMetadata;
 export function isCacheEntryFresh(
   entry: Pick<OgCacheEntry, "fetchedAt"> | undefined | null,

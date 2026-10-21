@@ -36,7 +36,9 @@ export function TypeWriter({ text, speedMs = 32, className }: TypeWriterProps) {
 
   return (
     <p className={cn("font-mono text-lead text-gray", className)}>
-      <span>{displayed}</span>
+      {/* Screen readers get the whole text once instead of every typed letter. */}
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true">{displayed}</span>
       <span className="ml-1 inline-block text-green animate-cursor-blink" aria-hidden="true">
         ▍
       </span>

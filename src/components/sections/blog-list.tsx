@@ -70,7 +70,7 @@ export function BlogListSection({ tag }: { tag?: string }) {
       ) : (
         <ul className="flex flex-col gap-4">
           {visiblePosts.map((post) => (
-            <li key={post.slug}>
+            <li key={post.slug} lang={post.lang === lang ? undefined : post.lang}>
               <Link
                 to="/$lang/blog/$slug/"
                 params={{ lang, slug: post.slug }}

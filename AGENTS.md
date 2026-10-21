@@ -112,7 +112,7 @@ The site is a set of static pages, not one long page. Each page is its own route
 ## Markdown
 
 - Render all Markdown through the shared `<Markdown>` component (`react-markdown` + `remark-gfm`). Front matter is parsed with `front-matter`.
-- Supported: GFM (tables, task lists, strikethrough), links, images, headings with anchors, code blocks, and a standalone URL on its own line, which becomes a link card (implemented by overriding the `p` component).
+- Supported: GFM (tables, task lists, strikethrough), links, images, headings with anchors, code blocks, and a standalone URL on its own line, which becomes a link card (implemented by overriding the `p` component). Links: `http(s)://` and `mailto:` open in a new tab, `#anchor` stays on the page, a site path such as `/en/blog/hello-world/` goes to that page (the deploy base path is added automatically), and anything else goes home. Repeated headings get `-2`, `-3`, … anchor ids.
 - **Raw HTML is not supported.** Never enable `rehype-raw` or `dangerouslySetInnerHTML` for content.
 - External links get `target="_blank"` and `rel="noopener noreferrer"` plus an external-link icon. Internal links use `<Link>`.
 - Relative images resolve against `src/assets/` (project covers, `blog/<slug>/`) and use the `?responsive` pipeline.
@@ -152,7 +152,7 @@ The blog has two kinds of page: the list (`/$lang/blog/`) and one page per post 
 - Embed kinds:
   - `card`: link card. YAML fields win; missing title or description come from the link-preview cache.
   - `youtube`: `youtube-nocookie.com` iframe loaded only after the visitor clicks a thumbnail.
-  - `iframe`: supported by the code but **disabled**: `embedAllowlist` in `site.yaml` is empty. Add a domain only when the owner approves it, and keep the CSP `frame-src` in sync. Iframes use `sandbox`, `loading="lazy"` and `referrerpolicy`.
+  - `iframe`: supported by the code but **disabled**: `embedAllowlist` in `site.yaml` is empty. Add a domain only when the owner approves it, and keep the CSP `frame-src` in sync (the content tests check both `https://<domain>` and `https://*.<domain>`). Iframes use `sandbox`, `loading="lazy"` and `referrerpolicy`.
   - `ratio` is an enum (`video`, `wide`, `square`) mapped to existing tokens. If an embed cannot load, fall back to a link card.
 - `scripts/fetch-og.mjs` runs before `pnpm build` and fetches Open Graph data (title, description, site name) for `card` embeds, project `links`, and standalone URLs in Markdown. Rules:
   - Cache in `src/content/.generated/og.json`, keyed by normalized URL with a fetch time. Reuse entries younger than 30 days.

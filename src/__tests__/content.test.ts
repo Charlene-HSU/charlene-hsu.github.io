@@ -33,6 +33,18 @@ describe("Content schemas and references", () => {
     expect(new Set(navIds).size).toBe(navIds.length);
   });
 
+  it("allows every embedAllowlist domain in the index.html frame-src CSP", () => {
+    const site = SiteContentSchema.parse(loadYaml("site.yaml"));
+    const indexHtml = fs.readFileSync(path.join(ROOT, "index.html"), "utf-8");
+    const frameSrc = indexHtml.match(/frame-src ([^;]*);/)?.[1].split(/\s+/) ?? [];
+    for (const domain of site.embedAllowlist) {
+      const clean = domain.trim().toLowerCase();
+      // Subdomains are allowed too (see isDomainAllowed in embed.tsx).
+      expect(frameSrc).toContain(`https://${clean}`);
+      expect(frameSrc).toContain(`https://*.${clean}`);
+    }
+  });
+
   it("has a route file for every nav page", () => {
     const site = SiteContentSchema.parse(loadYaml("site.yaml"));
     const routesDir = path.join(ROOT, "src/routes/$lang");
