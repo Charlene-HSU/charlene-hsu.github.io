@@ -1,18 +1,9 @@
 ---
 title: Hello World
 date: "2026-10-21"
-description: A first post on the new site, and what this blog will cover.
+description: A first post on the new site.
 tags:
-  - meta
-  - frontend
+  - test
 ---
 
-Welcome to my new personal site and blog. This site is designed around a monochrome, terminal-inspired aesthetic and keeps all content in plain YAML and Markdown files.
-
-```ts
-export function greet(name: string): string {
-  return `Hello, ${name}!`;
-}
-```
-
-Stay tuned for notes on frontend architecture, tooling, and web standards.
+Welcome to my new personal site and blog. 

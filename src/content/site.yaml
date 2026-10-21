@@ -1,14 +1,14 @@
 # TODO: Update meta.url, meta.repoUrl, and meta.siteName with your production domain and identity
 meta:
   siteName:
-    en: Your Name
-    zh-TW: Your Name
+    en: wowkfccc
+    zh-TW: wow肯德基爺爺欸
   title:
-    en: Your Name — Software Engineer
-    zh-TW: Your Name — 軟體工程師
+    en: wowkfccc — Student Software Engineer form FJU
+    zh-TW: wow肯德基爺爺欸 — 學生開發者
   description:
-    en: Software engineer building reliable things for the web.
-    zh-TW: 軟體工程師，打造可靠的網路產品。
+    en: Software engineer from FJU Medical Informatics and Innovative Applications, trying to do some contribution to society.
+    zh-TW: 來自輔大醫資學程的學生開發者，也許我的專案會對社會有幫助。
   url: https://charlene-hsu.github.io
   repoUrl: https://github.com/Charlene-HSU/charlene-hsu.github.io
 
@@ -19,8 +19,8 @@ nav:
       en: About
       zh-TW: 關於我
     description:
-      en: Who I am and what I care about as an engineer.
-      zh-TW: 我是誰，以及身為工程師我在意的事。
+      en: Who I am, maybe someone welling to know.
+      zh-TW: 我是誰，也許有人想知道呢。
   - id: skills
     icon: Braces
     label:
@@ -35,8 +35,8 @@ nav:
       en: Experience
       zh-TW: 經歷
     description:
-      en: Where I have worked and studied.
-      zh-TW: 我的工作與學習經歷。
+      en: Where I have studied.
+      zh-TW: 我的學習經歷。
   - id: projects
     icon: FolderGit2
     label:
@@ -51,16 +51,16 @@ nav:
       en: Blog
       zh-TW: 部落格
     description:
-      en: Notes on frontend, tooling and the web.
-      zh-TW: 關於前端、開發工具與網頁的筆記。
+      en: where I talk to myself
+      zh-TW: 自言自語的地方。
   - id: friends
     icon: Users
     label:
       en: Friends
       zh-TW: 友站
     description:
-      en: Sites by people I like reading, and how to exchange links.
-      zh-TW: 朋友們的網站，以及交換連結的方式。
+      en: Friends' website.
+      zh-TW: 朋友(電神)們的網站。
   - id: contact
     icon: Mail
     label:
@@ -183,17 +183,20 @@ ui:
       zh-TW: "時區：{tz}"
     marqueeAriaLabel:
       en: Tech stack highlights
-      zh-TW: 技術棧重點
+      zh-TW: 技術棧
     states:
       open:
         en: Available
-        zh-TW: 開放機會
+        zh-TW: 我很好
       busy:
         en: Focused
         zh-TW: 專注開發中
+      distribute:
+        en: not available to distribute.
+        zh-Tw: 別吵我
       away:
         en: Away
-        zh-TW: 暫時離開
+        zh-TW: 快爆掉了:((
   sections:
     about:
       comment:

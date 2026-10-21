@@ -1,31 +1,31 @@
 # TODO: Update projects with your real repositories, covers, and links
 items:
-  - id: awesome-cli
-    name: awesome-cli
-    status: active
-    period:
-      start: "2025-03"
-      end: null
-    featured: true
-    tags:
-      - TypeScript
-      - Node.js
-    cover: awesome-cli.webp
-    summary:
-      en: A small CLI tool for automating dev workflows.
-      zh-TW: 自動化開發流程的小型 CLI 工具。
-    links:
-      - type: github
-        url: https://github.com/you/awesome-cli
-      - type: demo
-        url: https://example.com
-    embeds:
-      - kind: card
-        url: https://dev.to/you/awesome-cli
-        title:
-          en: Writing awesome-cli
-          zh-TW: 開發 awesome-cli 的心得
-        description:
-          en: Architecture notes and lessons learned while building a zero-config workflow CLI.
-          zh-TW: 建構零設定工作流 CLI 的架構筆記與經驗分享。
-    body: projects/awesome-cli
+#  - id: awesome-cli
+#    name: awesome-cli
+#    status: active
+#    period:
+#      start: "2025-03"
+#      end: null
+#    featured: true
+#    tags:
+#      - TypeScript
+#      - Node.js
+#    cover: awesome-cli.webp
+#    summary:
+#      en: A small CLI tool for automating dev workflows.
+#      zh-TW: 自動化開發流程的小型 CLI 工具。
+#    links:
+#      - type: github
+#        url: https://github.com/you/awesome-cli
+#      - type: demo
+#        url: https://example.com
+#    embeds:
+#      - kind: card
+#        url: https://dev.to/you/awesome-cli
+#        title:
+#          en: Writing awesome-cli
+#          zh-TW: 開發 awesome-cli 的心得
+#        description:
+#          en: Architecture notes and lessons learned while building a zero-config workflow CLI.
+#          zh-TW: 建構零設定工作流 CLI 的架構筆記與經驗分享。
+#    body: projects/awesome-cli

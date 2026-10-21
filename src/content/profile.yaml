@@ -1,31 +1,31 @@
 # TODO: Replace placeholder profile details with your own information
-name: Your Name
+name: wow肯德基爺爺欸
 title:
-  en: Software Engineer
-  zh-TW: 軟體工程師
+  en: Student Software Engineer form FJU
+  zh-TW: 學生開發者
 location:
   en: Taipei, Taiwan
   zh-TW: 台灣・台北
 timezone: Asia/Taipei
 tagline:
-  en: Building reliable things for the web.
-  zh-TW: 打造可靠的網路產品。
+  en: I want to learn all the cool things
+  zh-TW: 什麼酷東西我也想學
 status:
   state: open
   text:
-    en: Open to work
-    zh-TW: 開放工作機會
+    en: Trying hard to become a person who are good at programming
+    zh-TW: 努力變強
 stats:
-  - value: 6
-    label:
-      en: Years
-      zh-TW: 年資
-  - value: 20
+#  - value: 6
+#    label:
+#      en: Years
+#      zh-TW: 年資
+  - value: 28
     label:
       en: Projects
       zh-TW: 專案
-  - value: 300
+  - value: 4
     label:
-      en: Commits / yr
-      zh-TW: 年度 Commits
+      en: Communities
+      zh-TW: 參與社群
 about: about
