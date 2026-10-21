@@ -1,12 +1,17 @@
 import { Copy, ExternalLink } from "lucide-react";
-import siteBadgeImg from "@/assets/friends/badges/site-88x31.png";
 import { SectionShell } from "@/components/layout/section-shell";
 import { Markdown } from "@/components/markdown";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useToastManager } from "@/components/ui/toast";
-import { friends, getFriendAvatarAsset, getFriendBadgeAsset, site } from "@/lib/content";
+import {
+  friends,
+  getFriendAvatarAsset,
+  getFriendBadgeAsset,
+  ownPublicFileUrl,
+  site,
+} from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 
 function escapeHtmlAttr(value: string): string {
@@ -30,6 +35,10 @@ function ExchangeCard({
   const exchangeName = t(exchange.name);
   const exchangeDesc = t(exchange.description);
   const badgeHtmlSnippet = `<a href="${escapeHtmlAttr(exchange.url)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtmlAttr(exchange.badge ?? "")}" width="88" height="31" alt="${escapeHtmlAttr(exchangeName)}" /></a>`;
+
+  // Previews of the images friends will link to (files in public/).
+  const avatarPreview = ownPublicFileUrl(exchange.avatar);
+  const badgePreview = ownPublicFileUrl(exchange.badge);
 
   const exchangeFields = [
     {
@@ -71,9 +80,19 @@ function ExchangeCard({
             key={field.key}
             className="flex items-center justify-between gap-3 rounded-md border border-rule bg-background p-3"
           >
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <span className="font-mono text-caption text-gray">{field.label}</span>
-              <span className="truncate font-mono text-body text-foreground">{field.value}</span>
+            <div className="flex min-w-0 items-center gap-3">
+              {field.key === "avatar" && avatarPreview ? (
+                <img
+                  src={avatarPreview}
+                  alt={tf(site.ui.sections.friends.avatarAltTemplate, { name: exchangeName })}
+                  loading="lazy"
+                  className="size-10 shrink-0 rounded-full border border-rule object-cover"
+                />
+              ) : null}
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span className="font-mono text-caption text-gray">{field.label}</span>
+                <span className="truncate font-mono text-body text-foreground">{field.value}</span>
+              </div>
             </div>
             <Button
               variant="ghost"
@@ -92,17 +111,19 @@ function ExchangeCard({
       {exchange.badge ? (
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-rule bg-background p-4">
           <div className="flex items-center gap-4">
-            <img
-              src={siteBadgeImg}
-              width="88"
-              height="31"
-              alt={tf(site.ui.sections.friends.badgeAltTemplate, {
-                name: exchangeName,
-              })}
-              loading="lazy"
-              className="shrink-0 border border-rule"
-            />
-            <div className="flex flex-col gap-0.5">
+            {badgePreview ? (
+              <img
+                src={badgePreview}
+                width="88"
+                height="31"
+                alt={tf(site.ui.sections.friends.badgeAltTemplate, {
+                  name: exchangeName,
+                })}
+                loading="lazy"
+                className="shrink-0 border border-rule"
+              />
+            ) : null}
+            <div className="flex min-w-0 flex-col gap-0.5">
               <span className="font-mono text-caption text-gray">
                 {t(site.ui.sections.friends.fields.badge)}
               </span>

@@ -16,10 +16,10 @@ status:
     en: Trying hard to become a person who are good at programming
     zh-TW: 努力變強
 stats:
-#  - value: 6
-#    label:
-#      en: Years
-#      zh-TW: 年資
+  #  - value: 6
+  #    label:
+  #      en: Years
+  #      zh-TW: 年資
   - value: 28
     label:
       en: Projects

@@ -174,7 +174,7 @@ The blog has two kinds of page: the list (`/$lang/blog/`) and one page per post 
 
 - `friends.yaml` lists friend sites (`name`, `url`, localized `description`, `tags`, optional `avatar`, optional `badge`) and an `exchange` block with this site's own details, application link and rules.
 - Avatars and badges are local files in `src/assets/friends/`. Never fetch a friend's favicon or image at runtime. Without an avatar, show the initial letter.
-- A `badge` is an 88×31 image rendered at its intrinsic size (`width="88"` and `height="31"`, not scaled by tokens). The exchange card offers one-click copy for each field and an HTML snippet for this site's own badge (with a Base UI `Toast` or `Tooltip` confirmation).
+- A `badge` is an 88×31 image rendered at its intrinsic size (`width="88"` and `height="31"`, not scaled by tokens). The exchange card offers one-click copy for each field and an HTML snippet for this site's own badge (with a Base UI `Toast` or `Tooltip` confirmation). Its avatar and badge previews come from `exchange.avatar` / `exchange.badge`: URLs on this site map to the same file in `public/` (`ownPublicFileUrl`), so the previews also work locally; never hardcode a preview image.
 
 ## Where components go
 

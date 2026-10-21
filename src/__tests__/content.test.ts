@@ -110,6 +110,18 @@ describe("Content schemas and references", () => {
 
   it("validates friends.yaml and ensures referenced avatars and badges exist", () => {
     const friends = FriendsContentSchema.parse(loadYaml("friends.yaml"));
+    const site = SiteContentSchema.parse(loadYaml("site.yaml"));
+
+    // The link-exchange avatar and badge on this site must be real files in public/.
+    const origin = site.meta.url.replace(/\/$/, "");
+    for (const url of [friends.exchange?.avatar, friends.exchange?.badge]) {
+      if (url?.startsWith(`${origin}/`)) {
+        const file = path.join(ROOT, "public", url.slice(origin.length + 1));
+        expect(fs.existsSync(file), `${url} needs public/${url.slice(origin.length + 1)}`).toBe(
+          true,
+        );
+      }
+    }
     for (const friend of friends.items) {
       if (friend.avatar) {
         const avatarPath = path.join(ASSETS_DIR, "friends", friend.avatar);

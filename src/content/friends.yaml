@@ -20,8 +20,9 @@ exchange:
   description:
     en: Trying ot be a software engineer.
     zh-TW: 大佬別電，群除我佬
-  avatar: https://charlene-hsu.github.io/avatar.png
-  badge: https://charlene-hsu.github.io/avatar.png
+  avatar: https://charlene-hsu.github.io/avatar.jpeg
+  # 88×31 badge in public/ (e.g. badge-88x31.png). Remove the line if you have none.
+  # badge: https://charlene-hsu.github.io/badge-88x31.png
   apply: mailto:hsu960919@gmail.com
   rules:
     en: |

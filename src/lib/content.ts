@@ -39,6 +39,18 @@ export const friends: FriendsContent = FriendsContentSchema.parse(friendsRaw);
 export const contact: ContactContent = ContactContentSchema.parse(contactRaw);
 export const ogCache: OgCache = OgCacheSchema.parse(ogCacheRaw);
 
+/**
+ * For a URL on this site (`site.yaml` `meta.url`), the same file served by this
+ * build, so `public/` images also show locally and under any base path.
+ * Returns undefined for other sites: visitors never load third-party images.
+ */
+export function ownPublicFileUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  const origin = site.meta.url.replace(/\/$/, "");
+  if (!url.startsWith(`${origin}/`)) return undefined;
+  return `${import.meta.env.BASE_URL}${url.slice(origin.length + 1)}`;
+}
+
 export type PeriodStatus = "present" | "ended";
 
 export function computePeriodStatus(period: Period): PeriodStatus {

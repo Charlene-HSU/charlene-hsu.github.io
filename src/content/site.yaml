@@ -77,6 +77,9 @@ blogTags:
   frontend:
     en: Frontend
     zh-TW: 前端
+  test:
+    en: Test
+    zh-TW: 測試
 
 # Footer: which pages it lists, how many columns, and the link at the bottom right.
 footer:
