@@ -117,6 +117,20 @@ export function ProjectsSection() {
     });
   };
 
+  const header = {
+    id: "projects",
+    comment: t(site.ui.sections.projects.comment),
+    title: t(site.ui.sections.projects.title),
+  };
+
+  if (!selectedProject) {
+    return (
+      <SectionShell {...header}>
+        <p className="font-mono text-body text-gray">{t(site.ui.sections.projects.empty)}</p>
+      </SectionShell>
+    );
+  }
+
   return (
     <SectionShell
       id="projects"

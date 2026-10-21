@@ -68,50 +68,52 @@ export function ContactSection() {
             </a>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {contact.links.map((social) => {
-              const label = t(social.label);
-              const icon = <BrandIcon name={social.icon} iconStyle={social.iconStyle} inverted />;
+          {contact.links.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {contact.links.map((social) => {
+                const label = t(social.label);
+                const icon = <BrandIcon name={social.icon} iconStyle={social.iconStyle} inverted />;
 
-              // A handle (e.g. a Discord username): show it and copy it on click.
-              if (social.text) {
-                const handle = social.text;
+                // A handle (e.g. a Discord username): show it and copy it on click.
+                if (social.text) {
+                  const handle = social.text;
+                  return (
+                    <Button
+                      key={`${social.icon}-${handle}`}
+                      variant="outline"
+                      aria-label={tf(site.ui.sections.contact.copyHandleAriaLabel, {
+                        label,
+                        value: handle,
+                      })}
+                      onClick={() => void copyToClipboard(handle)}
+                      className={invertedOutline}
+                    >
+                      {icon}
+                      <span>{label}</span>
+                      <span className="font-normal">{handle}</span>
+                      <Copy className="size-3.5 shrink-0" aria-hidden="true" />
+                    </Button>
+                  );
+                }
+
+                const isExternal = social.url?.startsWith("https://") ?? false;
                 return (
-                  <Button
-                    key={`${social.icon}-${handle}`}
-                    variant="outline"
-                    aria-label={tf(site.ui.sections.contact.copyHandleAriaLabel, {
-                      label,
-                      value: handle,
-                    })}
-                    onClick={() => void copyToClipboard(handle)}
-                    className={invertedOutline}
+                  <a
+                    key={social.url}
+                    href={social.url}
+                    {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className={buttonVariants({ variant: "outline", className: invertedOutline })}
                   >
                     {icon}
                     <span>{label}</span>
-                    <span className="font-normal">{handle}</span>
-                    <Copy className="size-3.5 shrink-0" aria-hidden="true" />
-                  </Button>
+                    {isExternal ? (
+                      <ExternalLink className="size-3.5 shrink-0" aria-hidden="true" />
+                    ) : null}
+                  </a>
                 );
-              }
-
-              const isExternal = social.url?.startsWith("https://") ?? false;
-              return (
-                <a
-                  key={social.url}
-                  href={social.url}
-                  {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className={buttonVariants({ variant: "outline", className: invertedOutline })}
-                >
-                  {icon}
-                  <span>{label}</span>
-                  {isExternal ? (
-                    <ExternalLink className="size-3.5 shrink-0" aria-hidden="true" />
-                  ) : null}
-                </a>
-              );
-            })}
-          </div>
+              })}
+            </div>
+          ) : null}
         </div>
       </div>
     </SectionShell>

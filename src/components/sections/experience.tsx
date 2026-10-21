@@ -15,6 +15,9 @@ export function ExperienceSection() {
       comment={t(site.ui.sections.experience.comment)}
       title={t(site.ui.sections.experience.title)}
     >
+      {experience.items.length === 0 ? (
+        <p className="font-mono text-body text-gray">{t(site.ui.sections.experience.empty)}</p>
+      ) : null}
       <div className="flex flex-col gap-4">
         {experience.items.map((item) => {
           const status = computePeriodStatus(item.period);

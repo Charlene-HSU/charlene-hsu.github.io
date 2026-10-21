@@ -78,8 +78,9 @@ describe("Content schemas and references", () => {
 
   it("validates skills.yaml", () => {
     const skills = SkillsContentSchema.parse(loadYaml("skills.yaml"));
-    expect(skills.groups.length).toBeGreaterThan(0);
-    expect(skills.marquee.length).toBeGreaterThan(0);
+    // Empty lists are allowed; the page shows an empty state instead.
+    expect(Array.isArray(skills.groups)).toBe(true);
+    expect(Array.isArray(skills.marquee)).toBe(true);
   });
 
   it("validates experience.yaml and ensures unique item IDs", () => {
@@ -123,7 +124,6 @@ describe("Content schemas and references", () => {
 
   it("validates contact.yaml", () => {
     const contact = ContactContentSchema.parse(loadYaml("contact.yaml"));
-    expect(contact.links.length).toBeGreaterThan(0);
 
     // Icons are file names in src/assets/brands/, with or without the extension.
     const brandFiles = fs
@@ -153,7 +153,6 @@ describe("Content schemas and references", () => {
     const site = SiteContentSchema.parse(loadYaml("site.yaml"));
     const blogDir = path.join(CONTENT_DIR, "blog");
     const files = fs.readdirSync(blogDir).filter((f) => f.endsWith(".md"));
-    expect(files.length).toBeGreaterThan(0);
 
     const seenSlugLang = new Set<string>();
     const tagsBySlug = new Map<string, string>();

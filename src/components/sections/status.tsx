@@ -85,34 +85,38 @@ export function StatusSection() {
 
       {/* Full-bleed Tech Stack Marquee. The list is drawn twice for a seamless loop;
           only the first copy is exposed to screen readers. */}
-      <div
-        role="region"
-        aria-label={t(site.ui.status.marqueeAriaLabel)}
-        className="w-full overflow-hidden border-y border-rule bg-surface py-3"
-      >
-        <div className="mx-auto max-w-content px-6">
-          <div className="overflow-hidden">
-            <div className="flex w-max items-center gap-6 animate-marquee">
-              {[false, true].map((isCopy) => (
-                <ul
-                  key={String(isCopy)}
-                  aria-hidden={isCopy || undefined}
-                  className="flex items-center gap-6"
-                >
-                  {skills.marquee.map((item, idx) => (
-                    <li key={`${item}-${idx}`} className="flex items-center gap-6">
-                      <span className="font-mono text-body font-bold text-foreground">{item}</span>
-                      <span className="font-mono text-body text-green" aria-hidden="true">
-                        /
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              ))}
+      {skills.marquee.length > 0 ? (
+        <div
+          role="region"
+          aria-label={t(site.ui.status.marqueeAriaLabel)}
+          className="w-full overflow-hidden border-y border-rule bg-surface py-3"
+        >
+          <div className="mx-auto max-w-content px-6">
+            <div className="overflow-hidden">
+              <div className="flex w-max items-center gap-6 animate-marquee">
+                {[false, true].map((isCopy) => (
+                  <ul
+                    key={String(isCopy)}
+                    aria-hidden={isCopy || undefined}
+                    className="flex items-center gap-6"
+                  >
+                    {skills.marquee.map((item, idx) => (
+                      <li key={`${item}-${idx}`} className="flex items-center gap-6">
+                        <span className="font-mono text-body font-bold text-foreground">
+                          {item}
+                        </span>
+                        <span className="font-mono text-body text-green" aria-hidden="true">
+                          /
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </section>
   );
 }

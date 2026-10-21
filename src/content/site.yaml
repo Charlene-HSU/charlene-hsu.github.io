@@ -179,6 +179,9 @@ ui:
         zh-TW: 關於我
       terminalTitle: "~/about.md"
     skills:
+      empty:
+        en: No skills listed yet.
+        zh-TW: 目前還沒有列出技能。
       comment:
         en: "// skills"
         zh-TW: "// 技能"
@@ -189,6 +192,9 @@ ui:
         en: Skill categories
         zh-TW: 技能分類
     experience:
+      empty:
+        en: No experience listed yet.
+        zh-TW: 目前還沒有列出經歷。
       comment:
         en: "// experience"
         zh-TW: "// 經歷"
@@ -208,6 +214,9 @@ ui:
         en: "Highlights ({count})"
         zh-TW: "重點紀錄 ({count})"
     projects:
+      empty:
+        en: No projects listed yet.
+        zh-TW: 目前還沒有列出專案。
       comment:
         en: "// projects"
         zh-TW: "// 專案"
@@ -268,6 +277,9 @@ ui:
         en: All posts
         zh-TW: 所有文章
     friends:
+      empty:
+        en: No friend sites listed yet.
+        zh-TW: 目前還沒有友站。
       comment:
         en: "// friends"
         zh-TW: "// 友站"

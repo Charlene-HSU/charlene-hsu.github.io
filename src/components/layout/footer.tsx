@@ -68,21 +68,23 @@ export function Footer() {
             <p className="font-sans text-body text-gray">{t(profile.tagline)}</p>
           </div>
 
-          <nav aria-labelledby="footer-nav-heading" className="flex flex-col gap-3">
-            <h2 id="footer-nav-heading" className="font-mono text-body font-bold text-foreground">
-              {t(site.ui.footer.navHeading)}
-            </h2>
-            <ul className={cn("grid gap-x-12 gap-y-2", columnClasses[site.footer.columns])}>
-              {footerPages.map((item) => (
-                <li key={item.id}>
-                  <Link to={pageRoutes[item.id]} params={{ lang }} className={linkClassName}>
-                    <NavIcon name={item.icon} className="size-3.5" />
-                    <span>{t(item.label)}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          {footerPages.length > 0 ? (
+            <nav aria-labelledby="footer-nav-heading" className="flex flex-col gap-3">
+              <h2 id="footer-nav-heading" className="font-mono text-body font-bold text-foreground">
+                {t(site.ui.footer.navHeading)}
+              </h2>
+              <ul className={cn("grid gap-x-12 gap-y-2", columnClasses[site.footer.columns])}>
+                {footerPages.map((item) => (
+                  <li key={item.id}>
+                    <Link to={pageRoutes[item.id]} params={{ lang }} className={linkClassName}>
+                      <NavIcon name={item.icon} className="size-3.5" />
+                      <span>{t(item.label)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ) : null}
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-rule pt-6 font-mono text-caption text-gray">

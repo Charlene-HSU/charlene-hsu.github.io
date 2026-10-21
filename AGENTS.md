@@ -62,6 +62,7 @@ React 19, Vite, Tailwind CSS v4, TypeScript, pnpm (npm, yarn and bun are blocked
 Conventions:
 
 - A translatable value is `string | { en: string; "zh-TW": string }`. Values that do not need translation (URLs, dates, tags, ids) are plain values. Resolve values with `t(value, lang)` from `@/lib/i18n`.
+- Lists and optional fields may be left empty (`items:`), written as `null` or omitted; all mean "none". Build them with `yamlList()` / `yamlOptional()` from `src/types/content.ts`, never a bare `z.array()` or `.optional()`. Every section shows an empty state (`ui.sections.<page>.empty`) or hides the block instead of crashing, and `friends.exchange` can be removed to hide the link-exchange card.
 - Dates are `YYYY-MM` or `YYYY-MM-DD`. `end: null` means "present". Status badges (Present, Ended, Archived) are computed from dates and status fields, not typed by hand.
 - Types for every content file live in `src/types/content.ts`; typed exports live in `src/lib/content.ts`. Never import YAML directly from components.
 - Content checks (Vitest) must keep passing: required fields exist in both languages, ids are unique, URLs are valid `https` (or `mailto:`), referenced Markdown, covers, avatars and badges exist, blog `title` and `date` are present, blog slugs are URL-safe and unique, every blog tag has a label in `blogTags`, and translations of one post list the same tags.

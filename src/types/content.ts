@@ -1,5 +1,21 @@
 import { z } from "zod";
 
+/**
+ * A YAML list. Leaving it empty (`items:`), writing `null` or omitting it all
+ * mean "no items", so the owner can clear a list without breaking the build.
+ */
+export function yamlList<T extends z.ZodTypeAny>(item: T) {
+  return z
+    .array(item)
+    .nullish()
+    .transform((value): z.output<T>[] => value ?? []);
+}
+
+/** An optional YAML value: leaving it empty, writing `null` or omitting it all mean "not set". */
+export function yamlOptional<T extends z.ZodTypeAny>(schema: T) {
+  return schema.nullish().transform((value): z.output<T> | undefined => value ?? undefined);
+}
+
 export const languages = ["en", "zh-TW"] as const;
 export type Lang = (typeof languages)[number];
 
@@ -97,12 +113,12 @@ export const BlogSlugSchema = z
 export type NavItem = z.infer<typeof NavItemSchema>;
 
 export const FooterSchema = z.object({
-  links: z.array(PageIdSchema).min(1),
+  links: yamlList(PageIdSchema),
   columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
   bottomLink: z
     .object({
-      page: PageIdSchema.optional(),
-      url: HttpsOrMailtoSchema.optional(),
+      page: yamlOptional(PageIdSchema),
+      url: yamlOptional(HttpsOrMailtoSchema),
       label: BilingualObjectSchema,
     })
     .refine((link) => (link.page === undefined) !== (link.url === undefined), {
@@ -121,9 +137,12 @@ export const SiteContentSchema = z.object({
     repoUrl: HttpsUrlSchema,
   }),
   nav: z.array(NavItemSchema).min(1),
-  blogTags: z.record(BlogTagIdSchema, BilingualObjectSchema),
+  blogTags: z
+    .record(BlogTagIdSchema, BilingualObjectSchema)
+    .nullish()
+    .transform((value) => value ?? {}),
   footer: FooterSchema,
-  embedAllowlist: z.array(z.string()),
+  embedAllowlist: yamlList(z.string()),
   ui: z.object({
     brand: z.string().min(1),
     pageTitleTemplate: BilingualObjectSchema,
@@ -168,11 +187,13 @@ export const SiteContentSchema = z.object({
         terminalTitle: z.string().min(1),
       }),
       skills: z.object({
+        empty: BilingualObjectSchema,
         comment: BilingualObjectSchema,
         title: BilingualObjectSchema,
         tabsAriaLabel: BilingualObjectSchema,
       }),
       experience: z.object({
+        empty: BilingualObjectSchema,
         comment: BilingualObjectSchema,
         title: BilingualObjectSchema,
         present: BilingualObjectSchema,
@@ -181,6 +202,7 @@ export const SiteContentSchema = z.object({
         highlightsToggle: BilingualObjectSchema,
       }),
       projects: z.object({
+        empty: BilingualObjectSchema,
         comment: BilingualObjectSchema,
         title: BilingualObjectSchema,
         prompt: z.string().min(1),
@@ -209,6 +231,7 @@ export const SiteContentSchema = z.object({
         backToList: BilingualObjectSchema,
       }),
       friends: z.object({
+        empty: BilingualObjectSchema,
         comment: BilingualObjectSchema,
         title: BilingualObjectSchema,
         avatarAltTemplate: BilingualObjectSchema,
@@ -269,7 +292,7 @@ export const ProfileContentSchema = z.object({
     state: ProfileStateSchema,
     text: BilingualObjectSchema,
   }),
-  stats: z.array(
+  stats: yamlList(
     z.object({
       value: z.number(),
       label: BilingualObjectSchema,
@@ -281,15 +304,13 @@ export const ProfileContentSchema = z.object({
 export type ProfileContent = z.infer<typeof ProfileContentSchema>;
 
 export const SkillsContentSchema = z.object({
-  groups: z
-    .array(
-      z.object({
-        name: LocalizedSchema,
-        items: z.array(z.string().min(1)).min(1),
-      }),
-    )
-    .min(1),
-  marquee: z.array(z.string().min(1)).min(1),
+  groups: yamlList(
+    z.object({
+      name: LocalizedSchema,
+      items: yamlList(z.string().min(1)),
+    }),
+  ),
+  marquee: yamlList(z.string().min(1)),
 });
 
 export type SkillsContent = z.infer<typeof SkillsContentSchema>;
@@ -299,17 +320,13 @@ export const ExperienceItemSchema = z.object({
   company: LocalizedSchema,
   role: BilingualObjectSchema,
   period: PeriodSchema,
-  // May be left empty (`highlights:`) or omitted; both mean "no highlights".
-  highlights: z
-    .array(BilingualObjectSchema)
-    .nullish()
-    .transform((value) => value ?? []),
+  highlights: yamlList(BilingualObjectSchema),
 });
 
 export type ExperienceItem = z.infer<typeof ExperienceItemSchema>;
 
 export const ExperienceContentSchema = z.object({
-  items: z.array(ExperienceItemSchema),
+  items: yamlList(ExperienceItemSchema),
 });
 
 export type ExperienceContent = z.infer<typeof ExperienceContentSchema>;
@@ -326,9 +343,9 @@ export type EmbedRatio = z.infer<typeof EmbedRatioSchema>;
 export const ProjectEmbedSchema = z.object({
   kind: z.enum(["card", "youtube", "iframe"]),
   url: HttpsUrlSchema,
-  title: LocalizedSchema.optional(),
-  description: LocalizedSchema.optional(),
-  ratio: EmbedRatioSchema.optional(),
+  title: yamlOptional(LocalizedSchema),
+  description: yamlOptional(LocalizedSchema),
+  ratio: yamlOptional(EmbedRatioSchema),
 });
 
 export type ProjectEmbed = z.infer<typeof ProjectEmbedSchema>;
@@ -338,27 +355,25 @@ export const ProjectItemSchema = z.object({
   name: LocalizedSchema,
   status: ProjectStatusSchema,
   period: PeriodSchema,
-  featured: z.boolean().optional(),
-  tags: z.array(z.string().min(1)),
-  cover: z.string().min(1).optional(),
+  featured: yamlOptional(z.boolean()),
+  tags: yamlList(z.string().min(1)),
+  cover: yamlOptional(z.string().min(1)),
   summary: BilingualObjectSchema,
-  links: z
-    .array(
-      z.object({
-        type: ProjectLinkTypeSchema,
-        url: HttpsUrlSchema,
-        label: LocalizedSchema.optional(),
-      }),
-    )
-    .default([]),
-  embeds: z.array(ProjectEmbedSchema).default([]),
-  body: z.string().min(1).optional(),
+  links: yamlList(
+    z.object({
+      type: ProjectLinkTypeSchema,
+      url: HttpsUrlSchema,
+      label: yamlOptional(LocalizedSchema),
+    }),
+  ),
+  embeds: yamlList(ProjectEmbedSchema),
+  body: yamlOptional(z.string().min(1)),
 });
 
 export type ProjectItem = z.infer<typeof ProjectItemSchema>;
 
 export const ProjectsContentSchema = z.object({
-  items: z.array(ProjectItemSchema).min(1),
+  items: yamlList(ProjectItemSchema),
 });
 
 export type ProjectsContent = z.infer<typeof ProjectsContentSchema>;
@@ -367,25 +382,28 @@ export const FriendItemSchema = z.object({
   name: LocalizedSchema,
   url: HttpsUrlSchema,
   description: BilingualObjectSchema,
-  avatar: z.string().min(1).optional(),
-  badge: z.string().min(1).optional(),
-  tags: z.array(z.string().min(1)).default([]),
+  avatar: yamlOptional(z.string().min(1)),
+  badge: yamlOptional(z.string().min(1)),
+  tags: yamlList(z.string().min(1)),
 });
 
 export type FriendItem = z.infer<typeof FriendItemSchema>;
 
 export const FriendsContentSchema = z.object({
   intro: BilingualObjectSchema,
-  items: z.array(FriendItemSchema),
-  exchange: z.object({
-    name: LocalizedSchema,
-    url: HttpsUrlSchema,
-    description: BilingualObjectSchema,
-    avatar: HttpsUrlSchema,
-    badge: HttpsUrlSchema.optional(),
-    apply: HttpsOrMailtoSchema,
-    rules: BilingualObjectSchema,
-  }),
+  items: yamlList(FriendItemSchema),
+  // Leave empty or remove to hide the link-exchange card.
+  exchange: yamlOptional(
+    z.object({
+      name: LocalizedSchema,
+      url: HttpsUrlSchema,
+      description: BilingualObjectSchema,
+      avatar: HttpsUrlSchema,
+      badge: yamlOptional(HttpsUrlSchema),
+      apply: HttpsOrMailtoSchema,
+      rules: BilingualObjectSchema,
+    }),
+  ),
 });
 
 export type FriendsContent = z.infer<typeof FriendsContentSchema>;
@@ -396,11 +414,14 @@ export const ContactLinkSchema = z
     /** File name in `src/assets/brands/` (svg, png, webp or jpg); the extension is optional. */
     icon: z.string().min(1),
     /** `mono` icons are light and get inverted on light surfaces; `color` icons keep their colors. */
-    iconStyle: z.enum(["mono", "color"]).default("mono"),
+    iconStyle: z
+      .enum(["mono", "color"])
+      .nullish()
+      .transform((value) => value ?? "mono"),
     /** Opens a page (`https://`) or an email (`mailto:`). */
-    url: HttpsOrMailtoSchema.optional(),
+    url: yamlOptional(HttpsOrMailtoSchema),
     /** Shown and copied on click instead of opening a link, e.g. a Discord username. */
-    text: z.string().min(1).optional(),
+    text: yamlOptional(z.string().min(1)),
   })
   .refine((link) => (link.url === undefined) !== (link.text === undefined), {
     message: "Each contact link needs exactly one of `url` or `text`",
@@ -410,7 +431,7 @@ export type ContactLink = z.infer<typeof ContactLinkSchema>;
 
 export const ContactContentSchema = z.object({
   email: z.string().email(),
-  links: z.array(ContactLinkSchema),
+  links: yamlList(ContactLinkSchema),
 });
 
 export type ContactContent = z.infer<typeof ContactContentSchema>;
@@ -418,9 +439,9 @@ export type ContactContent = z.infer<typeof ContactContentSchema>;
 export const BlogFrontMatterSchema = z.object({
   title: z.string().min(1),
   date: IsoDateSchema,
-  description: z.string().min(1).optional(),
-  tags: z.array(BlogTagIdSchema).default([]),
-  draft: z.boolean().optional(),
+  description: yamlOptional(z.string().min(1)),
+  tags: yamlList(BlogTagIdSchema),
+  draft: yamlOptional(z.boolean()),
 });
 
 export type BlogFrontMatter = z.infer<typeof BlogFrontMatterSchema>;
