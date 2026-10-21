@@ -162,7 +162,9 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
     };
 
     return (
-      <span className={cn("font-sans text-paragraph", className)}>
+      // `block`: an inline wrapper around the block paragraphs below makes the
+      // browser add an empty line first, which pushes list bullets onto their own line.
+      <span className={cn("block font-sans text-paragraph", className)}>
         <ReactMarkdown
           allowedElements={["p", "strong", "code", "a", "ul", "li"]}
           components={inlineComponents}
