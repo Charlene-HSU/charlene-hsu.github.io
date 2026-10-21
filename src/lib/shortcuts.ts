@@ -51,3 +51,23 @@ export function getShortcuts(lang: Lang, now: Date): Shortcut[] {
     )
     .slice(0, limit);
 }
+
+/** Markdown to plain text for short previews: drops links, emphasis, code marks and headings. */
+export function markdownToPlainText(markdown: string): string {
+  return markdown
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/[*_~`]+/g, "")
+    .replace(/^#+\s*/gm, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** First paragraph of a Markdown body (skipping headings, lists, quotes and code), as plain text. */
+export function firstParagraph(markdown: string): string {
+  const blocks = markdown.split(/\n\s*\n/).map((block) => block.trim());
+  const paragraph = blocks.find(
+    (block) => block.length > 0 && !/^(#|[-*+] |\d+\. |>|```)/.test(block),
+  );
+  return paragraph ? markdownToPlainText(paragraph) : "";
+}

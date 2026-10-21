@@ -145,6 +145,8 @@ export const SiteContentSchema = z.object({
   shortcuts: z.object({
     recentDays: z.number().int().min(0),
     limit: z.number().int().min(1),
+    /** Show a card linking to the About page, with the first paragraph of the About text. */
+    about: z.boolean().default(true),
   }),
   embedAllowlist: yamlList(z.string()),
   ui: z.object({

@@ -125,6 +125,7 @@ The site is a set of static pages, not one long page. Each page is its own route
 ### Home shortcuts
 
 - Between the status cards and the marquee, the home page links to projects and posts that were updated in the last `site.yaml` `shortcuts.recentDays` days (default 30), plus anything marked `pinned: true`. Pinned items come first, then newest first, at most `shortcuts.limit` items. With nothing to show, the block is not rendered.
+- The first card always links to About and shows the first paragraph of `md/about.<lang>.md` as plain text (`shortcuts.about: false` hides it). It does not count toward `limit`.
 - A project's date is `updated` (`YYYY-MM` or `YYYY-MM-DD`) in `projects.yaml`, falling back to `period.start`; a post's is `updated` in its front matter, falling back to `date`. `pinned: true` goes in the same places.
 - The logic lives in `src/lib/shortcuts.ts` (`getShortcuts`). Prerendered HTML uses the build time (`__BUILD_TIME__`, injected by `vite.config.ts`); after hydration the visitor's clock is used, so shortcuts expire without a rebuild.
 

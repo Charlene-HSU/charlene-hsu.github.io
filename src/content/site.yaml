@@ -104,6 +104,8 @@ footer:
 shortcuts:
   recentDays: 30
   limit: 4
+  # Card linking to About, showing the first paragraph of md/about.<lang>.md. `false` hides it.
+  about: true
 
 embedAllowlist: []
 
