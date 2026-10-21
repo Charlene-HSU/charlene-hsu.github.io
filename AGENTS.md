@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for AI coding agents working in this repository. This is a bilingual (English / Traditional Chinese) personal portfolio site with a black-and-white, terminal-inspired look. It introduces the owner, lists skills, experience and projects, shows a blog section and a friends section, and is published as a static site on GitHub Pages. README.md is the public introduction and quick start; keep implementation and operational details here. `CLAUDE.md` is a symlink to this file, so maintain one shared agent guide.
+Guidance for AI coding agents working in this repository. This is a bilingual (English / Traditional Chinese) personal portfolio site with a black-and-white, terminal-inspired look. It has a home page (hero, status and tech marquee) plus one page each for About, Skills, Experience, Projects, Blog, Friends and Contact. The blog has a post list with tag filters and one page per post. The site is published as a static site on GitHub Pages. README.md is the public introduction and quick start; keep implementation and operational details here. `CLAUDE.md` is a symlink to this file, so maintain one shared agent guide.
 
 The visual and engineering conventions are modeled on the [SITCON 2027 CFP site](https://github.com/sitcon-tw/2027-cfp) (MIT). Borrow its layout ideas and rules, never its branding, photos, copy or other assets.
 
@@ -46,42 +46,67 @@ React 19, Vite, Tailwind CSS v4, TypeScript, pnpm (npm, yarn and bun are blocked
 - Technical identifiers (route paths, anchor ids, CSS classes, state values) and calculated numbers may stay in code. Display labels for technical values belong in content.
 - YAML holds structured data (lists, dates, links, tags). Markdown holds long-form text (About, project descriptions, friend-link rules, blog posts).
 
-| File                 | Purpose                                                                                        |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| `site.yaml`          | Metadata, `nav` (single source for navbar, hero CTAs and footer), UI strings, `embedAllowlist` |
-| `profile.yaml`       | Name, title, location, timezone, tagline, status, stats, `primaryCta`, `about`                 |
-| `skills.yaml`        | Skill groups and the marquee list                                                              |
-| `experience.yaml`    | Work and study history                                                                         |
-| `projects.yaml`      | Projects, links and embeds                                                                     |
-| `friends.yaml`       | Friend sites and the link-exchange card                                                        |
-| `contact.yaml`       | Email and social links                                                                         |
-| `md/`                | Markdown for About (`about.<lang>.md`) and projects (`projects/<id>.<lang>.md`)                |
-| `blog/`              | Blog posts (`<slug>.<lang>.md`)                                                                |
-| `.generated/og.json` | Cache written by `fetch-og`. Commit it. Never edit it by hand                                  |
+| File                 | Purpose                                                                                                |
+| -------------------- | ------------------------------------------------------------------------------------------------------ |
+| `site.yaml`          | Metadata, `nav` (single source for pages, navbar and footer), `blogTags`, UI strings, `embedAllowlist` |
+| `profile.yaml`       | Name, title, location, timezone, tagline, status, stats, `about`                                       |
+| `skills.yaml`        | Skill groups and the marquee list                                                                      |
+| `experience.yaml`    | Work and study history                                                                                 |
+| `projects.yaml`      | Projects, links and embeds                                                                             |
+| `friends.yaml`       | Friend sites and the link-exchange card                                                                |
+| `contact.yaml`       | Email and social links                                                                                 |
+| `md/`                | Markdown for About (`about.<lang>.md`) and projects (`projects/<id>.<lang>.md`)                        |
+| `blog/`              | Blog posts (`<slug>.<lang>.md`), one page each                                                         |
+| `.generated/og.json` | Cache written by `fetch-og`. Commit it. Never edit it by hand                                          |
 
 Conventions:
 
 - A translatable value is `string | { en: string; "zh-TW": string }`. Values that do not need translation (URLs, dates, tags, ids) are plain values. Resolve values with `t(value, lang)` from `@/lib/i18n`.
 - Dates are `YYYY-MM` or `YYYY-MM-DD`. `end: null` means "present". Status badges (Present, Ended, Archived) are computed from dates and status fields, not typed by hand.
 - Types for every content file live in `src/types/content.ts`; typed exports live in `src/lib/content.ts`. Never import YAML directly from components.
-- Content checks (Vitest) must keep passing: required fields exist in both languages, ids are unique, URLs are valid `https` (or `mailto:`), referenced Markdown, covers, avatars and badges exist, blog `title` and `date` are present.
+- Content checks (Vitest) must keep passing: required fields exist in both languages, ids are unique, URLs are valid `https` (or `mailto:`), referenced Markdown, covers, avatars and badges exist, blog `title` and `date` are present, blog slugs are URL-safe and unique, every blog tag has a label in `blogTags`, and translations of one post list the same tags.
 
 For a content update: edit the relevant file under `src/content/`, keep its structure, run `pnpm check` and `pnpm test`, then review with `pnpm dev`.
 
 ## Internationalization
 
 - Supported languages: `en` and `zh-TW`. Every `zh*` locale maps to `zh-TW`; everything else maps to `en`. There is no Simplified Chinese version.
-- Routes are path-based: `/` (language detection and redirect), `/en/`, `/zh-TW/`. `src/routes/index.tsx` redirects in `beforeLoad`; `src/routes/$lang/route.tsx` validates the param (invalid → not found), provides the i18n context, and sets `<html lang>`.
+- Routes are path-based: `/` (language detection and redirect), then every page under a language prefix (`/en/…`, `/zh-TW/…`, see [Pages and routes](#pages-and-routes)). `src/routes/index.tsx` redirects in `beforeLoad`; `src/routes/$lang/route.tsx` validates the param (invalid → not found), provides the i18n context, and sets `<html lang>`.
 - Detection order: URL prefix → language stored in `localStorage` → `navigator.languages` (first supported match wins) → `en`. Wrap every `localStorage` access in `try/catch` and only run it in the browser, so prerendering stays safe.
-- The language switcher (Base UI `Menu`) keeps the current hash and stores the choice.
-- The prerendered `/` shell contains a tiny inline detection script, a `<noscript>` link to each language, and `hreflang` plus `x-default` alternates. Each language page has its own title, description, Open Graph metadata and `hreflang` links.
+- The language switcher (Base UI `Menu`) stays on the same page in the other language (same path after the prefix, same search params and hash, same blog post) and stores the choice.
+- The prerendered `/` shell contains a tiny inline detection script, a `<noscript>` link to each language, and `hreflang` plus `x-default` alternates. Every page has its own title, description, Open Graph metadata, canonical URL and `hreflang` links.
 - If a translation is missing, fall back to the other language and warn in development. Do not hide the content.
 - Format dates and numbers with `Intl` using the current language.
 
+## Pages and routes
+
+The site is a set of static pages, not one long page. Each page is its own route with its own URL, title and metadata.
+
+| Page       | Route (per language) | Content                                                                             |
+| ---------- | -------------------- | ----------------------------------------------------------------------------------- |
+| Home       | `/$lang/`            | Hero (name, title, typewriter tagline), status and clock cards, tech marquee        |
+| About      | `/$lang/about/`      | Stats and the About Markdown in a terminal window                                   |
+| Skills     | `/$lang/skills/`     | Skill groups in `Tabs`                                                              |
+| Experience | `/$lang/experience/` | Work and study history                                                              |
+| Projects   | `/$lang/projects/`   | Project tiles and detail panel (see [Projects](#projects-embeds-and-link-previews)) |
+| Blog       | `/$lang/blog/`       | Tag filter row, then the post list (see [Blog](#blog))                              |
+| Blog post  | `/$lang/blog/$slug/` | One post                                                                            |
+| Friends    | `/$lang/friends/`    | Friend cards and the link-exchange card                                             |
+| Contact    | `/$lang/contact/`    | Email card and social links                                                         |
+
+- Route files: `src/routes/$lang/index.tsx` (home), `about.tsx`, `skills.tsx`, `experience.tsx`, `projects.tsx`, `friends.tsx`, `contact.tsx`, `blog/index.tsx` and `blog/$slug.tsx` under `src/routes/$lang/`. Each route renders one section component from `src/components/sections/` and nothing else.
+- The router uses `trailingSlash: "always"`, so `to` paths end with `/` (`"/$lang/"`, `"/$lang/blog/"`, `"/$lang/blog/$slug/"`). Follow the paths the generated route tree type-checks.
+- Each page except Home opens with the shared page header (`SectionShell`): the comment eyebrow (`// projects`) and the page title as the page's only `<h1>`. On Home the owner's name is the `<h1>`. Headings inside a page start at `<h2>`.
+- Page content starts below the overlaid header: every page pads its top with `pt-header`. Pages share the same column, gutter and vertical padding.
+- Page titles and descriptions come from content: each `nav` entry has a localized `description`; the document title uses `ui.pageTitleTemplate` (for example `"{page} — {site}"`). Blog posts use their own `title` and `description`.
+- Navigating to another page scrolls to the top. Keep the router's scroll restoration for back and forward.
+- Unknown paths render a not-found page (`notFoundComponent` on the `$lang` route, copy in `ui.notFound`) with a link home. The root `notFoundComponent` covers paths without a valid language.
+
 ## Navigation and icons
 
-- `site.yaml` `nav` is the single source for the navbar, the hero CTAs and the footer links. Every page has one entry: `id`, `type` (`hash`), `icon`, localized `label`. Add a page by adding one entry and implementing its section.
-- The hero shows one CTA per entry (icon + label). `profile.yaml` `primaryCta` names the entry shown in green; the others are outline buttons.
+- `site.yaml` `nav` is the single source for the pages, the navbar and the footer links. Every page except Home has one entry: `id` (also the route segment, so `projects` → `/$lang/projects/`), `icon`, localized `label` and localized `description`. Adding a page means adding one entry, one route file and one section component.
+- Navbar links use `<Link>` and mark the current page with `aria-current="page"` and an active style (TanStack Router's `activeProps`, or `data-status="active"`). Blog post pages count as the Blog page. The brand link goes Home.
+- The hero has no page buttons; the navbar is the way to the other pages.
 - Icons are `lucide-react` names written in YAML and resolved through an allowlist mapping in code, so only used icons are bundled. Never import the whole icon set. Icons are decorative (`aria-hidden`); the label provides the text.
 
 ## Markdown
@@ -96,14 +121,33 @@ For a content update: edit the relevant file under `src/content/`, keep its stru
 
 ### Blog
 
-- The blog is a **section on the home page** (`#blog`), not a set of routes. Do not add blog list or article routes, tables of contents, tag filters, reading time, covers, pagination, RSS, comments or search unless the owner asks.
-- Posts are `src/content/blog/<slug>.<lang>.md` with YAML front matter containing only `title` and `date` (optional `draft: true`, shown in development only).
-- Posts are listed newest first and rendered as written: the front matter title and date, then the Markdown body through `<Markdown>`. Load them with `import.meta.glob("/src/content/blog/*.md", { query: "?raw", import: "default", eager: true })`.
-- If a post has no file for the current language, show the available one without a badge or notice.
+The blog has two kinds of page: the list (`/$lang/blog/`) and one page per post (`/$lang/blog/$slug/`).
+
+**Posts**
+
+- Posts are `src/content/blog/<slug>.<lang>.md`. The slug is lowercase letters, digits and hyphens, and is shared by all translations of a post.
+- Front matter: `title` and `date` (`YYYY-MM-DD`) are required; `description` (one or two sentences, used in the list and in page metadata) and `tags` (list of tag ids) are optional; `draft: true` shows the post in development only.
+- Tags are language-neutral ids (lowercase, hyphenated, for example `frontend`). Their display labels live in `site.yaml` `blogTags` (`{ <id>: { en, zh-TW } }`), so a tag reads correctly in both languages. Every translation of a post lists the same tags.
+- Load posts with `import.meta.glob("/src/content/blog/*.md", { query: "?raw", import: "default", eager: true })` through `src/lib/markdown.ts`. Components never parse posts themselves.
+- If a post has no file for the current language, show the available one without a badge or notice. Its canonical URL and `hreflang` links point only to the languages that have a file.
+
+**List page (`/$lang/blog/`)**
+
+- At the top, one row of tag filters: an "All" option first, then every tag in use (sorted by post count, then label), each with its count. Build it with Base UI `ToggleGroup` (single selection, `Toggle` items styled like small badges). On narrow screens the row scrolls horizontally instead of wrapping into many lines.
+- The selected tag is a validated search param (`?tag=<id>`, `validateSearch`); unknown tags fall back to "All". Filtering happens in the browser on prerendered data. Prerender only the unfiltered list.
+- Below the row, posts newest first. Each item shows the date, title, description (if any) and tags, and the whole item is one `<Link>` to the post page. No excerpts generated from the body.
+- Empty states use `ui.sections.blog.empty` (no posts) and `ui.sections.blog.emptyTag` (no posts with the selected tag).
+
+**Post page (`/$lang/blog/$slug/`)**
+
+- An `<article>` with: a back link to the list, the title as `<h1>`, the date (`<time dateTime>`), tags as links to `/$lang/blog/?tag=<id>`, then the body through `<Markdown>`. Markdown headings inside a post start at `<h2>`.
+- An unknown or (in production) draft slug throws `notFound()` in the route's `beforeLoad`.
+- Images for a post live in `src/assets/blog/<slug>/` and are referenced relatively from the Markdown.
+- Do not add tables of contents, reading time, covers, pagination, previous/next links, RSS, comments or search unless the owner asks.
 
 ## Projects, embeds and link previews
 
-- Projects have **no detail pages**. The Projects section shows a list of tiles on one side and a detail panel on the other (an accordion on mobile). The selected project is kept in a validated search param (`?p=<id>`, `validateSearch`) so it can be shared without adding a route.
+- Projects have **no per-project pages**. The Projects page shows a list of tiles and one detail panel: side by side from `md` up, with the tiles stacked above the panel on mobile. The selected project is kept in a validated search param (`?p=<id>`, `validateSearch`) so it can be shared without adding a route. Selecting a project replaces the search param without scrolling the page. Render the detail panel once (not one copy for desktop and another for mobile) so ids and images are not duplicated.
 - Panel content: cover, summary, link buttons, optional Markdown body (`body: projects/<id>` → `md/projects/<id>.<lang>.md`), and embeds.
 - Embed kinds:
   - `card`: link card. YAML fields win; missing title or description come from the link-preview cache.
@@ -126,10 +170,10 @@ For a content update: edit the relevant file under `src/content/`, keep its stru
 ## Where components go
 
 - `src/components/ui/`: reusable UI primitives (button, tabs, dialog, tooltip, menu, collapsible, toast, badge, …). One file per primitive, kebab-case.
-- `src/components/`: site-level components composed from the primitives: `layout/` (navbar, footer, section shell), `sections/` (hero, status, about, skills, experience, projects, blog, friends, contact), `markdown.tsx`, `embed.tsx`, `link-card.tsx`, `terminal.tsx`, `type-writer.tsx`, `responsive-image.tsx`.
-- `src/routes/`: one file per route, picked up by TanStack Router's Vite plugin (`index.tsx`, `$lang/route.tsx`, `$lang/index.tsx`). Each exports `Route = createFileRoute('<path>')({ component })`. Use `<Link to="…">` for internal links (type-checked paths). Routes compose components; do not put primitives inline in routes.
+- `src/components/`: site-level components composed from the primitives: `layout/` (navbar, footer, section shell, not-found page), `sections/` (hero, status, about, skills, experience, projects, blog list, blog post, friends, contact), `markdown.tsx`, `embed.tsx`, `link-card.tsx`, `terminal.tsx`, `type-writer.tsx`, `responsive-image.tsx`.
+- `src/routes/`: one file per route, picked up by TanStack Router's Vite plugin (`index.tsx`, `$lang/route.tsx`, `$lang/index.tsx` and the page routes listed in [Pages and routes](#pages-and-routes)). Each exports `Route = createFileRoute('<path>')({ component })`. Use `<Link to="…">` for internal links (type-checked paths). Routes compose components; do not put primitives inline in routes.
 - Never write a root-relative `href="/…"` or `src="/…"`. Route through `<Link>` (or a primitive's `render={<Link … />}`) and import assets so the base path is applied.
-- In-page jumps use `<Link to="/$lang" params={{ lang }} hash="projects">`, never a raw `<a href="#projects">`. The router smooth-scrolls hash links (`defaultHashScrollIntoView`, instant under `prefers-reduced-motion`) and `scroll-pt-header` on `html` keeps the target clear of the header. Do not add `scroll-behavior: smooth` in CSS or a smooth-scroll library.
+- Links between pages are `<Link to="/$lang/projects/" params={{ lang }}>`, never a raw `<a href>`. Hash links are only for anchors inside a page (Markdown headings); the router scrolls to them (`defaultHashScrollIntoView`, instant under `prefers-reduced-motion`) and `scroll-pt-header` on `html` keeps the target clear of the header. Do not add `scroll-behavior: smooth` in CSS or a smooth-scroll library.
 - `src/routeTree.gen.ts` is generated by the Vite plugin whenever `pnpm dev` or `pnpm build` runs. Never edit it by hand, but do commit it: `tsc` needs it.
 
 ## Base UI is a hard requirement
@@ -140,15 +184,15 @@ For a content update: edit the relevant file under `src/content/`, keep its stru
 - Never render a link (`<a>`) through `Button`'s `render` prop. Style the `<a>` or `<Link>` with `buttonVariants()` from `@/components/ui/button` instead.
 - Do not add other headless or pre-styled UI libraries (Radix, shadcn/ui, Headless UI, MUI, …).
 
-| Need                                        | Use                         |
-| ------------------------------------------- | --------------------------- |
-| Buttons, icon buttons                       | `Button`                    |
-| Skills categories                           | `Tabs`                      |
-| Experience highlights, mobile project list  | `Collapsible` / `Accordion` |
-| Language switcher, mobile navigation        | `Menu`                      |
-| Image lightbox, large embeds if ever needed | `Dialog`                    |
-| Icon-only controls                          | `Tooltip`                   |
-| "Copied" feedback                           | `Toast` (or `Tooltip`)      |
+| Need                                        | Use                    |
+| ------------------------------------------- | ---------------------- |
+| Buttons, icon buttons                       | `Button`               |
+| Skills categories                           | `Tabs`                 |
+| Experience highlights                       | `Collapsible`          |
+| Language switcher, mobile navigation        | `Menu`                 |
+| Image lightbox, large embeds if ever needed | `Dialog`               |
+| Icon-only controls                          | `Tooltip`              |
+| "Copied" feedback                           | `Toast` (or `Tooltip`) |
 
 ## Styling
 

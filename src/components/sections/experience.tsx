@@ -36,7 +36,7 @@ export function ExperienceSection() {
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="flex flex-col gap-1">
                   <div className="flex flex-wrap items-center gap-2.5">
-                    <h3 className="font-mono text-h2 font-bold text-foreground">{t(item.role)}</h3>
+                    <h2 className="font-mono text-h2 font-bold text-foreground">{t(item.role)}</h2>
                     <Badge variant={status === "present" ? "green" : "default"}>
                       {status === "present"
                         ? t(site.ui.sections.experience.present)

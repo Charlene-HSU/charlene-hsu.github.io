@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { createFileRoute, notFound, Outlet } from "@tanstack/react-router";
+import { createFileRoute, notFound, Outlet, useParams } from "@tanstack/react-router";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
+import { NotFoundPage } from "@/components/layout/not-found";
 import { ToastList } from "@/components/ui/toast";
-import { site } from "@/lib/content";
-import { I18nProvider, isLang, t, type Lang } from "@/lib/i18n";
+import { I18nProvider, isLang, type Lang } from "@/lib/i18n";
 
 function LangLayout() {
   const { lang } = Route.useParams();
@@ -12,11 +12,6 @@ function LangLayout() {
 
   useEffect(() => {
     document.documentElement.lang = validLang;
-    document.title = t(site.meta.title, validLang);
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute("content", t(site.meta.description, validLang));
-    }
   }, [validLang]);
 
   return (
@@ -33,6 +28,11 @@ function LangLayout() {
   );
 }
 
+function LangNotFound() {
+  const params = useParams({ strict: false }) as { lang?: string };
+  return <NotFoundPage lang={isLang(params.lang) ? params.lang : undefined} />;
+}
+
 export const Route = createFileRoute("/$lang")({
   beforeLoad: ({ params }) => {
     if (!isLang(params.lang)) {
@@ -40,4 +40,5 @@ export const Route = createFileRoute("/$lang")({
     }
   },
   component: LangLayout,
+  notFoundComponent: LangNotFound,
 });

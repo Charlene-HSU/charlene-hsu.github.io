@@ -67,12 +67,32 @@ export const NavIconNameSchema = z.enum([
 
 export type NavIconName = z.infer<typeof NavIconNameSchema>;
 
+export const pageIds = [
+  "about",
+  "skills",
+  "experience",
+  "projects",
+  "blog",
+  "friends",
+  "contact",
+] as const;
+export const PageIdSchema = z.enum(pageIds);
+export type PageId = z.infer<typeof PageIdSchema>;
+
 export const NavItemSchema = z.object({
-  id: z.string().min(1),
-  type: z.literal("hash"),
+  id: PageIdSchema,
   icon: NavIconNameSchema,
   label: BilingualObjectSchema,
+  description: BilingualObjectSchema,
 });
+
+export const BlogTagIdSchema = z
+  .string()
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Tag ids are lowercase words joined by hyphens");
+
+export const BlogSlugSchema = z
+  .string()
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slugs are lowercase words joined by hyphens");
 
 export type NavItem = z.infer<typeof NavItemSchema>;
 
@@ -85,9 +105,11 @@ export const SiteContentSchema = z.object({
     repoUrl: HttpsUrlSchema,
   }),
   nav: z.array(NavItemSchema).min(1),
+  blogTags: z.record(BlogTagIdSchema, BilingualObjectSchema),
   embedAllowlist: z.array(z.string()),
   ui: z.object({
     brand: z.string().min(1),
+    pageTitleTemplate: BilingualObjectSchema,
     brandAriaLabel: BilingualObjectSchema,
     mainNavAriaLabel: BilingualObjectSchema,
     mobileMenuAriaLabel: BilingualObjectSchema,
@@ -96,6 +118,12 @@ export const SiteContentSchema = z.object({
     languages: z.object({
       en: z.string().min(1),
       "zh-TW": z.string().min(1),
+    }),
+    notFound: z.object({
+      comment: z.string().min(1),
+      title: BilingualObjectSchema,
+      message: BilingualObjectSchema,
+      homeLink: BilingualObjectSchema,
     }),
     redirect: z.object({
       message: BilingualObjectSchema,
@@ -157,6 +185,11 @@ export const SiteContentSchema = z.object({
         comment: BilingualObjectSchema,
         title: BilingualObjectSchema,
         empty: BilingualObjectSchema,
+        emptyTag: BilingualObjectSchema,
+        allTags: BilingualObjectSchema,
+        tagFilterAriaLabel: BilingualObjectSchema,
+        postTagsAriaLabel: BilingualObjectSchema,
+        backToList: BilingualObjectSchema,
       }),
       friends: z.object({
         comment: BilingualObjectSchema,
@@ -227,7 +260,6 @@ export const ProfileContentSchema = z.object({
       label: BilingualObjectSchema,
     }),
   ),
-  primaryCta: z.string().min(1),
   about: z.string().min(1),
 });
 
@@ -355,6 +387,8 @@ export type ContactContent = z.infer<typeof ContactContentSchema>;
 export const BlogFrontMatterSchema = z.object({
   title: z.string().min(1),
   date: IsoDateSchema,
+  description: z.string().min(1).optional(),
+  tags: z.array(BlogTagIdSchema).default([]),
   draft: z.boolean().optional(),
 });
 
@@ -365,6 +399,8 @@ export interface BlogPost {
   lang: Lang;
   title: string;
   date: string;
+  description?: string;
+  tags: string[];
   draft: boolean;
   body: string;
 }

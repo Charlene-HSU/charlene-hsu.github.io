@@ -143,9 +143,9 @@ export function FriendsSection() {
       {/* Link Exchange Info Card */}
       <div className="flex flex-col gap-6 rounded-lg border border-rule bg-surface p-6">
         <div className="flex flex-col gap-1">
-          <h3 className="font-mono text-h2 font-bold text-foreground">
+          <h2 className="font-mono text-h2 font-bold text-foreground">
             {t(site.ui.sections.friends.exchangeTitle)}
-          </h3>
+          </h2>
           <p className="font-sans text-body text-gray">
             {t(site.ui.sections.friends.exchangeSubtitle)}
           </p>

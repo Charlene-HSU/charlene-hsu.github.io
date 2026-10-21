@@ -1,13 +1,9 @@
-import { Link } from "@tanstack/react-router";
 import { TypeWriter } from "@/components/type-writer";
-import { buttonVariants } from "@/components/ui/button";
 import { profile, site } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
-import { NavIcon } from "@/lib/icons";
-import { cn } from "@/lib/utils";
 
 export function HeroSection() {
-  const { lang, t, tf } = useI18n();
+  const { t, tf } = useI18n();
 
   const metaLine = tf(site.ui.hero.metaTemplate, {
     title: t(profile.title),
@@ -26,30 +22,6 @@ export function HeroSection() {
         </div>
 
         <TypeWriter text={t(profile.tagline)} />
-
-        <div className="grid grid-cols-2 gap-3 pt-2 sm:flex sm:flex-wrap">
-          {site.nav.map((item) => {
-            const isPrimary = item.id === profile.primaryCta;
-            return (
-              <Link
-                key={item.id}
-                to="/$lang/"
-                params={{ lang }}
-                hash={item.id}
-                className={cn(
-                  buttonVariants({
-                    variant: isPrimary ? "primary" : "outline",
-                    size: "lg",
-                  }),
-                  "w-full sm:w-auto",
-                )}
-              >
-                <NavIcon name={item.icon} />
-                <span>{t(item.label)}</span>
-              </Link>
-            );
-          })}
-        </div>
       </div>
     </section>
   );

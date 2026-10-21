@@ -20,7 +20,7 @@ All user-facing content lives in [`src/content/`](./src/content/README.md). You 
 - `pnpm dev` — Start the development server
 - `pnpm check` — Run typecheck, ESLint, and Prettier formatting check
 - `pnpm test` — Run Vitest (including content validation checks)
-- `pnpm build` — Fetch Open Graph link previews, typecheck, bundle, prerender `/`, `/en/`, `/zh-TW/`, and generate `sitemap.xml`
+- `pnpm build` — Fetch Open Graph link previews, typecheck, bundle, prerender every page in both languages (home, About, Skills, Experience, Projects, Blog and each post, Friends, Contact) plus `404.html`, and generate `sitemap.xml`
 - `pnpm og:refresh` — Re-fetch all link previews ignoring the 30-day cache
 - `pnpm preview` — Locally preview the production build
 

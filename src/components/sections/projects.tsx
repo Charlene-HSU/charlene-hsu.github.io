@@ -1,5 +1,5 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { ChevronDown, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { Embed } from "@/components/embed";
 import { SectionShell } from "@/components/layout/section-shell";
 import { Markdown } from "@/components/markdown";
@@ -7,17 +7,11 @@ import { ResponsiveImage } from "@/components/responsive-image";
 import { Terminal } from "@/components/terminal";
 import { Badge, type BadgeVariant } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  AccordionHeader,
-  AccordionItem,
-  AccordionPanel,
-  AccordionRoot,
-  AccordionTrigger,
-} from "@/components/ui/collapsible";
 import { computeProjectBadgeStatus, getProjectCoverAsset, projects, site } from "@/lib/content";
 import { formatTemplate, useI18n } from "@/lib/i18n";
 import { BrandIcon } from "@/lib/icons";
 import { getMarkdownContent } from "@/lib/markdown";
+import { useHydrated } from "@/lib/use-hydrated";
 import { cn } from "@/lib/utils";
 import type { ProjectItem, ProjectStatus } from "@/types/content";
 
@@ -27,30 +21,14 @@ const statusVariantMap: Record<ProjectStatus, BadgeVariant> = {
   archived: "red",
 };
 
-function getDesktopTileCornerClasses(index: number, total: number): string {
-  if (total === 1) {
-    return "rounded-l-xl rounded-r-sm";
-  }
-  if (index === 0) {
-    return "rounded-tl-xl rounded-tr-sm rounded-b-sm";
-  }
-  if (index === total - 1) {
-    return "rounded-bl-xl rounded-br-sm rounded-t-sm";
-  }
-  return "rounded-sm";
-}
-
-function getMobileTileCornerClasses(index: number, total: number): string {
-  if (total === 1) {
-    return "rounded-xl";
-  }
-  if (index === 0) {
-    return "rounded-t-xl rounded-b-sm";
-  }
-  if (index === total - 1) {
-    return "rounded-t-sm rounded-b-xl";
-  }
-  return "rounded-sm";
+/**
+ * Corner rule: the tiles and the panel read as one shape. On mobile the tiles
+ * stack above the panel; from md up they sit to its left.
+ */
+function getTileCornerClasses(index: number, total: number): string {
+  const isFirst = index === 0;
+  const isLast = index === total - 1;
+  return cn("rounded-sm", isFirst && "rounded-t-xl md:rounded-tr-sm", isLast && "md:rounded-bl-xl");
 }
 
 function ProjectDetailContent({
@@ -122,16 +100,20 @@ export function ProjectsSection() {
   const { lang, t } = useI18n();
   const search = useSearch({ strict: false }) as { p?: string };
   const navigate = useNavigate();
+  const hydrated = useHydrated();
 
-  const selectedProject = projects.items.find((item) => item.id === search.p) ?? projects.items[0];
+  // The prerendered HTML always shows the first project; apply `?p=` after hydration.
+  const requestedId = hydrated ? search.p : undefined;
+  const selectedProject =
+    projects.items.find((item) => item.id === requestedId) ?? projects.items[0];
 
   const handleSelectProject = (projectId: string) => {
     void navigate({
-      to: "/$lang/",
+      to: "/$lang/projects/",
       params: { lang },
       search: { p: projectId },
-      hash: "projects",
       replace: true,
+      resetScroll: false,
     });
   };
 
@@ -144,8 +126,8 @@ export function ProjectsSection() {
         <span className="font-mono text-body text-gray">{site.ui.sections.projects.prompt}</span>
       }
     >
-      {/* Desktop Split Layout: Left Stacked Tiles + Right Terminal Detail Panel */}
-      <div className="hidden md:grid md:grid-cols-12 md:gap-2">
+      {/* Tiles stack above the panel on mobile and sit beside it from md up. */}
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-12">
         <div
           role="group"
           aria-label={t(site.ui.sections.projects.listAriaLabel)}
@@ -162,11 +144,11 @@ export function ProjectsSection() {
                 aria-pressed={isSelected}
                 className={cn(
                   "h-auto w-full flex-col items-start justify-start gap-3 p-5 text-left",
-                  getDesktopTileCornerClasses(idx, projects.items.length),
+                  getTileCornerClasses(idx, projects.items.length),
                   isSelected && "border-green bg-surface",
                 )}
               >
-                <div className="flex w-full items-center justify-between gap-2">
+                <span className="flex w-full items-center justify-between gap-2">
                   <span
                     className={cn(
                       "font-mono text-h2 font-bold",
@@ -178,87 +160,36 @@ export function ProjectsSection() {
                   <Badge variant={statusVariantMap[badgeStatus]}>
                     {t(site.ui.sections.projects.statuses[badgeStatus])}
                   </Badge>
-                </div>
-                <p className="line-clamp-2 font-sans text-body font-normal text-gray">
+                </span>
+                <span className="line-clamp-2 font-sans text-body font-normal text-gray">
                   {t(item.summary)}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
+                </span>
+                <span className="flex flex-wrap gap-1.5">
                   {item.tags.map((tag) => (
                     <Badge key={tag} variant="default">
                       {tag}
                     </Badge>
                   ))}
-                </div>
+                </span>
               </Button>
             );
           })}
         </div>
 
         <div className="md:col-span-7">
-          {selectedProject ? (
-            <Terminal
-              title={formatTemplate(site.ui.sections.projects.terminalTitleTemplate, {
-                id: selectedProject.id,
-              })}
-              className="h-full rounded-l-sm rounded-r-xl"
-            >
-              <ProjectDetailContent
-                project={selectedProject}
-                isFirstProject={selectedProject.id === projects.items[0]?.id}
-              />
-            </Terminal>
-          ) : null}
+          <Terminal
+            title={formatTemplate(site.ui.sections.projects.terminalTitleTemplate, {
+              id: selectedProject.id,
+            })}
+            className="h-full rounded-b-xl rounded-t-sm md:rounded-l-sm md:rounded-r-xl"
+            aria-live="polite"
+          >
+            <ProjectDetailContent
+              project={selectedProject}
+              isFirstProject={selectedProject.id === projects.items[0]?.id}
+            />
+          </Terminal>
         </div>
-      </div>
-
-      {/* Mobile Accordion Layout */}
-      <div className="md:hidden">
-        <AccordionRoot
-          value={selectedProject ? [selectedProject.id] : []}
-          onValueChange={(openValues) => {
-            const nextId = openValues[0] as string | undefined;
-            if (nextId) {
-              handleSelectProject(nextId);
-            }
-          }}
-        >
-          {projects.items.map((item, idx) => {
-            const badgeStatus = computeProjectBadgeStatus(item);
-            return (
-              <AccordionItem
-                key={item.id}
-                value={item.id}
-                className={getMobileTileCornerClasses(idx, projects.items.length)}
-              >
-                <AccordionHeader>
-                  <AccordionTrigger>
-                    <div className="flex flex-col items-start gap-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-mono text-h2 font-bold text-foreground">
-                          {t(item.name)}
-                        </span>
-                        <Badge variant={statusVariantMap[badgeStatus]}>
-                          {t(site.ui.sections.projects.statuses[badgeStatus])}
-                        </Badge>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {item.tags.map((tag) => (
-                          <Badge key={tag} variant="default">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <ChevronDown className="size-4 shrink-0 text-gray" aria-hidden="true" />
-                  </AccordionTrigger>
-                </AccordionHeader>
-                <AccordionPanel>
-                  <ProjectDetailContent project={item} isFirstProject={idx === 0} />
-                </AccordionPanel>
-              </AccordionItem>
-            );
-          })}
-        </AccordionRoot>
       </div>
     </SectionShell>
   );

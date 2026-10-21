@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useMatches, useNavigate } from "@tanstack/react-router";
 import { Check, Globe, Menu as MenuIcon } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -21,25 +21,29 @@ import {
 import { contact, site } from "@/lib/content";
 import { languages, useI18n, writeStoredLang, type Lang } from "@/lib/i18n";
 import { BrandIcon, NavIcon } from "@/lib/icons";
+import { pageRoutes } from "@/lib/pages";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
   const { lang, t } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
+  const matches = useMatches();
 
   const githubLink =
     contact.links.find((item) => item.icon.toLowerCase() === "github")?.url ?? site.meta.repoUrl;
 
   const handleLanguageChange = (nextLang: Lang) => {
     writeStoredLang(nextLang);
-    const currentHash = location.hash ? location.hash.replace(/^#/, "") : undefined;
+    // Stay on the same page: rebuild the deepest matched route with only `lang` changed.
+    const current = matches[matches.length - 1];
     void navigate({
-      to: "/$lang/",
-      params: { lang: nextLang },
-      search: (prev) => prev,
-      hash: currentHash,
-    });
+      to: current?.fullPath ?? "/$lang/",
+      params: { ...current?.params, lang: nextLang },
+      search: current?.search,
+      hash: location.hash ? location.hash.replace(/^#/, "") : undefined,
+      // The route is only known at runtime, so the router cannot type-check it here.
+    } as never);
   };
 
   return (
@@ -63,11 +67,10 @@ export function Navbar() {
                 <TooltipTrigger
                   render={
                     <Link
-                      to="/$lang/"
+                      to={pageRoutes[item.id]}
                       params={{ lang }}
-                      hash={item.id}
                       aria-label={label}
-                      className="inline-flex h-control items-center gap-2 rounded-full px-3 font-mono text-body text-gray transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
+                      className="inline-flex h-control items-center gap-2 rounded-full px-3 font-mono text-body text-gray transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue data-[status=active]:bg-surface data-[status=active]:text-green"
                     >
                       <NavIcon name={item.icon} />
                       <span className="hidden lg:inline">{label}</span>
@@ -144,7 +147,13 @@ export function Navbar() {
                     {site.nav.map((item) => (
                       <MenuItem
                         key={item.id}
-                        render={<Link to="/$lang/" params={{ lang }} hash={item.id} />}
+                        render={
+                          <Link
+                            to={pageRoutes[item.id]}
+                            params={{ lang }}
+                            className="data-[status=active]:text-green"
+                          />
+                        }
                       >
                         <NavIcon name={item.icon} />
                         <span>{t(item.label)}</span>

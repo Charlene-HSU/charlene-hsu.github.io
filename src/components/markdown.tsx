@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import { LinkCard } from "@/components/link-card";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { getMarkdownAsset } from "@/lib/content";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, type Lang } from "@/lib/i18n";
 import { cn, type WithClassName } from "@/lib/utils";
 
 function slugifyHeading(children: ReactNode): string {
@@ -40,6 +40,32 @@ function getStandaloneUrl(children: ReactNode): string | null {
     }
   }
   return null;
+}
+
+/** A link inside the site: `#anchor` stays on the current page, anything else goes home. */
+function InternalLink({
+  href,
+  lang,
+  className,
+  children,
+}: {
+  href: string;
+  lang: Lang;
+  className: string;
+  children: ReactNode;
+}) {
+  if (href.startsWith("#")) {
+    return (
+      <Link to="./" hash={href.slice(1)} className={className}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <Link to="/$lang/" params={{ lang }} className={className}>
+      {children}
+    </Link>
+  );
 }
 
 export type MarkdownProps = WithClassName<{
@@ -77,16 +103,14 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
             </a>
           );
         }
-        const hash = href.startsWith("#") ? href.slice(1) : undefined;
         return (
-          <Link
-            to="/$lang/"
-            params={{ lang }}
-            hash={hash}
+          <InternalLink
+            href={href}
+            lang={lang}
             className="text-blue underline underline-offset-4 hover:text-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
           >
             {children}
-          </Link>
+          </InternalLink>
         );
       },
     };
@@ -150,16 +174,14 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
           </a>
         );
       }
-      const hash = href.startsWith("#") ? href.slice(1) : undefined;
       return (
-        <Link
-          to="/$lang/"
-          params={{ lang }}
-          hash={hash}
+        <InternalLink
+          href={href}
+          lang={lang}
           className="text-blue underline underline-offset-4 hover:text-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
         >
           {children}
-        </Link>
+        </InternalLink>
       );
     },
     strong: ({ children }) => <strong className="font-bold text-foreground">{children}</strong>,
