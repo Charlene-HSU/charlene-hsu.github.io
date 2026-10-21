@@ -23,7 +23,8 @@ function formatClockTime(date: Date, lang: string, timeZone: string): string {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-    hour12: false,
+    // `hour12: false` shows midnight as "24:00" in some browsers; h23 is always 00–23.
+    hourCycle: "h23",
   }).format(date);
 }
 
@@ -43,7 +44,6 @@ export function StatusSection() {
   }, [lang]);
 
   const state = profile.status.state;
-  const marqueeItems = [...skills.marquee, ...skills.marquee];
 
   return (
     <section className="w-full flex flex-col gap-12 pb-16">
@@ -83,21 +83,31 @@ export function StatusSection() {
         </div>
       </div>
 
-      {/* Full-bleed Tech Stack Marquee */}
+      {/* Full-bleed Tech Stack Marquee. The list is drawn twice for a seamless loop;
+          only the first copy is exposed to screen readers. */}
       <div
+        role="region"
         aria-label={t(site.ui.status.marqueeAriaLabel)}
         className="w-full overflow-hidden border-y border-rule bg-surface py-3"
       >
         <div className="mx-auto max-w-content px-6">
           <div className="overflow-hidden">
             <div className="flex w-max items-center gap-6 animate-marquee">
-              {marqueeItems.map((item, idx) => (
-                <div key={`${item}-${idx}`} className="flex items-center gap-6">
-                  <span className="font-mono text-body font-bold text-foreground">{item}</span>
-                  <span className="font-mono text-body text-green" aria-hidden="true">
-                    /
-                  </span>
-                </div>
+              {[false, true].map((isCopy) => (
+                <ul
+                  key={String(isCopy)}
+                  aria-hidden={isCopy || undefined}
+                  className="flex items-center gap-6"
+                >
+                  {skills.marquee.map((item, idx) => (
+                    <li key={`${item}-${idx}`} className="flex items-center gap-6">
+                      <span className="font-mono text-body font-bold text-foreground">{item}</span>
+                      <span className="font-mono text-body text-green" aria-hidden="true">
+                        /
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               ))}
             </div>
           </div>

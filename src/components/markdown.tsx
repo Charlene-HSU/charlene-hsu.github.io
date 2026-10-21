@@ -129,7 +129,8 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
 
   if (inline) {
     const inlineComponents: Components = {
-      p: ({ children }) => <span>{children}</span>,
+      // `block` keeps several paragraphs apart without nesting a <p> in inline contexts.
+      p: ({ children }) => <span className="block">{children}</span>,
       strong: ({ children }) => <strong className="font-bold text-foreground">{children}</strong>,
       code: ({ children }) => (
         <code className="rounded-xs border border-rule bg-background px-1.5 py-0.5 font-mono text-caption text-green">
