@@ -1,9 +1,15 @@
-# TODO: Update email and social links with your own contact details
 email: hsu960919@gmail.com
+
+# Each link needs a label, an icon and exactly one of `url` or `text`.
+# - icon: a file name in src/assets/brands/ (svg, png, webp or jpg); the extension is optional.
+# - iconStyle: `mono` (default) for one-color light icons, `color` to keep the icon's own colors.
+# - url: https:// or mailto: — opens the link.
+# - text: shown on the button and copied on click (for example a Discord username).
 links:
   - label: GitHub
     icon: github
     url: https://github.com/Charlene-HSU
   - label: Discord
-    icon: discord
-    url: https://linkedin.com/in/you
+    icon: discord-icon-svgrepo-com
+    iconStyle: color
+    text: wowkfccc

@@ -3,42 +3,41 @@ groups:
       en: Languages
       zh-TW: 程式語言
     items:
-      - TypeScript
-      - JavaScript
+      - Java
+      - Kotlin
+      - C
+      - C++
       - Python
-      - Go
-  - name:
-      en: Frontend
-      zh-TW: 前端開發
-    items:
-      - React
-      - Tailwind CSS
-      - Vite
-      - TanStack Router
-      - Base UI
+      - C# (不熟)
+      - JavaScript (不熟)
+      - Shell Script
   - name:
       en: Backend
       zh-TW: 後端與架構
     items:
+      - RESTful APIs
+      - Event-Driven & Plugin Architecture (Minecraft)
       - Node.js
-      - PostgreSQL
+      - SQLite / mySQL
       - REST API
-      - GraphQL
   - name:
       en: Tools
       zh-TW: 開發工具
     items:
+      - JetBrains
+      - VS Code
+      - Cursor
+      - Claude
       - Git
       - Docker
       - Linux
-      - pnpm
-      - GitHub Actions
+      - Unity Engine
+      - Blender
 marquee:
-  - TypeScript
-  - React
-  - Vite
-  - Tailwind CSS
-  - TanStack Router
-  - Base UI
-  - pnpm
+  - Java
+  - Kotlin
+  - C/C++
+  - SQLite / mySQL\
+  - Git
+  - Docker
   - Linux

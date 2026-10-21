@@ -30,8 +30,8 @@ export function SectionShell({
         {comment || title || headerRight ? (
           <header className="flex flex-wrap items-end justify-between gap-4">
             <div className="flex flex-col gap-2">
-              {comment ? (
-                <span className="font-mono text-body font-bold text-green">{comment}</span>
+              {comment && comment.toLowerCase() !== title?.toLowerCase() ? (
+                <span className="font-mono text-paragraph font-bold text-green">{comment}</span>
               ) : null}
               {title ? (
                 <h1 className="font-mono text-display font-bold text-foreground">{title}</h1>

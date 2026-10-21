@@ -45,6 +45,18 @@ describe("Content schemas and references", () => {
     }
   });
 
+  it("only references nav pages from the footer", () => {
+    const site = SiteContentSchema.parse(loadYaml("site.yaml"));
+    const navIds = new Set<string>(site.nav.map((item) => item.id));
+    for (const id of site.footer.links) {
+      expect(navIds.has(id), `footer link "${id}" is in nav`).toBe(true);
+    }
+    expect(new Set(site.footer.links).size).toBe(site.footer.links.length);
+    if (site.footer.bottomLink.page) {
+      expect(navIds.has(site.footer.bottomLink.page)).toBe(true);
+    }
+  });
+
   it("has a route file for every nav page", () => {
     const site = SiteContentSchema.parse(loadYaml("site.yaml"));
     const routesDir = path.join(ROOT, "src/routes/$lang");
@@ -66,8 +78,9 @@ describe("Content schemas and references", () => {
 
   it("validates skills.yaml", () => {
     const skills = SkillsContentSchema.parse(loadYaml("skills.yaml"));
-    expect(skills.groups.length).toBeGreaterThan(0);
-    expect(skills.marquee.length).toBeGreaterThan(0);
+    // Empty lists are allowed; the page shows an empty state instead.
+    expect(Array.isArray(skills.groups)).toBe(true);
+    expect(Array.isArray(skills.marquee)).toBe(true);
   });
 
   it("validates experience.yaml and ensures unique item IDs", () => {
@@ -111,7 +124,22 @@ describe("Content schemas and references", () => {
 
   it("validates contact.yaml", () => {
     const contact = ContactContentSchema.parse(loadYaml("contact.yaml"));
-    expect(contact.links.length).toBeGreaterThan(0);
+
+    // Icons are file names in src/assets/brands/, with or without the extension.
+    const brandFiles = fs
+      .readdirSync(path.join(ASSETS_DIR, "brands"))
+      .filter((f) => /\.(svg|png|webp|jpe?g)$/i.test(f))
+      .map((f) => f.toLowerCase());
+    const brandNames = new Set([
+      ...brandFiles,
+      ...brandFiles.map((f) => f.replace(/\.[^.]+$/, "")),
+    ]);
+    for (const link of contact.links) {
+      expect(
+        brandNames.has(link.icon.toLowerCase()),
+        `icon "${link.icon}" in src/assets/brands/`,
+      ).toBe(true);
+    }
   });
 
   it("validates .generated/og.json cache schema", () => {
@@ -125,7 +153,6 @@ describe("Content schemas and references", () => {
     const site = SiteContentSchema.parse(loadYaml("site.yaml"));
     const blogDir = path.join(CONTENT_DIR, "blog");
     const files = fs.readdirSync(blogDir).filter((f) => f.endsWith(".md"));
-    expect(files.length).toBeGreaterThan(0);
 
     const seenSlugLang = new Set<string>();
     const tagsBySlug = new Map<string, string>();

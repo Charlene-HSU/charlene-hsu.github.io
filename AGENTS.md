@@ -46,22 +46,23 @@ React 19, Vite, Tailwind CSS v4, TypeScript, pnpm (npm, yarn and bun are blocked
 - Technical identifiers (route paths, anchor ids, CSS classes, state values) and calculated numbers may stay in code. Display labels for technical values belong in content.
 - YAML holds structured data (lists, dates, links, tags). Markdown holds long-form text (About, project descriptions, friend-link rules, blog posts).
 
-| File                 | Purpose                                                                                                |
-| -------------------- | ------------------------------------------------------------------------------------------------------ |
-| `site.yaml`          | Metadata, `nav` (single source for pages, navbar and footer), `blogTags`, UI strings, `embedAllowlist` |
-| `profile.yaml`       | Name, title, location, timezone, tagline, status, stats, `about`                                       |
-| `skills.yaml`        | Skill groups and the marquee list                                                                      |
-| `experience.yaml`    | Work and study history                                                                                 |
-| `projects.yaml`      | Projects, links and embeds                                                                             |
-| `friends.yaml`       | Friend sites and the link-exchange card                                                                |
-| `contact.yaml`       | Email and social links                                                                                 |
-| `md/`                | Markdown for About (`about.<lang>.md`) and projects (`projects/<id>.<lang>.md`)                        |
-| `blog/`              | Blog posts (`<slug>.<lang>.md`), one page each                                                         |
-| `.generated/og.json` | Cache written by `fetch-og`. Commit it. Never edit it by hand                                          |
+| File                 | Purpose                                                                                                                                                                                                |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `site.yaml`          | Metadata, `nav` (single source for pages and the navbar), `footer` (links, columns, bottom-right link), `blogTags`, UI strings, `embedAllowlist`                                                       |
+| `profile.yaml`       | Name, title, location, timezone, tagline, status, stats, `about`                                                                                                                                       |
+| `skills.yaml`        | Skill groups and the marquee list                                                                                                                                                                      |
+| `experience.yaml`    | Work and study history                                                                                                                                                                                 |
+| `projects.yaml`      | Projects, links and embeds                                                                                                                                                                             |
+| `friends.yaml`       | Friend sites and the link-exchange card                                                                                                                                                                |
+| `contact.yaml`       | Email and contact links: `label`, `icon` (file in `src/assets/brands/`), optional `iconStyle` (`mono`/`color`), and exactly one of `url` (opens) or `text` (shown and copied, e.g. a Discord username) |
+| `md/`                | Markdown for About (`about.<lang>.md`) and projects (`projects/<id>.<lang>.md`)                                                                                                                        |
+| `blog/`              | Blog posts (`<slug>.<lang>.md`), one page each                                                                                                                                                         |
+| `.generated/og.json` | Cache written by `fetch-og`. Commit it. Never edit it by hand                                                                                                                                          |
 
 Conventions:
 
 - A translatable value is `string | { en: string; "zh-TW": string }`. Values that do not need translation (URLs, dates, tags, ids) are plain values. Resolve values with `t(value, lang)` from `@/lib/i18n`.
+- Lists and optional fields may be left empty (`items:`), written as `null` or omitted; all mean "none". Build them with `yamlList()` / `yamlOptional()` from `src/types/content.ts`, never a bare `z.array()` or `.optional()`. Every section shows an empty state (`ui.sections.<page>.empty`) or hides the block instead of crashing, and `friends.exchange` can be removed to hide the link-exchange card.
 - Dates are `YYYY-MM` or `YYYY-MM-DD`. `end: null` means "present". Status badges (Present, Ended, Archived) are computed from dates and status fields, not typed by hand.
 - Types for every content file live in `src/types/content.ts`; typed exports live in `src/lib/content.ts`. Never import YAML directly from components.
 - Content checks (Vitest) must keep passing: required fields exist in both languages, ids are unique, URLs are valid `https` (or `mailto:`), referenced Markdown, covers, avatars and badges exist, blog `title` and `date` are present, blog slugs are URL-safe and unique, every blog tag has a label in `blogTags`, and translations of one post list the same tags.
@@ -82,21 +83,21 @@ For a content update: edit the relevant file under `src/content/`, keep its stru
 
 The site is a set of static pages, not one long page. Each page is its own route with its own URL, title and metadata.
 
-| Page       | Route (per language) | Content                                                                             |
-| ---------- | -------------------- | ----------------------------------------------------------------------------------- |
-| Home       | `/$lang/`            | Hero (name, title, typewriter tagline), status and clock cards, tech marquee        |
-| About      | `/$lang/about/`      | Stats and the About Markdown in a terminal window                                   |
-| Skills     | `/$lang/skills/`     | Skill groups in `Tabs`                                                              |
-| Experience | `/$lang/experience/` | Work and study history                                                              |
-| Projects   | `/$lang/projects/`   | Project tiles and detail panel (see [Projects](#projects-embeds-and-link-previews)) |
-| Blog       | `/$lang/blog/`       | Tag filter row, then the post list (see [Blog](#blog))                              |
-| Blog post  | `/$lang/blog/$slug/` | One post                                                                            |
-| Friends    | `/$lang/friends/`    | Friend cards and the link-exchange card                                             |
-| Contact    | `/$lang/contact/`    | Email card and social links                                                         |
+| Page       | Route (per language) | Content                                                                                                                                                                                                                                           |
+| ---------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Home       | `/$lang/`            | Hero (name, title, typewriter tagline), the self-introduction from `md/about.<lang>.md` with a link to About (`shortcuts.about: false` hides it), status and clock cards, shortcuts to recent or pinned projects and posts, then the tech marquee |
+| About      | `/$lang/about/`      | Stats and the About Markdown in a terminal window                                                                                                                                                                                                 |
+| Skills     | `/$lang/skills/`     | Skill groups in `Tabs`                                                                                                                                                                                                                            |
+| Experience | `/$lang/experience/` | Work and study history                                                                                                                                                                                                                            |
+| Projects   | `/$lang/projects/`   | Project tiles and detail panel (see [Projects](#projects-embeds-and-link-previews))                                                                                                                                                               |
+| Blog       | `/$lang/blog/`       | Tag filter row, then the post list (see [Blog](#blog))                                                                                                                                                                                            |
+| Blog post  | `/$lang/blog/$slug/` | One post                                                                                                                                                                                                                                          |
+| Friends    | `/$lang/friends/`    | Friend cards and the link-exchange card                                                                                                                                                                                                           |
+| Contact    | `/$lang/contact/`    | Email card and social links                                                                                                                                                                                                                       |
 
 - Route files: `src/routes/$lang/index.tsx` (home), `about.tsx`, `skills.tsx`, `experience.tsx`, `projects.tsx`, `friends.tsx`, `contact.tsx`, `blog/index.tsx` and `blog/$slug.tsx` under `src/routes/$lang/`. Each route renders one section component from `src/components/sections/` and nothing else.
 - The router uses `trailingSlash: "always"`, so `to` paths end with `/` (`"/$lang/"`, `"/$lang/blog/"`, `"/$lang/blog/$slug/"`). Follow the paths the generated route tree type-checks.
-- Each page except Home opens with the shared page header (`SectionShell`): the comment eyebrow (`// projects`) and the page title as the page's only `<h1>`. On Home the owner's name is the `<h1>`. Headings inside a page start at `<h2>`.
+- Each page except Home opens with the shared page header (`SectionShell`): the comment eyebrow (`projects`) and the page title as the page's only `<h1>`. On Home the owner's name is the `<h1>`. Headings inside a page start at `<h2>`.
 - Page content starts below the overlaid header: every page pads its top with `pt-header`. Pages share the same column, gutter and vertical padding.
 - Page titles and descriptions come from content: each `nav` entry has a localized `description`; the document title uses `ui.pageTitleTemplate` (for example `"{page} — {site}"`). Blog posts use their own `title` and `description`.
 - Navigating to another page scrolls to the top. Keep the router's scroll restoration for back and forward.
@@ -104,7 +105,9 @@ The site is a set of static pages, not one long page. Each page is its own route
 
 ## Navigation and icons
 
-- `site.yaml` `nav` is the single source for the pages, the navbar and the footer links. Every page except Home has one entry: `id` (also the route segment, so `projects` → `/$lang/projects/`), `icon`, localized `label` and localized `description`. Adding a page means adding one entry, one route file and one section component.
+- `site.yaml` `nav` is the single source for the pages and the navbar; the footer picks from it. Every page except Home has one entry: `id` (also the route segment, so `projects` → `/$lang/projects/`), `icon`, localized `label` and localized `description`. Adding a page means adding one entry, one route file and one section component.
+- The footer is configured in `site.yaml` `footer`: `links` (nav ids, in order), `columns` (1–4; phones show at most two) and `bottomLink` (`page`, a nav id, or `url`, `https://` or `mailto:`, plus a localized `label`). Its bottom-left text is `ui.footer.license`. It has no friends or social columns.
+- The navbar brand shows `ui.brand` followed by `ui.brandHome` (for example `~/HOME`) and links to Home; it is highlighted on Home only.
 - Navbar links use `<Link>` and mark the current page with `aria-current="page"` and an active style (TanStack Router's `activeProps`, or `data-status="active"`). Blog post pages count as the Blog page. The brand link goes Home.
 - The hero has no page buttons; the navbar is the way to the other pages.
 - Icons are `lucide-react` names written in YAML and resolved through an allowlist mapping in code, so only used icons are bundled. Never import the whole icon set. Icons are decorative (`aria-hidden`); the label provides the text.
@@ -118,6 +121,12 @@ The site is a set of static pages, not one long page. Each page is its own route
 - Relative images resolve against `src/assets/` (project covers, `blog/<slug>/`) and use the `?responsive` pipeline.
 - Phase 2 (add only when the owner asks): `remark-directive` for `::embed{kind="…" url="…"}` and `rehype-highlight` for code highlighting. Do not add other Markdown plugins without approval.
 - Inline Markdown fields in YAML (for example experience `highlights`, friend `rules`) render through `<Markdown inline>`, which only supports bold, links and inline code.
+
+### Home shortcuts
+
+- Between the status cards and the marquee, the home page links to projects and posts that were updated in the last `site.yaml` `shortcuts.recentDays` days (default 30), plus anything marked `pinned: true`. Pinned items come first, then newest first, at most `shortcuts.limit` items. With nothing to show, the block is not rendered.
+- A project's date is `updated` (`YYYY-MM` or `YYYY-MM-DD`) in `projects.yaml`, falling back to `period.start`; a post's is `updated` in its front matter, falling back to `date`. `pinned: true` goes in the same places.
+- The logic lives in `src/lib/shortcuts.ts` (`getShortcuts`). Prerendered HTML uses the build time (`__BUILD_TIME__`, injected by `vite.config.ts`); after hydration the visitor's clock is used, so shortcuts expire without a rebuild.
 
 ### Blog
 
@@ -238,9 +247,9 @@ Sizes in px (tokens are rem). Line heights are the same at every size unless not
 | ---------------- | -------------------------------- | ------ | ------------------------------------------- |
 | `font-sans`      | Noto Sans TC → Inter → system-ui |        | Body copy and all Chinese text              |
 | `font-mono`      | JetBrains Mono → ui-monospace    |        | Navigation, labels, eyebrows, numbers, code |
-| `text-mega`      | 96 / 1.05                        | 44     | Hero name                                   |
+| `text-mega`      | 96 / 1.05                        | 44     | Unused; kept for very large display text    |
 | `text-stat`      | 64 / 1                           | 40     | Stat numbers                                |
-| `text-display`   | 48 / 1.15                        | 32     | Section titles (`// projects`)              |
+| `text-display`   | 48 / 1.15                        | 32     | Page titles, the hero name                  |
 | `text-h1`        | 32 / 1.25                        | 26     | Sub-headings                                |
 | `text-h2`        | 24 / 1.3                         | 20     | Card titles                                 |
 | `text-lead`      | 18 / 1.6                         | 16     | Large buttons, lead text                    |
@@ -285,14 +294,14 @@ Fonts are self-hosted (OFL). Never load fonts from a CDN. Noto Sans TC is large,
 
 ### Visual language
 
-- Terminal vocabulary: `$ whoami`, `~/about`, `> ls`, a blinking cursor. Section titles are comments: `// about`, `// projects`.
+- Terminal vocabulary: `$ whoami`, `~/about`, `> ls`, a blinking cursor. Eyebrow labels above titles are plain words (no `//` prefix); an eyebrow that only repeats the title is not shown.
 - 1px `rule` borders, small radii, no shadows. The terminal window component (title bar with three dots) frames About and the project panel.
 - The typewriter effect is used only for the hero tagline.
 
 ## Icons and images
 
 - Icons: use `lucide-react` whenever an equivalent exists.
-- Brand logos (GitHub, LinkedIn, …) that Lucide does not provide are exported as SVG into `src/assets/brands/` and imported. Never hand-draw or paste approximate paths.
+- Brand logos (GitHub, Discord, …) that Lucide does not provide live in `src/assets/brands/` as SVG (preferred) or PNG/WebP. Every file there is picked up automatically (`import.meta.glob` in `src/lib/icons.tsx`) and referenced from YAML by file name, extension optional. Never hand-draw or paste approximate paths. Icons are small, so they skip the `?responsive` pipeline.
 - Photos and covers are optimized at build time by `vite-imagetools`. Commit them as JPG, PNG or WebP, at least as wide as they render on a 2× screen (up to 1600px). Import with `?responsive` (also as `query: '?responsive'` in `import.meta.glob`) and render with `ResponsiveImage` (`@/components/responsive-image`), passing `sizes`. The first image on a page takes `loading="eager"` and `fetchPriority="high"`. SVGs are imported plainly and rendered with `<img>`.
 
 ## Accessibility

@@ -46,13 +46,13 @@ export function StatusSection() {
   const state = profile.status.state;
 
   return (
-    <section className="w-full flex flex-col gap-12 pb-16">
+    <section className="w-full pb-16">
       <div className="w-full px-6">
         <div className="mx-auto grid w-full max-w-content grid-cols-1 gap-2 md:grid-cols-2">
           {/* Left / Top Card: Current Status (outer corner xl, inner corner sm) */}
           <div className="flex flex-col justify-between gap-4 rounded-t-xl rounded-b-sm border border-rule bg-surface p-6 md:rounded-l-xl md:rounded-r-sm">
             <div className="flex items-center justify-between gap-3">
-              <span className="font-mono text-caption text-gray">
+              <span className="font-mono text-body text-gray">
                 {t(site.ui.status.statusEyebrow)}
               </span>
               <Badge variant={stateBadgeVariant[state]}>{t(site.ui.status.states[state])}</Badge>
@@ -71,7 +71,7 @@ export function StatusSection() {
           {/* Right / Bottom Card: Local Time (inner corner sm, outer corner xl) */}
           <div className="flex flex-col justify-between gap-4 rounded-t-sm rounded-b-xl border border-rule bg-surface p-6 md:rounded-l-sm md:rounded-r-xl">
             <div className="flex items-center justify-between gap-3">
-              <span className="font-mono text-caption text-gray">
+              <span className="font-mono text-body text-gray">
                 {t(site.ui.status.clockEyebrow)}
               </span>
               <span className="font-mono text-caption text-gray">
@@ -82,7 +82,17 @@ export function StatusSection() {
           </div>
         </div>
       </div>
+    </section>
+  );
+}
 
+/** Full-bleed tech marquee on the home page; hidden when `skills.yaml` `marquee` is empty. */
+export function MarqueeSection() {
+  const { t } = useI18n();
+  if (skills.marquee.length === 0) return null;
+
+  return (
+    <section className="w-full pb-16 md:pb-24">
       {/* Full-bleed Tech Stack Marquee. The list is drawn twice for a seamless loop;
           only the first copy is exposed to screen readers. */}
       <div

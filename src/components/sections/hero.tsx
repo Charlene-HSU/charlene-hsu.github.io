@@ -15,7 +15,7 @@ export function HeroSection() {
       <div className="mx-auto flex w-full max-w-content flex-col gap-6 pt-8 md:pt-12">
         <div className="flex flex-col gap-3">
           <span className="font-mono text-body font-bold text-green">{site.ui.hero.prompt}</span>
-          <h1 className="font-mono text-mega font-bold tracking-tight text-foreground">
+          <h1 className="font-mono text-display font-bold tracking-tight text-foreground">
             {t(profile.name)}
           </h1>
           <p className="font-mono text-h2 font-normal text-foreground">{metaLine}</p>

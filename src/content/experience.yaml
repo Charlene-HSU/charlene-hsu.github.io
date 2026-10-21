@@ -1,32 +1,33 @@
 # TODO: Update experience items with your actual work and study history
 items:
-  - id: company-senior-fe
+  - id: FJU_student
     company:
-      en: Company Name
-      zh-TW: Company Name
+      en: Fu Jen Catholic University
+      zh-TW: 天主教輔仁大學
     role:
-      en: Frontend Engineer
-      zh-TW: 前端工程師
+      en: Medical Informatics and Innovative Applications Student
+      zh-TW: 醫學資訊與創新應用學士學位學程 學生
     period:
-      start: "2023-01"
+      start: "2026-09"
       end: null
     highlights:
-      - en: Led migration to React 19 and Vite across core web applications.
-        zh-TW: 主導核心網頁應用遷移至 React 19 與 Vite。
-      - en: Reduced bundle size by **35%** and established design token architecture.
-        zh-TW: 將 bundle 縮小 **35%**，並建立設計 Token 架構。
-  - id: studio-fullstack
+      - en: nothing now
+        zh-TW: 啥都沒有
+
+  - id: dtsh_student
     company:
-      en: Web Studio
-      zh-TW: Web Studio
+      en: Taipei Municipal Datong High School
+      zh-TW: 臺北市立大同高級中學
     role:
-      en: Full-Stack Developer
-      zh-TW: 全端開發者
+      en: studied in dtsh
+      zh-TW: 曾就讀大同高中
     period:
-      start: "2021-06"
-      end: "2022-12"
+      start: "2023-06"
+      end: "2026-06"
     highlights:
-      - en: Built accessible UI component libraries and automated CI/CD pipelines with `pnpm`.
-        zh-TW: 建構無障礙 UI 元件庫，並以 `pnpm` 自動化 CI/CD 流程。
-      - en: Maintained static prerendering and internationalization workflows.
-        zh-TW: 維護靜態預渲染與多語系國際化工作流。
+      - en: Served as the 33rd Leader of the Computer Science Club
+        zh-TW: 擔任33屆資訊社社長
+      - en: Participated in 2025 Taiwan International Fair
+        zh-TW: 2025台灣國際科學展覽會
+      - en: APCS 5 4
+        zh-TW: APCS 5 4

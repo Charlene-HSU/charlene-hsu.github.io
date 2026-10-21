@@ -16,27 +16,34 @@ export function SkillsSection() {
       comment={t(site.ui.sections.skills.comment)}
       title={t(site.ui.sections.skills.title)}
     >
-      <TabsRoot defaultValue={defaultTab}>
-        <TabsList aria-label={t(site.ui.sections.skills.tabsAriaLabel)}>
-          {skills.groups.map((group, idx) => (
-            <TabsTab key={idx} value={idx}>
-              {t(group.name)}
-            </TabsTab>
-          ))}
-        </TabsList>
+      {skills.groups.length === 0 ? (
+        <p className="font-mono text-body text-gray">{t(site.ui.sections.skills.empty)}</p>
+      ) : (
+        <TabsRoot defaultValue={defaultTab}>
+          <TabsList aria-label={t(site.ui.sections.skills.tabsAriaLabel)}>
+            {skills.groups.map((group, idx) => (
+              <TabsTab key={idx} value={idx}>
+                {t(group.name)}
+              </TabsTab>
+            ))}
+          </TabsList>
 
-        {skills.groups.map((group, idx) => (
-          <TabsPanel key={idx} value={idx}>
-            <div className="flex flex-wrap gap-2.5">
-              {group.items.map((skill) => (
-                <Badge key={skill} variant="outline" className="px-3 py-1.5 text-body">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </TabsPanel>
-        ))}
-      </TabsRoot>
+          {skills.groups.map((group, idx) => (
+            <TabsPanel key={idx} value={idx}>
+              {group.items.length === 0 ? (
+                <p className="font-mono text-body text-gray">{t(site.ui.sections.skills.empty)}</p>
+              ) : null}
+              <div className="flex flex-wrap gap-2.5">
+                {group.items.map((skill) => (
+                  <Badge key={skill} variant="outline" className="px-3 py-1.5 text-body">
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            </TabsPanel>
+          ))}
+        </TabsRoot>
+      )}
     </SectionShell>
   );
 }

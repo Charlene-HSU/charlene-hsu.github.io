@@ -1,5 +1,21 @@
 import { z } from "zod";
 
+/**
+ * A YAML list. Leaving it empty (`items:`), writing `null` or omitting it all
+ * mean "no items", so the owner can clear a list without breaking the build.
+ */
+export function yamlList<T extends z.ZodTypeAny>(item: T) {
+  return z
+    .array(item)
+    .nullish()
+    .transform((value): z.output<T>[] => value ?? []);
+}
+
+/** An optional YAML value: leaving it empty, writing `null` or omitting it all mean "not set". */
+export function yamlOptional<T extends z.ZodTypeAny>(schema: T) {
+  return schema.nullish().transform((value): z.output<T> | undefined => value ?? undefined);
+}
+
 export const languages = ["en", "zh-TW"] as const;
 export type Lang = (typeof languages)[number];
 
@@ -96,6 +112,22 @@ export const BlogSlugSchema = z
 
 export type NavItem = z.infer<typeof NavItemSchema>;
 
+export const FooterSchema = z.object({
+  links: yamlList(PageIdSchema),
+  columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+  bottomLink: z
+    .object({
+      page: yamlOptional(PageIdSchema),
+      url: yamlOptional(HttpsOrMailtoSchema),
+      label: BilingualObjectSchema,
+    })
+    .refine((link) => (link.page === undefined) !== (link.url === undefined), {
+      message: "footer.bottomLink needs exactly one of `page` or `url`",
+    }),
+});
+
+export type FooterContent = z.infer<typeof FooterSchema>;
+
 export const SiteContentSchema = z.object({
   meta: z.object({
     siteName: BilingualObjectSchema,
@@ -105,10 +137,21 @@ export const SiteContentSchema = z.object({
     repoUrl: HttpsUrlSchema,
   }),
   nav: z.array(NavItemSchema).min(1),
-  blogTags: z.record(BlogTagIdSchema, BilingualObjectSchema),
-  embedAllowlist: z.array(z.string()),
+  blogTags: z
+    .record(BlogTagIdSchema, BilingualObjectSchema)
+    .nullish()
+    .transform((value) => value ?? {}),
+  footer: FooterSchema,
+  shortcuts: z.object({
+    recentDays: z.number().int().min(0),
+    limit: z.number().int().min(1),
+    /** Show the self-introduction (`md/about.<lang>.md`) under the name on the home page. */
+    about: z.boolean().default(true),
+  }),
+  embedAllowlist: yamlList(z.string()),
   ui: z.object({
     brand: z.string().min(1),
+    brandHome: LocalizedSchema,
     pageTitleTemplate: BilingualObjectSchema,
     brandAriaLabel: BilingualObjectSchema,
     mainNavAriaLabel: BilingualObjectSchema,
@@ -133,6 +176,14 @@ export const SiteContentSchema = z.object({
       prompt: z.string().min(1),
       metaTemplate: BilingualObjectSchema,
     }),
+    shortcuts: z.object({
+      comment: BilingualObjectSchema,
+      kinds: z.object({
+        project: BilingualObjectSchema,
+        post: BilingualObjectSchema,
+      }),
+      pinned: BilingualObjectSchema,
+    }),
     status: z.object({
       statusEyebrow: BilingualObjectSchema,
       clockEyebrow: BilingualObjectSchema,
@@ -151,11 +202,13 @@ export const SiteContentSchema = z.object({
         terminalTitle: z.string().min(1),
       }),
       skills: z.object({
+        empty: BilingualObjectSchema,
         comment: BilingualObjectSchema,
         title: BilingualObjectSchema,
         tabsAriaLabel: BilingualObjectSchema,
       }),
       experience: z.object({
+        empty: BilingualObjectSchema,
         comment: BilingualObjectSchema,
         title: BilingualObjectSchema,
         present: BilingualObjectSchema,
@@ -164,6 +217,7 @@ export const SiteContentSchema = z.object({
         highlightsToggle: BilingualObjectSchema,
       }),
       projects: z.object({
+        empty: BilingualObjectSchema,
         comment: BilingualObjectSchema,
         title: BilingualObjectSchema,
         prompt: z.string().min(1),
@@ -192,6 +246,7 @@ export const SiteContentSchema = z.object({
         backToList: BilingualObjectSchema,
       }),
       friends: z.object({
+        empty: BilingualObjectSchema,
         comment: BilingualObjectSchema,
         title: BilingualObjectSchema,
         avatarAltTemplate: BilingualObjectSchema,
@@ -216,6 +271,7 @@ export const SiteContentSchema = z.object({
         lead: BilingualObjectSchema,
         copyEmail: BilingualObjectSchema,
         sendEmail: BilingualObjectSchema,
+        copyHandleAriaLabel: BilingualObjectSchema,
       }),
     }),
     embed: z.object({
@@ -231,10 +287,7 @@ export const SiteContentSchema = z.object({
     }),
     footer: z.object({
       navHeading: BilingualObjectSchema,
-      friendsHeading: BilingualObjectSchema,
-      socialHeading: BilingualObjectSchema,
       license: BilingualObjectSchema,
-      sourceLink: BilingualObjectSchema,
     }),
   }),
 });
@@ -254,7 +307,7 @@ export const ProfileContentSchema = z.object({
     state: ProfileStateSchema,
     text: BilingualObjectSchema,
   }),
-  stats: z.array(
+  stats: yamlList(
     z.object({
       value: z.number(),
       label: BilingualObjectSchema,
@@ -266,15 +319,13 @@ export const ProfileContentSchema = z.object({
 export type ProfileContent = z.infer<typeof ProfileContentSchema>;
 
 export const SkillsContentSchema = z.object({
-  groups: z
-    .array(
-      z.object({
-        name: LocalizedSchema,
-        items: z.array(z.string().min(1)).min(1),
-      }),
-    )
-    .min(1),
-  marquee: z.array(z.string().min(1)).min(1),
+  groups: yamlList(
+    z.object({
+      name: LocalizedSchema,
+      items: yamlList(z.string().min(1)),
+    }),
+  ),
+  marquee: yamlList(z.string().min(1)),
 });
 
 export type SkillsContent = z.infer<typeof SkillsContentSchema>;
@@ -284,13 +335,13 @@ export const ExperienceItemSchema = z.object({
   company: LocalizedSchema,
   role: BilingualObjectSchema,
   period: PeriodSchema,
-  highlights: z.array(BilingualObjectSchema),
+  highlights: yamlList(BilingualObjectSchema),
 });
 
 export type ExperienceItem = z.infer<typeof ExperienceItemSchema>;
 
 export const ExperienceContentSchema = z.object({
-  items: z.array(ExperienceItemSchema),
+  items: yamlList(ExperienceItemSchema),
 });
 
 export type ExperienceContent = z.infer<typeof ExperienceContentSchema>;
@@ -307,9 +358,9 @@ export type EmbedRatio = z.infer<typeof EmbedRatioSchema>;
 export const ProjectEmbedSchema = z.object({
   kind: z.enum(["card", "youtube", "iframe"]),
   url: HttpsUrlSchema,
-  title: LocalizedSchema.optional(),
-  description: LocalizedSchema.optional(),
-  ratio: EmbedRatioSchema.optional(),
+  title: yamlOptional(LocalizedSchema),
+  description: yamlOptional(LocalizedSchema),
+  ratio: yamlOptional(EmbedRatioSchema),
 });
 
 export type ProjectEmbed = z.infer<typeof ProjectEmbedSchema>;
@@ -319,27 +370,29 @@ export const ProjectItemSchema = z.object({
   name: LocalizedSchema,
   status: ProjectStatusSchema,
   period: PeriodSchema,
-  featured: z.boolean().optional(),
-  tags: z.array(z.string().min(1)),
-  cover: z.string().min(1).optional(),
+  featured: yamlOptional(z.boolean()),
+  /** Last update (YYYY-MM or YYYY-MM-DD); falls back to `period.start` for the home shortcuts. */
+  updated: yamlOptional(YearMonthOrDateSchema),
+  /** Always show this project in the home shortcuts. */
+  pinned: yamlOptional(z.boolean()),
+  tags: yamlList(z.string().min(1)),
+  cover: yamlOptional(z.string().min(1)),
   summary: BilingualObjectSchema,
-  links: z
-    .array(
-      z.object({
-        type: ProjectLinkTypeSchema,
-        url: HttpsUrlSchema,
-        label: LocalizedSchema.optional(),
-      }),
-    )
-    .default([]),
-  embeds: z.array(ProjectEmbedSchema).default([]),
-  body: z.string().min(1).optional(),
+  links: yamlList(
+    z.object({
+      type: ProjectLinkTypeSchema,
+      url: HttpsUrlSchema,
+      label: yamlOptional(LocalizedSchema),
+    }),
+  ),
+  embeds: yamlList(ProjectEmbedSchema),
+  body: yamlOptional(z.string().min(1)),
 });
 
 export type ProjectItem = z.infer<typeof ProjectItemSchema>;
 
 export const ProjectsContentSchema = z.object({
-  items: z.array(ProjectItemSchema).min(1),
+  items: yamlList(ProjectItemSchema),
 });
 
 export type ProjectsContent = z.infer<typeof ProjectsContentSchema>;
@@ -348,38 +401,56 @@ export const FriendItemSchema = z.object({
   name: LocalizedSchema,
   url: HttpsUrlSchema,
   description: BilingualObjectSchema,
-  avatar: z.string().min(1).optional(),
-  badge: z.string().min(1).optional(),
-  tags: z.array(z.string().min(1)).default([]),
+  avatar: yamlOptional(z.string().min(1)),
+  badge: yamlOptional(z.string().min(1)),
+  tags: yamlList(z.string().min(1)),
 });
 
 export type FriendItem = z.infer<typeof FriendItemSchema>;
 
 export const FriendsContentSchema = z.object({
   intro: BilingualObjectSchema,
-  items: z.array(FriendItemSchema),
-  exchange: z.object({
-    name: LocalizedSchema,
-    url: HttpsUrlSchema,
-    description: BilingualObjectSchema,
-    avatar: HttpsUrlSchema,
-    badge: HttpsUrlSchema.optional(),
-    apply: HttpsOrMailtoSchema,
-    rules: BilingualObjectSchema,
-  }),
+  items: yamlList(FriendItemSchema),
+  // Leave empty or remove to hide the link-exchange card.
+  exchange: yamlOptional(
+    z.object({
+      name: LocalizedSchema,
+      url: HttpsUrlSchema,
+      description: BilingualObjectSchema,
+      avatar: HttpsUrlSchema,
+      badge: yamlOptional(HttpsUrlSchema),
+      apply: HttpsOrMailtoSchema,
+      rules: BilingualObjectSchema,
+    }),
+  ),
 });
 
 export type FriendsContent = z.infer<typeof FriendsContentSchema>;
 
+export const ContactLinkSchema = z
+  .object({
+    label: LocalizedSchema,
+    /** File name in `src/assets/brands/` (svg, png, webp or jpg); the extension is optional. */
+    icon: z.string().min(1),
+    /** `mono` icons are light and get inverted on light surfaces; `color` icons keep their colors. */
+    iconStyle: z
+      .enum(["mono", "color"])
+      .nullish()
+      .transform((value) => value ?? "mono"),
+    /** Opens a page (`https://`) or an email (`mailto:`). */
+    url: yamlOptional(HttpsOrMailtoSchema),
+    /** Shown and copied on click instead of opening a link, e.g. a Discord username. */
+    text: yamlOptional(z.string().min(1)),
+  })
+  .refine((link) => (link.url === undefined) !== (link.text === undefined), {
+    message: "Each contact link needs exactly one of `url` or `text`",
+  });
+
+export type ContactLink = z.infer<typeof ContactLinkSchema>;
+
 export const ContactContentSchema = z.object({
   email: z.string().email(),
-  links: z.array(
-    z.object({
-      label: LocalizedSchema,
-      icon: z.string().min(1),
-      url: HttpsUrlSchema,
-    }),
-  ),
+  links: yamlList(ContactLinkSchema),
 });
 
 export type ContactContent = z.infer<typeof ContactContentSchema>;
@@ -387,9 +458,13 @@ export type ContactContent = z.infer<typeof ContactContentSchema>;
 export const BlogFrontMatterSchema = z.object({
   title: z.string().min(1),
   date: IsoDateSchema,
-  description: z.string().min(1).optional(),
-  tags: z.array(BlogTagIdSchema).default([]),
-  draft: z.boolean().optional(),
+  description: yamlOptional(z.string().min(1)),
+  tags: yamlList(BlogTagIdSchema),
+  draft: yamlOptional(z.boolean()),
+  /** Last update (YYYY-MM-DD); falls back to `date` for the home shortcuts. */
+  updated: yamlOptional(IsoDateSchema),
+  /** Always show this post in the home shortcuts. */
+  pinned: yamlOptional(z.boolean()),
 });
 
 export type BlogFrontMatter = z.infer<typeof BlogFrontMatterSchema>;
@@ -402,6 +477,8 @@ export interface BlogPost {
   description?: string;
   tags: string[];
   draft: boolean;
+  updated?: string;
+  pinned: boolean;
   body: string;
 }
 

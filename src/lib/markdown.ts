@@ -82,6 +82,8 @@ export function getAllBlogEntries(): BlogPost[] {
       description: frontmatter.description,
       tags: frontmatter.tags,
       draft: Boolean(frontmatter.draft),
+      updated: frontmatter.updated,
+      pinned: Boolean(frontmatter.pinned),
       body: parsed.body.trim(),
     });
   }
