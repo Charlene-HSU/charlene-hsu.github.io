@@ -260,7 +260,6 @@ export const ProfileContentSchema = z.object({
       label: BilingualObjectSchema,
     }),
   ),
-  primaryCta: z.string().min(1),
   about: z.string().min(1),
 });
 

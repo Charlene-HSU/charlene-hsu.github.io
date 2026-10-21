@@ -43,12 +43,8 @@ describe("Content schemas and references", () => {
     }
   });
 
-  it("validates profile.yaml and checks primaryCta and about markdown references", () => {
-    const site = SiteContentSchema.parse(loadYaml("site.yaml"));
+  it("validates profile.yaml and checks the about markdown reference", () => {
     const profile = ProfileContentSchema.parse(loadYaml("profile.yaml"));
-
-    const navIds = new Set<string>(site.nav.map((n) => n.id));
-    expect(navIds.has(profile.primaryCta)).toBe(true);
 
     for (const lang of languages) {
       const mdPath = path.join(CONTENT_DIR, "md", `${profile.about}.${lang}.md`);

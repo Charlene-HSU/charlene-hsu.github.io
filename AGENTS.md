@@ -46,18 +46,18 @@ React 19, Vite, Tailwind CSS v4, TypeScript, pnpm (npm, yarn and bun are blocked
 - Technical identifiers (route paths, anchor ids, CSS classes, state values) and calculated numbers may stay in code. Display labels for technical values belong in content.
 - YAML holds structured data (lists, dates, links, tags). Markdown holds long-form text (About, project descriptions, friend-link rules, blog posts).
 
-| File                 | Purpose                                                                                                           |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `site.yaml`          | Metadata, `nav` (single source for pages, navbar, hero CTAs and footer), `blogTags`, UI strings, `embedAllowlist` |
-| `profile.yaml`       | Name, title, location, timezone, tagline, status, stats, `primaryCta`, `about`                                    |
-| `skills.yaml`        | Skill groups and the marquee list                                                                                 |
-| `experience.yaml`    | Work and study history                                                                                            |
-| `projects.yaml`      | Projects, links and embeds                                                                                        |
-| `friends.yaml`       | Friend sites and the link-exchange card                                                                           |
-| `contact.yaml`       | Email and social links                                                                                            |
-| `md/`                | Markdown for About (`about.<lang>.md`) and projects (`projects/<id>.<lang>.md`)                                   |
-| `blog/`              | Blog posts (`<slug>.<lang>.md`), one page each                                                                    |
-| `.generated/og.json` | Cache written by `fetch-og`. Commit it. Never edit it by hand                                                     |
+| File                 | Purpose                                                                                                |
+| -------------------- | ------------------------------------------------------------------------------------------------------ |
+| `site.yaml`          | Metadata, `nav` (single source for pages, navbar and footer), `blogTags`, UI strings, `embedAllowlist` |
+| `profile.yaml`       | Name, title, location, timezone, tagline, status, stats, `about`                                       |
+| `skills.yaml`        | Skill groups and the marquee list                                                                      |
+| `experience.yaml`    | Work and study history                                                                                 |
+| `projects.yaml`      | Projects, links and embeds                                                                             |
+| `friends.yaml`       | Friend sites and the link-exchange card                                                                |
+| `contact.yaml`       | Email and social links                                                                                 |
+| `md/`                | Markdown for About (`about.<lang>.md`) and projects (`projects/<id>.<lang>.md`)                        |
+| `blog/`              | Blog posts (`<slug>.<lang>.md`), one page each                                                         |
+| `.generated/og.json` | Cache written by `fetch-og`. Commit it. Never edit it by hand                                          |
 
 Conventions:
 
@@ -82,17 +82,17 @@ For a content update: edit the relevant file under `src/content/`, keep its stru
 
 The site is a set of static pages, not one long page. Each page is its own route with its own URL, title and metadata.
 
-| Page       | Route (per language) | Content                                                                                        |
-| ---------- | -------------------- | ---------------------------------------------------------------------------------------------- |
-| Home       | `/$lang/`            | Hero (name, title, typewriter tagline, one CTA per page), status and clock cards, tech marquee |
-| About      | `/$lang/about/`      | Stats and the About Markdown in a terminal window                                              |
-| Skills     | `/$lang/skills/`     | Skill groups in `Tabs`                                                                         |
-| Experience | `/$lang/experience/` | Work and study history                                                                         |
-| Projects   | `/$lang/projects/`   | Project tiles and detail panel (see [Projects](#projects-embeds-and-link-previews))            |
-| Blog       | `/$lang/blog/`       | Tag filter row, then the post list (see [Blog](#blog))                                         |
-| Blog post  | `/$lang/blog/$slug/` | One post                                                                                       |
-| Friends    | `/$lang/friends/`    | Friend cards and the link-exchange card                                                        |
-| Contact    | `/$lang/contact/`    | Email card and social links                                                                    |
+| Page       | Route (per language) | Content                                                                             |
+| ---------- | -------------------- | ----------------------------------------------------------------------------------- |
+| Home       | `/$lang/`            | Hero (name, title, typewriter tagline), status and clock cards, tech marquee        |
+| About      | `/$lang/about/`      | Stats and the About Markdown in a terminal window                                   |
+| Skills     | `/$lang/skills/`     | Skill groups in `Tabs`                                                              |
+| Experience | `/$lang/experience/` | Work and study history                                                              |
+| Projects   | `/$lang/projects/`   | Project tiles and detail panel (see [Projects](#projects-embeds-and-link-previews)) |
+| Blog       | `/$lang/blog/`       | Tag filter row, then the post list (see [Blog](#blog))                              |
+| Blog post  | `/$lang/blog/$slug/` | One post                                                                            |
+| Friends    | `/$lang/friends/`    | Friend cards and the link-exchange card                                             |
+| Contact    | `/$lang/contact/`    | Email card and social links                                                         |
 
 - Route files: `src/routes/$lang/index.tsx` (home), `about.tsx`, `skills.tsx`, `experience.tsx`, `projects.tsx`, `friends.tsx`, `contact.tsx`, `blog/index.tsx` and `blog/$slug.tsx` under `src/routes/$lang/`. Each route renders one section component from `src/components/sections/` and nothing else.
 - The router uses `trailingSlash: "always"`, so `to` paths end with `/` (`"/$lang/"`, `"/$lang/blog/"`, `"/$lang/blog/$slug/"`). Follow the paths the generated route tree type-checks.
@@ -104,9 +104,9 @@ The site is a set of static pages, not one long page. Each page is its own route
 
 ## Navigation and icons
 
-- `site.yaml` `nav` is the single source for the pages, the navbar, the hero CTAs and the footer links. Every page except Home has one entry: `id` (also the route segment, so `projects` → `/$lang/projects/`), `icon`, localized `label` and localized `description`. Adding a page means adding one entry, one route file and one section component.
+- `site.yaml` `nav` is the single source for the pages, the navbar and the footer links. Every page except Home has one entry: `id` (also the route segment, so `projects` → `/$lang/projects/`), `icon`, localized `label` and localized `description`. Adding a page means adding one entry, one route file and one section component.
 - Navbar links use `<Link>` and mark the current page with `aria-current="page"` and an active style (TanStack Router's `activeProps`, or `data-status="active"`). Blog post pages count as the Blog page. The brand link goes Home.
-- The hero shows one CTA per entry (icon + label) linking to that page. `profile.yaml` `primaryCta` names the entry shown in green; the others are outline buttons.
+- The hero has no page buttons; the navbar is the way to the other pages.
 - Icons are `lucide-react` names written in YAML and resolved through an allowlist mapping in code, so only used icons are bundled. Never import the whole icon set. Icons are decorative (`aria-hidden`); the label provides the text.
 
 ## Markdown
