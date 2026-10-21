@@ -233,6 +233,7 @@ export const SiteContentSchema = z.object({
         lead: BilingualObjectSchema,
         copyEmail: BilingualObjectSchema,
         sendEmail: BilingualObjectSchema,
+        copyHandleAriaLabel: BilingualObjectSchema,
       }),
     }),
     embed: z.object({
@@ -385,15 +386,27 @@ export const FriendsContentSchema = z.object({
 
 export type FriendsContent = z.infer<typeof FriendsContentSchema>;
 
+export const ContactLinkSchema = z
+  .object({
+    label: LocalizedSchema,
+    /** File name in `src/assets/brands/` (svg, png, webp or jpg); the extension is optional. */
+    icon: z.string().min(1),
+    /** `mono` icons are light and get inverted on light surfaces; `color` icons keep their colors. */
+    iconStyle: z.enum(["mono", "color"]).default("mono"),
+    /** Opens a page (`https://`) or an email (`mailto:`). */
+    url: HttpsOrMailtoSchema.optional(),
+    /** Shown and copied on click instead of opening a link, e.g. a Discord username. */
+    text: z.string().min(1).optional(),
+  })
+  .refine((link) => (link.url === undefined) !== (link.text === undefined), {
+    message: "Each contact link needs exactly one of `url` or `text`",
+  });
+
+export type ContactLink = z.infer<typeof ContactLinkSchema>;
+
 export const ContactContentSchema = z.object({
   email: z.string().email(),
-  links: z.array(
-    z.object({
-      label: LocalizedSchema,
-      icon: z.string().min(1),
-      url: HttpsUrlSchema,
-    }),
-  ),
+  links: z.array(ContactLinkSchema),
 });
 
 export type ContactContent = z.infer<typeof ContactContentSchema>;

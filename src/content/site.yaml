@@ -330,6 +330,9 @@ ui:
       sendEmail:
         en: Send Email
         zh-TW: 寄送郵件
+      copyHandleAriaLabel:
+        en: "Copy {label}: {value}"
+        zh-TW: "複製 {label}：{value}"
   embed:
     playYoutubeAriaLabel:
       en: "Play YouTube video: {title}"

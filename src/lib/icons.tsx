@@ -8,8 +8,7 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import githubSvg from "@/assets/brands/github.svg";
-import linkedinSvg from "@/assets/brands/linkedin.svg";
+import { resolveBrandIcon } from "@/lib/brand-icons";
 import { cn } from "@/lib/utils";
 import type { NavIconName } from "@/types/content";
 
@@ -23,11 +22,6 @@ const navIconAllowlist: Record<NavIconName, LucideIcon> = {
   Mail,
 };
 
-const brandSvgAllowlist: Record<string, string> = {
-  github: githubSvg,
-  linkedin: linkedinSvg,
-};
-
 export function NavIcon({ name, className }: { name: NavIconName; className?: string }) {
   const IconComponent = navIconAllowlist[name];
   return <IconComponent className={cn("size-4 shrink-0", className)} aria-hidden="true" />;
@@ -37,19 +31,26 @@ export function BrandIcon({
   name,
   className,
   inverted = false,
+  iconStyle = "mono",
 }: {
   name: string;
   className?: string;
+  /** The icon sits on a light surface. */
   inverted?: boolean;
+  iconStyle?: "mono" | "color";
 }) {
-  const svgSrc = brandSvgAllowlist[name.toLowerCase()];
-  if (svgSrc) {
+  const src = resolveBrandIcon(name);
+  if (src) {
     return (
       <img
-        src={svgSrc}
+        src={src}
         alt=""
         aria-hidden="true"
-        className={cn("size-4 shrink-0", inverted && "invert", className)}
+        className={cn(
+          "size-4 shrink-0 object-contain",
+          inverted && iconStyle === "mono" && "invert",
+          className,
+        )}
       />
     );
   }

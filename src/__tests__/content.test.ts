@@ -124,6 +124,22 @@ describe("Content schemas and references", () => {
   it("validates contact.yaml", () => {
     const contact = ContactContentSchema.parse(loadYaml("contact.yaml"));
     expect(contact.links.length).toBeGreaterThan(0);
+
+    // Icons are file names in src/assets/brands/, with or without the extension.
+    const brandFiles = fs
+      .readdirSync(path.join(ASSETS_DIR, "brands"))
+      .filter((f) => /\.(svg|png|webp|jpe?g)$/i.test(f))
+      .map((f) => f.toLowerCase());
+    const brandNames = new Set([
+      ...brandFiles,
+      ...brandFiles.map((f) => f.replace(/\.[^.]+$/, "")),
+    ]);
+    for (const link of contact.links) {
+      expect(
+        brandNames.has(link.icon.toLowerCase()),
+        `icon "${link.icon}" in src/assets/brands/`,
+      ).toBe(true);
+    }
   });
 
   it("validates .generated/og.json cache schema", () => {

@@ -31,7 +31,8 @@ export function Navbar() {
   const matches = useMatches();
 
   const githubLink =
-    contact.links.find((item) => item.icon.toLowerCase() === "github")?.url ?? site.meta.repoUrl;
+    contact.links.find((item) => item.icon.toLowerCase().startsWith("github") && item.url)?.url ??
+    site.meta.repoUrl;
 
   const handleLanguageChange = (nextLang: Lang) => {
     writeStoredLang(nextLang);

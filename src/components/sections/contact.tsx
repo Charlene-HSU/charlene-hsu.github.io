@@ -6,18 +6,21 @@ import { contact, site } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { BrandIcon } from "@/lib/icons";
 
+const invertedOutline =
+  "border-background/30 bg-transparent text-background hover:border-background hover:bg-background/10";
+
 export function ContactSection() {
   const { t, tf } = useI18n();
   const toastManager = useToastManager();
 
-  const handleCopyEmail = async () => {
+  const copyToClipboard = async (value: string) => {
     try {
       // Only confirm a copy that actually happened.
       if (typeof navigator === "undefined" || !navigator.clipboard) return;
-      await navigator.clipboard.writeText(contact.email);
+      await navigator.clipboard.writeText(value);
       toastManager.add({
         title: t(site.ui.toast.copiedTitle),
-        description: tf(site.ui.toast.copiedDescription, { value: contact.email }),
+        description: tf(site.ui.toast.copiedDescription, { value }),
       });
     } catch {
       // Ignore clipboard permission errors
@@ -43,7 +46,11 @@ export function ContactSection() {
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-background/15 pt-6">
           <div className="flex flex-wrap gap-3">
-            <Button variant="inverted" size="lg" onClick={() => void handleCopyEmail()}>
+            <Button
+              variant="inverted"
+              size="lg"
+              onClick={() => void copyToClipboard(contact.email)}
+            >
               <Copy className="size-4" aria-hidden="true" />
               <span>{tf(site.ui.sections.contact.copyEmail, { email: contact.email })}</span>
             </Button>
@@ -53,8 +60,7 @@ export function ContactSection() {
               className={buttonVariants({
                 variant: "outline",
                 size: "lg",
-                className:
-                  "border-background/30 bg-transparent text-background hover:border-background hover:bg-background/10",
+                className: invertedOutline,
               })}
             >
               <Mail className="size-4" aria-hidden="true" />
@@ -63,23 +69,48 @@ export function ContactSection() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {contact.links.map((social) => (
-              <a
-                key={social.url}
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={buttonVariants({
-                  variant: "outline",
-                  className:
-                    "border-background/30 bg-transparent text-background hover:border-background hover:bg-background/10",
-                })}
-              >
-                <BrandIcon name={social.icon} inverted />
-                <span>{t(social.label)}</span>
-                <ExternalLink className="size-3.5 shrink-0" aria-hidden="true" />
-              </a>
-            ))}
+            {contact.links.map((social) => {
+              const label = t(social.label);
+              const icon = <BrandIcon name={social.icon} iconStyle={social.iconStyle} inverted />;
+
+              // A handle (e.g. a Discord username): show it and copy it on click.
+              if (social.text) {
+                const handle = social.text;
+                return (
+                  <Button
+                    key={`${social.icon}-${handle}`}
+                    variant="outline"
+                    aria-label={tf(site.ui.sections.contact.copyHandleAriaLabel, {
+                      label,
+                      value: handle,
+                    })}
+                    onClick={() => void copyToClipboard(handle)}
+                    className={invertedOutline}
+                  >
+                    {icon}
+                    <span>{label}</span>
+                    <span className="font-normal">{handle}</span>
+                    <Copy className="size-3.5 shrink-0" aria-hidden="true" />
+                  </Button>
+                );
+              }
+
+              const isExternal = social.url?.startsWith("https://") ?? false;
+              return (
+                <a
+                  key={social.url}
+                  href={social.url}
+                  {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  className={buttonVariants({ variant: "outline", className: invertedOutline })}
+                >
+                  {icon}
+                  <span>{label}</span>
+                  {isExternal ? (
+                    <ExternalLink className="size-3.5 shrink-0" aria-hidden="true" />
+                  ) : null}
+                </a>
+              );
+            })}
           </div>
         </div>
       </div>

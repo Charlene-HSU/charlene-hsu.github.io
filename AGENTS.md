@@ -46,18 +46,18 @@ React 19, Vite, Tailwind CSS v4, TypeScript, pnpm (npm, yarn and bun are blocked
 - Technical identifiers (route paths, anchor ids, CSS classes, state values) and calculated numbers may stay in code. Display labels for technical values belong in content.
 - YAML holds structured data (lists, dates, links, tags). Markdown holds long-form text (About, project descriptions, friend-link rules, blog posts).
 
-| File                 | Purpose                                                                                                                                          |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `site.yaml`          | Metadata, `nav` (single source for pages and the navbar), `footer` (links, columns, bottom-right link), `blogTags`, UI strings, `embedAllowlist` |
-| `profile.yaml`       | Name, title, location, timezone, tagline, status, stats, `about`                                                                                 |
-| `skills.yaml`        | Skill groups and the marquee list                                                                                                                |
-| `experience.yaml`    | Work and study history                                                                                                                           |
-| `projects.yaml`      | Projects, links and embeds                                                                                                                       |
-| `friends.yaml`       | Friend sites and the link-exchange card                                                                                                          |
-| `contact.yaml`       | Email and social links                                                                                                                           |
-| `md/`                | Markdown for About (`about.<lang>.md`) and projects (`projects/<id>.<lang>.md`)                                                                  |
-| `blog/`              | Blog posts (`<slug>.<lang>.md`), one page each                                                                                                   |
-| `.generated/og.json` | Cache written by `fetch-og`. Commit it. Never edit it by hand                                                                                    |
+| File                 | Purpose                                                                                                                                                                                                |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `site.yaml`          | Metadata, `nav` (single source for pages and the navbar), `footer` (links, columns, bottom-right link), `blogTags`, UI strings, `embedAllowlist`                                                       |
+| `profile.yaml`       | Name, title, location, timezone, tagline, status, stats, `about`                                                                                                                                       |
+| `skills.yaml`        | Skill groups and the marquee list                                                                                                                                                                      |
+| `experience.yaml`    | Work and study history                                                                                                                                                                                 |
+| `projects.yaml`      | Projects, links and embeds                                                                                                                                                                             |
+| `friends.yaml`       | Friend sites and the link-exchange card                                                                                                                                                                |
+| `contact.yaml`       | Email and contact links: `label`, `icon` (file in `src/assets/brands/`), optional `iconStyle` (`mono`/`color`), and exactly one of `url` (opens) or `text` (shown and copied, e.g. a Discord username) |
+| `md/`                | Markdown for About (`about.<lang>.md`) and projects (`projects/<id>.<lang>.md`)                                                                                                                        |
+| `blog/`              | Blog posts (`<slug>.<lang>.md`), one page each                                                                                                                                                         |
+| `.generated/og.json` | Cache written by `fetch-og`. Commit it. Never edit it by hand                                                                                                                                          |
 
 Conventions:
 
@@ -293,7 +293,7 @@ Fonts are self-hosted (OFL). Never load fonts from a CDN. Noto Sans TC is large,
 ## Icons and images
 
 - Icons: use `lucide-react` whenever an equivalent exists.
-- Brand logos (GitHub, LinkedIn, …) that Lucide does not provide are exported as SVG into `src/assets/brands/` and imported. Never hand-draw or paste approximate paths.
+- Brand logos (GitHub, Discord, …) that Lucide does not provide live in `src/assets/brands/` as SVG (preferred) or PNG/WebP. Every file there is picked up automatically (`import.meta.glob` in `src/lib/icons.tsx`) and referenced from YAML by file name, extension optional. Never hand-draw or paste approximate paths. Icons are small, so they skip the `?responsive` pipeline.
 - Photos and covers are optimized at build time by `vite-imagetools`. Commit them as JPG, PNG or WebP, at least as wide as they render on a 2× screen (up to 1600px). Import with `?responsive` (also as `query: '?responsive'` in `import.meta.glob`) and render with `ResponsiveImage` (`@/components/responsive-image`), passing `sizes`. The first image on a page takes `loading="eager"` and `fetchPriority="high"`. SVGs are imported plainly and rendered with `<img>`.
 
 ## Accessibility
