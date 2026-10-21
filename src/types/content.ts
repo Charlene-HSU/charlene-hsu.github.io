@@ -142,9 +142,14 @@ export const SiteContentSchema = z.object({
     .nullish()
     .transform((value) => value ?? {}),
   footer: FooterSchema,
+  shortcuts: z.object({
+    recentDays: z.number().int().min(0),
+    limit: z.number().int().min(1),
+  }),
   embedAllowlist: yamlList(z.string()),
   ui: z.object({
     brand: z.string().min(1),
+    brandHome: LocalizedSchema,
     pageTitleTemplate: BilingualObjectSchema,
     brandAriaLabel: BilingualObjectSchema,
     mainNavAriaLabel: BilingualObjectSchema,
@@ -168,6 +173,14 @@ export const SiteContentSchema = z.object({
     hero: z.object({
       prompt: z.string().min(1),
       metaTemplate: BilingualObjectSchema,
+    }),
+    shortcuts: z.object({
+      comment: BilingualObjectSchema,
+      kinds: z.object({
+        project: BilingualObjectSchema,
+        post: BilingualObjectSchema,
+      }),
+      pinned: BilingualObjectSchema,
     }),
     status: z.object({
       statusEyebrow: BilingualObjectSchema,
@@ -356,6 +369,10 @@ export const ProjectItemSchema = z.object({
   status: ProjectStatusSchema,
   period: PeriodSchema,
   featured: yamlOptional(z.boolean()),
+  /** Last update (YYYY-MM or YYYY-MM-DD); falls back to `period.start` for the home shortcuts. */
+  updated: yamlOptional(YearMonthOrDateSchema),
+  /** Always show this project in the home shortcuts. */
+  pinned: yamlOptional(z.boolean()),
   tags: yamlList(z.string().min(1)),
   cover: yamlOptional(z.string().min(1)),
   summary: BilingualObjectSchema,
@@ -442,6 +459,10 @@ export const BlogFrontMatterSchema = z.object({
   description: yamlOptional(z.string().min(1)),
   tags: yamlList(BlogTagIdSchema),
   draft: yamlOptional(z.boolean()),
+  /** Last update (YYYY-MM-DD); falls back to `date` for the home shortcuts. */
+  updated: yamlOptional(IsoDateSchema),
+  /** Always show this post in the home shortcuts. */
+  pinned: yamlOptional(z.boolean()),
 });
 
 export type BlogFrontMatter = z.infer<typeof BlogFrontMatterSchema>;
@@ -454,6 +475,8 @@ export interface BlogPost {
   description?: string;
   tags: string[];
   draft: boolean;
+  updated?: string;
+  pinned: boolean;
   body: string;
 }
 

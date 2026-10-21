@@ -98,10 +98,19 @@ footer:
       en: Contact me
       zh-TW: 聯絡我
 
+# Home page shortcuts under the marquee: projects and posts updated in the last
+# `recentDays` days, plus anything marked `pinned: true` (in projects.yaml or a
+# post's front matter). Hidden when there is nothing to show.
+shortcuts:
+  recentDays: 30
+  limit: 4
+
 embedAllowlist: []
 
 ui:
   brand: "~/"
+  # Shown after the brand in the navbar, so visitors know it leads to the home page.
+  brandHome: HOME
   pageTitleTemplate:
     en: "{page} — {site}"
     zh-TW: "{page} — {site}"
@@ -146,6 +155,20 @@ ui:
     metaTemplate:
       en: "{title} · {location}"
       zh-TW: "{title} · {location}"
+  shortcuts:
+    comment:
+      en: "// recently updated"
+      zh-TW: "// 最近更新"
+    kinds:
+      project:
+        en: Project
+        zh-TW: 專案
+      post:
+        en: Post
+        zh-TW: 文章
+    pinned:
+      en: Pinned
+      zh-TW: 置頂
   status:
     statusEyebrow:
       en: "// current_status"

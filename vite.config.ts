@@ -11,6 +11,10 @@ const basePath = process.env.BASE_PATH || "/";
 
 export default defineConfig({
   base: basePath,
+  define: {
+    // When this build was made; the home shortcuts use it until the page hydrates.
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
   plugins: [
     TanStackRouterVite({
       target: "react",

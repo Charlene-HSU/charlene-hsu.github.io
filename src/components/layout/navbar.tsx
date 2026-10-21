@@ -54,9 +54,13 @@ export function Navbar() {
           to="/$lang/"
           params={{ lang }}
           aria-label={t(site.ui.brandAriaLabel)}
-          className="inline-flex items-center gap-1 rounded-full px-3 py-1 font-mono text-lead font-bold text-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
+          activeOptions={{ exact: true }}
+          className="group inline-flex items-center rounded-full px-3 py-1 font-mono text-lead font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
         >
-          <span>{site.ui.brand}</span>
+          <span className="text-green">{site.ui.brand}</span>
+          <span className="text-foreground transition-colors group-hover:text-green group-data-[status=active]:text-green">
+            {t(site.ui.brandHome)}
+          </span>
         </Link>
 
         {/* Desktop & Tablet Navigation */}

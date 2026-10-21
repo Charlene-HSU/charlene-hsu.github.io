@@ -83,17 +83,17 @@ For a content update: edit the relevant file under `src/content/`, keep its stru
 
 The site is a set of static pages, not one long page. Each page is its own route with its own URL, title and metadata.
 
-| Page       | Route (per language) | Content                                                                             |
-| ---------- | -------------------- | ----------------------------------------------------------------------------------- |
-| Home       | `/$lang/`            | Hero (name, title, typewriter tagline), status and clock cards, tech marquee        |
-| About      | `/$lang/about/`      | Stats and the About Markdown in a terminal window                                   |
-| Skills     | `/$lang/skills/`     | Skill groups in `Tabs`                                                              |
-| Experience | `/$lang/experience/` | Work and study history                                                              |
-| Projects   | `/$lang/projects/`   | Project tiles and detail panel (see [Projects](#projects-embeds-and-link-previews)) |
-| Blog       | `/$lang/blog/`       | Tag filter row, then the post list (see [Blog](#blog))                              |
-| Blog post  | `/$lang/blog/$slug/` | One post                                                                            |
-| Friends    | `/$lang/friends/`    | Friend cards and the link-exchange card                                             |
-| Contact    | `/$lang/contact/`    | Email card and social links                                                         |
+| Page       | Route (per language) | Content                                                                                                                        |
+| ---------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Home       | `/$lang/`            | Hero (name, title, typewriter tagline), status and clock cards, tech marquee, shortcuts to recent or pinned projects and posts |
+| About      | `/$lang/about/`      | Stats and the About Markdown in a terminal window                                                                              |
+| Skills     | `/$lang/skills/`     | Skill groups in `Tabs`                                                                                                         |
+| Experience | `/$lang/experience/` | Work and study history                                                                                                         |
+| Projects   | `/$lang/projects/`   | Project tiles and detail panel (see [Projects](#projects-embeds-and-link-previews))                                            |
+| Blog       | `/$lang/blog/`       | Tag filter row, then the post list (see [Blog](#blog))                                                                         |
+| Blog post  | `/$lang/blog/$slug/` | One post                                                                                                                       |
+| Friends    | `/$lang/friends/`    | Friend cards and the link-exchange card                                                                                        |
+| Contact    | `/$lang/contact/`    | Email card and social links                                                                                                    |
 
 - Route files: `src/routes/$lang/index.tsx` (home), `about.tsx`, `skills.tsx`, `experience.tsx`, `projects.tsx`, `friends.tsx`, `contact.tsx`, `blog/index.tsx` and `blog/$slug.tsx` under `src/routes/$lang/`. Each route renders one section component from `src/components/sections/` and nothing else.
 - The router uses `trailingSlash: "always"`, so `to` paths end with `/` (`"/$lang/"`, `"/$lang/blog/"`, `"/$lang/blog/$slug/"`). Follow the paths the generated route tree type-checks.
@@ -107,6 +107,7 @@ The site is a set of static pages, not one long page. Each page is its own route
 
 - `site.yaml` `nav` is the single source for the pages and the navbar; the footer picks from it. Every page except Home has one entry: `id` (also the route segment, so `projects` → `/$lang/projects/`), `icon`, localized `label` and localized `description`. Adding a page means adding one entry, one route file and one section component.
 - The footer is configured in `site.yaml` `footer`: `links` (nav ids, in order), `columns` (1–4; phones show at most two) and `bottomLink` (`page`, a nav id, or `url`, `https://` or `mailto:`, plus a localized `label`). Its bottom-left text is `ui.footer.license`. It has no friends or social columns.
+- The navbar brand shows `ui.brand` followed by `ui.brandHome` (for example `~/HOME`) and links to Home; it is highlighted on Home only.
 - Navbar links use `<Link>` and mark the current page with `aria-current="page"` and an active style (TanStack Router's `activeProps`, or `data-status="active"`). Blog post pages count as the Blog page. The brand link goes Home.
 - The hero has no page buttons; the navbar is the way to the other pages.
 - Icons are `lucide-react` names written in YAML and resolved through an allowlist mapping in code, so only used icons are bundled. Never import the whole icon set. Icons are decorative (`aria-hidden`); the label provides the text.
@@ -120,6 +121,12 @@ The site is a set of static pages, not one long page. Each page is its own route
 - Relative images resolve against `src/assets/` (project covers, `blog/<slug>/`) and use the `?responsive` pipeline.
 - Phase 2 (add only when the owner asks): `remark-directive` for `::embed{kind="…" url="…"}` and `rehype-highlight` for code highlighting. Do not add other Markdown plugins without approval.
 - Inline Markdown fields in YAML (for example experience `highlights`, friend `rules`) render through `<Markdown inline>`, which only supports bold, links and inline code.
+
+### Home shortcuts
+
+- Under the marquee, the home page links to projects and posts that were updated in the last `site.yaml` `shortcuts.recentDays` days (default 30), plus anything marked `pinned: true`. Pinned items come first, then newest first, at most `shortcuts.limit` items. With nothing to show, the block is not rendered.
+- A project's date is `updated` (`YYYY-MM` or `YYYY-MM-DD`) in `projects.yaml`, falling back to `period.start`; a post's is `updated` in its front matter, falling back to `date`. `pinned: true` goes in the same places.
+- The logic lives in `src/lib/shortcuts.ts` (`getShortcuts`). Prerendered HTML uses the build time (`__BUILD_TIME__`, injected by `vite.config.ts`); after hydration the visitor's clock is used, so shortcuts expire without a rebuild.
 
 ### Blog
 
