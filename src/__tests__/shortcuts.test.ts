@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { site } from "@/lib/content";
-import { firstParagraph, getShortcuts, isRecent, parseContentDate } from "@/lib/shortcuts";
+import { getShortcuts, isRecent, parseContentDate } from "@/lib/shortcuts";
 
 describe("home shortcuts", () => {
   const now = new Date(Date.UTC(2026, 9, 22));
@@ -25,14 +25,5 @@ describe("home shortcuts", () => {
       // Nothing is recent in 2100, so only pinned items remain.
       expect(items.every((item) => item.pinned)).toBe(true);
     }
-  });
-});
-
-describe("about shortcut text", () => {
-  it("takes the first real paragraph as plain text", () => {
-    const md =
-      "# Title\n\n- list\n\nHi! I build **fast** [sites](https://example.com) with `code`.\n\nSecond.";
-    expect(firstParagraph(md)).toBe("Hi! I build fast sites with code.");
-    expect(firstParagraph("")).toBe("");
   });
 });

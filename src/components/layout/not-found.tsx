@@ -14,7 +14,7 @@ export function NotFoundPage({ lang }: { lang?: Lang }) {
     <section className="w-full px-6 pt-header pb-16 md:pb-24">
       <div className="mx-auto flex w-full max-w-content flex-col gap-8 pt-8 md:pt-12">
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-body font-bold text-green">
+          <span className="font-mono text-paragraph font-bold text-green">
             {site.ui.notFound.comment}
           </span>
           <h1 className="flex flex-col font-mono text-display font-bold text-foreground">

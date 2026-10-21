@@ -52,7 +52,7 @@ export function StatusSection() {
           {/* Left / Top Card: Current Status (outer corner xl, inner corner sm) */}
           <div className="flex flex-col justify-between gap-4 rounded-t-xl rounded-b-sm border border-rule bg-surface p-6 md:rounded-l-xl md:rounded-r-sm">
             <div className="flex items-center justify-between gap-3">
-              <span className="font-mono text-caption text-gray">
+              <span className="font-mono text-body text-gray">
                 {t(site.ui.status.statusEyebrow)}
               </span>
               <Badge variant={stateBadgeVariant[state]}>{t(site.ui.status.states[state])}</Badge>
@@ -71,7 +71,7 @@ export function StatusSection() {
           {/* Right / Bottom Card: Local Time (inner corner sm, outer corner xl) */}
           <div className="flex flex-col justify-between gap-4 rounded-t-sm rounded-b-xl border border-rule bg-surface p-6 md:rounded-l-sm md:rounded-r-xl">
             <div className="flex items-center justify-between gap-3">
-              <span className="font-mono text-caption text-gray">
+              <span className="font-mono text-body text-gray">
                 {t(site.ui.status.clockEyebrow)}
               </span>
               <span className="font-mono text-caption text-gray">

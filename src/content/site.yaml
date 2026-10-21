@@ -104,7 +104,7 @@ footer:
 shortcuts:
   recentDays: 30
   limit: 4
-  # Card linking to About, showing the first paragraph of md/about.<lang>.md. `false` hides it.
+  # Self-introduction (md/about.<lang>.md) under your name on the home page. `false` hides it.
   about: true
 
 embedAllowlist: []
@@ -117,7 +117,7 @@ ui:
     en: "{page} — {site}"
     zh-TW: "{page} — {site}"
   notFound:
-    comment: "// 404"
+    comment: "404"
     title:
       en: Page not found
       zh-TW: 找不到這個頁面
@@ -159,8 +159,8 @@ ui:
       zh-TW: "{title} · {location}"
   shortcuts:
     comment:
-      en: "// recently updated"
-      zh-TW: "// 最近更新"
+      en: "recently updated"
+      zh-TW: "最近更新"
     kinds:
       project:
         en: Project
@@ -173,11 +173,11 @@ ui:
       zh-TW: 置頂
   status:
     statusEyebrow:
-      en: "// current_status"
-      zh-TW: "// 目前狀態"
+      en: "current_status"
+      zh-TW: "目前狀態"
     clockEyebrow:
-      en: "// local_time"
-      zh-TW: "// 當地時間"
+      en: "local_time"
+      zh-TW: "當地時間"
     timezoneTemplate:
       en: "Timezone: {tz}"
       zh-TW: "時區：{tz}"
@@ -197,8 +197,8 @@ ui:
   sections:
     about:
       comment:
-        en: "// about"
-        zh-TW: "// 關於我"
+        en: "about"
+        zh-TW: "關於我"
       title:
         en: About
         zh-TW: 關於我
@@ -208,8 +208,8 @@ ui:
         en: No skills listed yet.
         zh-TW: 目前還沒有列出技能。
       comment:
-        en: "// skills"
-        zh-TW: "// 技能"
+        en: "skills"
+        zh-TW: "技能"
       title:
         en: Skills
         zh-TW: 技能
@@ -221,8 +221,8 @@ ui:
         en: No experience listed yet.
         zh-TW: 目前還沒有列出經歷。
       comment:
-        en: "// experience"
-        zh-TW: "// 經歷"
+        en: "experience"
+        zh-TW: "經歷"
       title:
         en: Experience
         zh-TW: 經歷
@@ -243,8 +243,8 @@ ui:
         en: No projects listed yet.
         zh-TW: 目前還沒有列出專案。
       comment:
-        en: "// projects"
-        zh-TW: "// 專案"
+        en: "projects"
+        zh-TW: "專案"
       title:
         en: Projects
         zh-TW: 專案
@@ -278,8 +278,8 @@ ui:
           zh-TW: 說明文件
     blog:
       comment:
-        en: "// blog"
-        zh-TW: "// 部落格"
+        en: "blog"
+        zh-TW: "部落格"
       title:
         en: Blog
         zh-TW: 部落格
@@ -306,8 +306,8 @@ ui:
         en: No friend sites listed yet.
         zh-TW: 目前還沒有友站。
       comment:
-        en: "// friends"
-        zh-TW: "// 友站"
+        en: "friends"
+        zh-TW: "友站"
       title:
         en: Friends
         zh-TW: 友站
@@ -353,8 +353,8 @@ ui:
         zh-TW: 申請交換連結
     contact:
       comment:
-        en: "// contact"
-        zh-TW: "// 聯絡"
+        en: "contact"
+        zh-TW: "聯絡"
       title:
         en: Get in Touch
         zh-TW: 與我聯絡

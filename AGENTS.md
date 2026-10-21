@@ -83,21 +83,21 @@ For a content update: edit the relevant file under `src/content/`, keep its stru
 
 The site is a set of static pages, not one long page. Each page is its own route with its own URL, title and metadata.
 
-| Page       | Route (per language) | Content                                                                                                                                 |
-| ---------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Home       | `/$lang/`            | Hero (name, title, typewriter tagline), status and clock cards, shortcuts to recent or pinned projects and posts, then the tech marquee |
-| About      | `/$lang/about/`      | Stats and the About Markdown in a terminal window                                                                                       |
-| Skills     | `/$lang/skills/`     | Skill groups in `Tabs`                                                                                                                  |
-| Experience | `/$lang/experience/` | Work and study history                                                                                                                  |
-| Projects   | `/$lang/projects/`   | Project tiles and detail panel (see [Projects](#projects-embeds-and-link-previews))                                                     |
-| Blog       | `/$lang/blog/`       | Tag filter row, then the post list (see [Blog](#blog))                                                                                  |
-| Blog post  | `/$lang/blog/$slug/` | One post                                                                                                                                |
-| Friends    | `/$lang/friends/`    | Friend cards and the link-exchange card                                                                                                 |
-| Contact    | `/$lang/contact/`    | Email card and social links                                                                                                             |
+| Page       | Route (per language) | Content                                                                                                                                                                                                                                           |
+| ---------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Home       | `/$lang/`            | Hero (name, title, typewriter tagline), the self-introduction from `md/about.<lang>.md` with a link to About (`shortcuts.about: false` hides it), status and clock cards, shortcuts to recent or pinned projects and posts, then the tech marquee |
+| About      | `/$lang/about/`      | Stats and the About Markdown in a terminal window                                                                                                                                                                                                 |
+| Skills     | `/$lang/skills/`     | Skill groups in `Tabs`                                                                                                                                                                                                                            |
+| Experience | `/$lang/experience/` | Work and study history                                                                                                                                                                                                                            |
+| Projects   | `/$lang/projects/`   | Project tiles and detail panel (see [Projects](#projects-embeds-and-link-previews))                                                                                                                                                               |
+| Blog       | `/$lang/blog/`       | Tag filter row, then the post list (see [Blog](#blog))                                                                                                                                                                                            |
+| Blog post  | `/$lang/blog/$slug/` | One post                                                                                                                                                                                                                                          |
+| Friends    | `/$lang/friends/`    | Friend cards and the link-exchange card                                                                                                                                                                                                           |
+| Contact    | `/$lang/contact/`    | Email card and social links                                                                                                                                                                                                                       |
 
 - Route files: `src/routes/$lang/index.tsx` (home), `about.tsx`, `skills.tsx`, `experience.tsx`, `projects.tsx`, `friends.tsx`, `contact.tsx`, `blog/index.tsx` and `blog/$slug.tsx` under `src/routes/$lang/`. Each route renders one section component from `src/components/sections/` and nothing else.
 - The router uses `trailingSlash: "always"`, so `to` paths end with `/` (`"/$lang/"`, `"/$lang/blog/"`, `"/$lang/blog/$slug/"`). Follow the paths the generated route tree type-checks.
-- Each page except Home opens with the shared page header (`SectionShell`): the comment eyebrow (`// projects`) and the page title as the page's only `<h1>`. On Home the owner's name is the `<h1>`. Headings inside a page start at `<h2>`.
+- Each page except Home opens with the shared page header (`SectionShell`): the comment eyebrow (`projects`) and the page title as the page's only `<h1>`. On Home the owner's name is the `<h1>`. Headings inside a page start at `<h2>`.
 - Page content starts below the overlaid header: every page pads its top with `pt-header`. Pages share the same column, gutter and vertical padding.
 - Page titles and descriptions come from content: each `nav` entry has a localized `description`; the document title uses `ui.pageTitleTemplate` (for example `"{page} — {site}"`). Blog posts use their own `title` and `description`.
 - Navigating to another page scrolls to the top. Keep the router's scroll restoration for back and forward.
@@ -125,7 +125,6 @@ The site is a set of static pages, not one long page. Each page is its own route
 ### Home shortcuts
 
 - Between the status cards and the marquee, the home page links to projects and posts that were updated in the last `site.yaml` `shortcuts.recentDays` days (default 30), plus anything marked `pinned: true`. Pinned items come first, then newest first, at most `shortcuts.limit` items. With nothing to show, the block is not rendered.
-- The first card always links to About and shows the first paragraph of `md/about.<lang>.md` as plain text (`shortcuts.about: false` hides it). It does not count toward `limit`.
 - A project's date is `updated` (`YYYY-MM` or `YYYY-MM-DD`) in `projects.yaml`, falling back to `period.start`; a post's is `updated` in its front matter, falling back to `date`. `pinned: true` goes in the same places.
 - The logic lives in `src/lib/shortcuts.ts` (`getShortcuts`). Prerendered HTML uses the build time (`__BUILD_TIME__`, injected by `vite.config.ts`); after hydration the visitor's clock is used, so shortcuts expire without a rebuild.
 
@@ -248,9 +247,9 @@ Sizes in px (tokens are rem). Line heights are the same at every size unless not
 | ---------------- | -------------------------------- | ------ | ------------------------------------------- |
 | `font-sans`      | Noto Sans TC → Inter → system-ui |        | Body copy and all Chinese text              |
 | `font-mono`      | JetBrains Mono → ui-monospace    |        | Navigation, labels, eyebrows, numbers, code |
-| `text-mega`      | 96 / 1.05                        | 44     | Hero name                                   |
+| `text-mega`      | 96 / 1.05                        | 44     | Unused; kept for very large display text    |
 | `text-stat`      | 64 / 1                           | 40     | Stat numbers                                |
-| `text-display`   | 48 / 1.15                        | 32     | Section titles (`// projects`)              |
+| `text-display`   | 48 / 1.15                        | 32     | Page titles, the hero name                  |
 | `text-h1`        | 32 / 1.25                        | 26     | Sub-headings                                |
 | `text-h2`        | 24 / 1.3                         | 20     | Card titles                                 |
 | `text-lead`      | 18 / 1.6                         | 16     | Large buttons, lead text                    |
@@ -295,7 +294,7 @@ Fonts are self-hosted (OFL). Never load fonts from a CDN. Noto Sans TC is large,
 
 ### Visual language
 
-- Terminal vocabulary: `$ whoami`, `~/about`, `> ls`, a blinking cursor. Section titles are comments: `// about`, `// projects`.
+- Terminal vocabulary: `$ whoami`, `~/about`, `> ls`, a blinking cursor. Eyebrow labels above titles are plain words (no `//` prefix); an eyebrow that only repeats the title is not shown.
 - 1px `rule` borders, small radii, no shadows. The terminal window component (title bar with three dots) frames About and the project panel.
 - The typewriter effect is used only for the hero tagline.
 
