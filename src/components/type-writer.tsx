@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useHydrated } from "@/lib/use-hydrated";
 import { cn, type WithClassName } from "@/lib/utils";
 
 export type TypeWriterProps = WithClassName<{
@@ -8,6 +9,7 @@ export type TypeWriterProps = WithClassName<{
 
 export function TypeWriter({ text, speedMs = 32, className }: TypeWriterProps) {
   const [displayed, setDisplayed] = useState(text);
+  const hydrated = useHydrated();
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -38,7 +40,11 @@ export function TypeWriter({ text, speedMs = 32, className }: TypeWriterProps) {
     <p className={cn("font-mono text-lead text-gray", className)}>
       {/* Screen readers get the whole text once instead of every typed letter. */}
       <span className="sr-only">{text}</span>
-      <span aria-hidden="true">{displayed}</span>
+      {/* The prerendered full text stays hidden (but keeps its space) until the typing
+          starts, so it does not flash; see `data-typewriter-pending` in index.css. */}
+      <span aria-hidden="true" data-typewriter-pending={hydrated ? undefined : ""}>
+        {displayed}
+      </span>
       <span className="ml-1 inline-block text-green animate-cursor-blink" aria-hidden="true">
         ▍
       </span>
