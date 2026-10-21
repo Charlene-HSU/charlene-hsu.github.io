@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { profile, site } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { NavIcon } from "@/lib/icons";
+import { pageRoutes } from "@/lib/pages";
 import { cn } from "@/lib/utils";
 
 export function HeroSection() {
@@ -33,9 +34,8 @@ export function HeroSection() {
             return (
               <Link
                 key={item.id}
-                to="/$lang/"
+                to={pageRoutes[item.id]}
                 params={{ lang }}
-                hash={item.id}
                 className={cn(
                   buttonVariants({
                     variant: isPrimary ? "primary" : "outline",

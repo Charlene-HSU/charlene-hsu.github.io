@@ -10,56 +10,92 @@ meta:
     en: Software engineer building reliable things for the web.
     zh-TW: 軟體工程師，打造可靠的網路產品。
   url: https://charlene-hsu.github.io
-  repoUrl: https://github.com/Charlene-HSU/Charlene-HSU.github.io
+  repoUrl: https://github.com/Charlene-HSU/charlene-hsu.github.io
 
 nav:
   - id: about
-    type: hash
     icon: User
     label:
       en: About
       zh-TW: 關於我
+    description:
+      en: Who I am and what I care about as an engineer.
+      zh-TW: 我是誰，以及身為工程師我在意的事。
   - id: skills
-    type: hash
     icon: Braces
     label:
       en: Skills
       zh-TW: 技能
+    description:
+      en: Languages, frameworks and tools I work with.
+      zh-TW: 我常用的程式語言、框架與工具。
   - id: experience
-    type: hash
     icon: Briefcase
     label:
       en: Experience
       zh-TW: 經歷
+    description:
+      en: Where I have worked and studied.
+      zh-TW: 我的工作與學習經歷。
   - id: projects
-    type: hash
     icon: FolderGit2
     label:
       en: Projects
       zh-TW: 專案
+    description:
+      en: Things I have built, with links and notes.
+      zh-TW: 我做過的專案、連結與筆記。
   - id: blog
-    type: hash
     icon: PenLine
     label:
       en: Blog
       zh-TW: 部落格
+    description:
+      en: Notes on frontend, tooling and the web.
+      zh-TW: 關於前端、開發工具與網頁的筆記。
   - id: friends
-    type: hash
     icon: Users
     label:
       en: Friends
       zh-TW: 友站
+    description:
+      en: Sites by people I like reading, and how to exchange links.
+      zh-TW: 朋友們的網站，以及交換連結的方式。
   - id: contact
-    type: hash
     icon: Mail
     label:
       en: Contact
       zh-TW: 聯絡
+    description:
+      en: How to reach me.
+      zh-TW: 聯絡我的方式。
+
+blogTags:
+  meta:
+    en: Site news
+    zh-TW: 網站消息
+  frontend:
+    en: Frontend
+    zh-TW: 前端
 
 embedAllowlist: []
 
 ui:
   brand: "~/"
+  pageTitleTemplate:
+    en: "{page} — {site}"
+    zh-TW: "{page} — {site}"
+  notFound:
+    comment: "// 404"
+    title:
+      en: Page not found
+      zh-TW: 找不到這個頁面
+    message:
+      en: The page you are looking for does not exist or has moved.
+      zh-TW: 你要找的頁面不存在，或已經搬家了。
+    homeLink:
+      en: Back to home
+      zh-TW: 回到首頁
   brandAriaLabel:
     en: Back to top
     zh-TW: 回到頂部
@@ -196,6 +232,21 @@ ui:
       empty:
         en: No posts published yet.
         zh-TW: 目前尚無文章。
+      emptyTag:
+        en: No posts with this tag yet.
+        zh-TW: 這個標籤目前沒有文章。
+      allTags:
+        en: All
+        zh-TW: 全部
+      tagFilterAriaLabel:
+        en: Filter posts by tag
+        zh-TW: 依標籤篩選文章
+      postTagsAriaLabel:
+        en: Post tags
+        zh-TW: 文章標籤
+      backToList:
+        en: All posts
+        zh-TW: 所有文章
     friends:
       comment:
         en: "// friends"

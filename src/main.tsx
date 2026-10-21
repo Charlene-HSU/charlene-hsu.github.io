@@ -38,7 +38,11 @@ if (rootElement) {
   );
 
   if (rootElement.hasChildNodes()) {
-    hydrateRoot(rootElement, app);
+    // Resolve the current route before hydrating so the first client render
+    // matches the prerendered HTML.
+    void router.load().then(() => {
+      hydrateRoot(rootElement, app);
+    });
   } else {
     createRoot(rootElement).render(app);
   }

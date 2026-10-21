@@ -12,6 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LangRouteRouteImport } from './routes/$lang/route'
 import { Route as LangIndexRouteImport } from './routes/$lang/index'
+import { Route as LangAboutRouteImport } from './routes/$lang/about'
+import { Route as LangContactRouteImport } from './routes/$lang/contact'
+import { Route as LangExperienceRouteImport } from './routes/$lang/experience'
+import { Route as LangFriendsRouteImport } from './routes/$lang/friends'
+import { Route as LangProjectsRouteImport } from './routes/$lang/projects'
+import { Route as LangSkillsRouteImport } from './routes/$lang/skills'
+import { Route as LangBlogIndexRouteImport } from './routes/$lang/blog/index'
+import { Route as LangBlogSlugRouteImport } from './routes/$lang/blog/$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,28 +36,125 @@ const LangIndexRoute = LangIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LangRouteRoute,
 } as any)
+const LangAboutRoute = LangAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => LangRouteRoute,
+} as any)
+const LangContactRoute = LangContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => LangRouteRoute,
+} as any)
+const LangExperienceRoute = LangExperienceRouteImport.update({
+  id: '/experience',
+  path: '/experience',
+  getParentRoute: () => LangRouteRoute,
+} as any)
+const LangFriendsRoute = LangFriendsRouteImport.update({
+  id: '/friends',
+  path: '/friends',
+  getParentRoute: () => LangRouteRoute,
+} as any)
+const LangProjectsRoute = LangProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => LangRouteRoute,
+} as any)
+const LangSkillsRoute = LangSkillsRouteImport.update({
+  id: '/skills',
+  path: '/skills',
+  getParentRoute: () => LangRouteRoute,
+} as any)
+const LangBlogIndexRoute = LangBlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => LangRouteRoute,
+} as any)
+const LangBlogSlugRoute = LangBlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => LangRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$lang': typeof LangRouteRouteWithChildren
+  '/$lang/about': typeof LangAboutRoute
+  '/$lang/contact': typeof LangContactRoute
+  '/$lang/experience': typeof LangExperienceRoute
+  '/$lang/friends': typeof LangFriendsRoute
+  '/$lang/projects': typeof LangProjectsRoute
+  '/$lang/skills': typeof LangSkillsRoute
   '/$lang/': typeof LangIndexRoute
+  '/$lang/blog/$slug': typeof LangBlogSlugRoute
+  '/$lang/blog/': typeof LangBlogIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$lang/about': typeof LangAboutRoute
+  '/$lang/contact': typeof LangContactRoute
+  '/$lang/experience': typeof LangExperienceRoute
+  '/$lang/friends': typeof LangFriendsRoute
+  '/$lang/projects': typeof LangProjectsRoute
+  '/$lang/skills': typeof LangSkillsRoute
   '/$lang': typeof LangIndexRoute
+  '/$lang/blog/$slug': typeof LangBlogSlugRoute
+  '/$lang/blog': typeof LangBlogIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$lang': typeof LangRouteRouteWithChildren
+  '/$lang/about': typeof LangAboutRoute
+  '/$lang/contact': typeof LangContactRoute
+  '/$lang/experience': typeof LangExperienceRoute
+  '/$lang/friends': typeof LangFriendsRoute
+  '/$lang/projects': typeof LangProjectsRoute
+  '/$lang/skills': typeof LangSkillsRoute
   '/$lang/': typeof LangIndexRoute
+  '/$lang/blog/$slug': typeof LangBlogSlugRoute
+  '/$lang/blog/': typeof LangBlogIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$lang' | '/$lang/'
+  fullPaths:
+    | '/'
+    | '/$lang'
+    | '/$lang/about'
+    | '/$lang/contact'
+    | '/$lang/experience'
+    | '/$lang/friends'
+    | '/$lang/projects'
+    | '/$lang/skills'
+    | '/$lang/'
+    | '/$lang/blog/$slug'
+    | '/$lang/blog/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$lang'
-  id: '__root__' | '/' | '/$lang' | '/$lang/'
+  to:
+    | '/'
+    | '/$lang/about'
+    | '/$lang/contact'
+    | '/$lang/experience'
+    | '/$lang/friends'
+    | '/$lang/projects'
+    | '/$lang/skills'
+    | '/$lang'
+    | '/$lang/blog/$slug'
+    | '/$lang/blog'
+  id:
+    | '__root__'
+    | '/'
+    | '/$lang'
+    | '/$lang/about'
+    | '/$lang/contact'
+    | '/$lang/experience'
+    | '/$lang/friends'
+    | '/$lang/projects'
+    | '/$lang/skills'
+    | '/$lang/'
+    | '/$lang/blog/$slug'
+    | '/$lang/blog/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -80,15 +185,87 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LangIndexRouteImport
       parentRoute: typeof LangRouteRoute
     }
+    '/$lang/about': {
+      id: '/$lang/about'
+      path: '/about'
+      fullPath: '/$lang/about'
+      preLoaderRoute: typeof LangAboutRouteImport
+      parentRoute: typeof LangRouteRoute
+    }
+    '/$lang/contact': {
+      id: '/$lang/contact'
+      path: '/contact'
+      fullPath: '/$lang/contact'
+      preLoaderRoute: typeof LangContactRouteImport
+      parentRoute: typeof LangRouteRoute
+    }
+    '/$lang/experience': {
+      id: '/$lang/experience'
+      path: '/experience'
+      fullPath: '/$lang/experience'
+      preLoaderRoute: typeof LangExperienceRouteImport
+      parentRoute: typeof LangRouteRoute
+    }
+    '/$lang/friends': {
+      id: '/$lang/friends'
+      path: '/friends'
+      fullPath: '/$lang/friends'
+      preLoaderRoute: typeof LangFriendsRouteImport
+      parentRoute: typeof LangRouteRoute
+    }
+    '/$lang/projects': {
+      id: '/$lang/projects'
+      path: '/projects'
+      fullPath: '/$lang/projects'
+      preLoaderRoute: typeof LangProjectsRouteImport
+      parentRoute: typeof LangRouteRoute
+    }
+    '/$lang/skills': {
+      id: '/$lang/skills'
+      path: '/skills'
+      fullPath: '/$lang/skills'
+      preLoaderRoute: typeof LangSkillsRouteImport
+      parentRoute: typeof LangRouteRoute
+    }
+    '/$lang/blog/': {
+      id: '/$lang/blog/'
+      path: '/blog'
+      fullPath: '/$lang/blog/'
+      preLoaderRoute: typeof LangBlogIndexRouteImport
+      parentRoute: typeof LangRouteRoute
+    }
+    '/$lang/blog/$slug': {
+      id: '/$lang/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/$lang/blog/$slug'
+      preLoaderRoute: typeof LangBlogSlugRouteImport
+      parentRoute: typeof LangRouteRoute
+    }
   }
 }
 
 interface LangRouteRouteChildren {
+  LangAboutRoute: typeof LangAboutRoute
+  LangContactRoute: typeof LangContactRoute
+  LangExperienceRoute: typeof LangExperienceRoute
+  LangFriendsRoute: typeof LangFriendsRoute
+  LangProjectsRoute: typeof LangProjectsRoute
+  LangSkillsRoute: typeof LangSkillsRoute
   LangIndexRoute: typeof LangIndexRoute
+  LangBlogSlugRoute: typeof LangBlogSlugRoute
+  LangBlogIndexRoute: typeof LangBlogIndexRoute
 }
 
 const LangRouteRouteChildren: LangRouteRouteChildren = {
+  LangAboutRoute: LangAboutRoute,
+  LangContactRoute: LangContactRoute,
+  LangExperienceRoute: LangExperienceRoute,
+  LangFriendsRoute: LangFriendsRoute,
+  LangProjectsRoute: LangProjectsRoute,
+  LangSkillsRoute: LangSkillsRoute,
   LangIndexRoute: LangIndexRoute,
+  LangBlogSlugRoute: LangBlogSlugRoute,
+  LangBlogIndexRoute: LangBlogIndexRoute,
 }
 
 const LangRouteRouteWithChildren = LangRouteRoute._addFileChildren(

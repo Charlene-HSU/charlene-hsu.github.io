@@ -1,6 +1,10 @@
 ---
 title: Hello World
 date: "2026-10-21"
+description: A first post on the new site, and what this blog will cover.
+tags:
+  - meta
+  - frontend
 ---
 
 Welcome to my new personal site and blog. This site is designed around a monochrome, terminal-inspired aesthetic and keeps all content in plain YAML and Markdown files.

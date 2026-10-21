@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import YAML from "yaml";
 import {
   BlogFrontMatterSchema,
+  BlogSlugSchema,
   ContactContentSchema,
   ExperienceContentSchema,
   FriendsContentSchema,
@@ -32,11 +33,21 @@ describe("Content schemas and references", () => {
     expect(new Set(navIds).size).toBe(navIds.length);
   });
 
+  it("has a route file for every nav page", () => {
+    const site = SiteContentSchema.parse(loadYaml("site.yaml"));
+    const routesDir = path.join(ROOT, "src/routes/$lang");
+    for (const item of site.nav) {
+      const flat = path.join(routesDir, `${item.id}.tsx`);
+      const nested = path.join(routesDir, item.id, "index.tsx");
+      expect(fs.existsSync(flat) || fs.existsSync(nested), `route for "${item.id}"`).toBe(true);
+    }
+  });
+
   it("validates profile.yaml and checks primaryCta and about markdown references", () => {
     const site = SiteContentSchema.parse(loadYaml("site.yaml"));
     const profile = ProfileContentSchema.parse(loadYaml("profile.yaml"));
 
-    const navIds = new Set(site.nav.map((n) => n.id));
+    const navIds = new Set<string>(site.nav.map((n) => n.id));
     expect(navIds.has(profile.primaryCta)).toBe(true);
 
     for (const lang of languages) {
@@ -102,17 +113,19 @@ describe("Content schemas and references", () => {
     OgCacheSchema.parse(ogRaw);
   });
 
-  it("validates blog posts frontmatter, filename conventions, and referenced images", () => {
+  it("validates blog posts frontmatter, filename conventions, tags, and referenced images", () => {
+    const site = SiteContentSchema.parse(loadYaml("site.yaml"));
     const blogDir = path.join(CONTENT_DIR, "blog");
     const files = fs.readdirSync(blogDir).filter((f) => f.endsWith(".md"));
     expect(files.length).toBeGreaterThan(0);
 
     const seenSlugLang = new Set<string>();
+    const tagsBySlug = new Map<string, string>();
     for (const file of files) {
       const matchedLang = languages.find((l) => file.endsWith(`.${l}.md`));
-      expect(matchedLang).toBeDefined();
+      expect(matchedLang, `language suffix of ${file}`).toBeDefined();
       const slug = file.slice(0, -`.${matchedLang}.md`.length);
-      expect(slug.length).toBeGreaterThan(0);
+      BlogSlugSchema.parse(slug);
 
       const key = `${slug}:${matchedLang}`;
       expect(seenSlugLang.has(key)).toBe(false);
@@ -120,7 +133,17 @@ describe("Content schemas and references", () => {
 
       const raw = fs.readFileSync(path.join(blogDir, file), "utf-8");
       const parsed = fm<unknown>(raw);
-      BlogFrontMatterSchema.parse(parsed.attributes);
+      const frontmatter = BlogFrontMatterSchema.parse(parsed.attributes);
+
+      for (const tag of frontmatter.tags) {
+        expect(site.blogTags[tag], `label for tag "${tag}" in site.yaml blogTags`).toBeDefined();
+      }
+      const tagKey = [...frontmatter.tags].sort().join(",");
+      const previous = tagsBySlug.get(slug);
+      if (previous !== undefined) {
+        expect(tagKey, `translations of "${slug}" list the same tags`).toBe(previous);
+      }
+      tagsBySlug.set(slug, tagKey);
 
       const imageRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
       for (const match of parsed.body.matchAll(imageRegex)) {

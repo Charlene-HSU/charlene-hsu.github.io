@@ -3,6 +3,7 @@ import { ExternalLink } from "lucide-react";
 import { contact, friends, profile, site } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { BrandIcon, NavIcon } from "@/lib/icons";
+import { pageRoutes } from "@/lib/pages";
 
 export function Footer() {
   const { lang, t } = useI18n();
@@ -24,16 +25,15 @@ export function Footer() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <h3 className="font-mono text-body font-bold text-foreground">
+            <h2 className="font-mono text-body font-bold text-foreground">
               {t(site.ui.footer.navHeading)}
-            </h3>
+            </h2>
             <ul className="flex flex-col gap-2">
               {site.nav.map((item) => (
                 <li key={item.id}>
                   <Link
-                    to="/$lang/"
+                    to={pageRoutes[item.id]}
                     params={{ lang }}
-                    hash={item.id}
                     className="inline-flex items-center gap-2 font-mono text-body text-gray transition-colors hover:text-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
                   >
                     <NavIcon name={item.icon} className="size-3.5" />
@@ -45,9 +45,9 @@ export function Footer() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <h3 className="font-mono text-body font-bold text-foreground">
+            <h2 className="font-mono text-body font-bold text-foreground">
               {t(site.ui.footer.friendsHeading)}
-            </h3>
+            </h2>
             <ul className="flex flex-col gap-2">
               {friends.items.map((friend) => (
                 <li key={friend.url}>
@@ -66,9 +66,9 @@ export function Footer() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <h3 className="font-mono text-body font-bold text-foreground">
+            <h2 className="font-mono text-body font-bold text-foreground">
               {t(site.ui.footer.socialHeading)}
-            </h3>
+            </h2>
             <ul className="flex flex-col gap-2">
               {contact.links.map((social) => (
                 <li key={social.url}>
