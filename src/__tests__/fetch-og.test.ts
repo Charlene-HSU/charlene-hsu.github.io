@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   assertSafeHostname,
   collectMarkdownStandaloneUrls,
+  decodeHtmlEntities,
   extractOgMetadata,
   isCacheEntryFresh,
   isPrivateOrLoopbackIp,
@@ -24,6 +25,16 @@ describe("fetch-og script utilities", () => {
     expect(isPrivateOrLoopbackIp("::1")).toBe(true);
     expect(isPrivateOrLoopbackIp("fe80::1")).toBe(true);
     expect(isPrivateOrLoopbackIp("93.184.216.34")).toBe(false);
+  });
+
+  it("checks the IPv4 address inside IPv4-mapped IPv6 addresses", () => {
+    expect(isPrivateOrLoopbackIp("::ffff:127.0.0.1")).toBe(true);
+    expect(isPrivateOrLoopbackIp("::ffff:172.16.0.1")).toBe(true);
+    expect(isPrivateOrLoopbackIp("::ffff:169.254.169.254")).toBe(true);
+    expect(isPrivateOrLoopbackIp("::ffff:7f00:1")).toBe(true);
+    expect(isPrivateOrLoopbackIp("0:0:0:0:0:ffff:a00:1")).toBe(true);
+    expect(isPrivateOrLoopbackIp("::ffff:93.184.216.34")).toBe(false);
+    expect(isPrivateOrLoopbackIp("::ffff:5db8:d822")).toBe(false);
   });
 
   it("rejects localhost and hosts resolving to private IPs", async () => {
@@ -56,6 +67,23 @@ describe("fetch-og script utilities", () => {
       description: "OG Description",
       siteName: "Example Site",
     });
+  });
+
+  it("keeps apostrophes inside double-quoted values and the reverse", () => {
+    const html = `
+      <meta property="og:title" content="It's here" />
+      <meta content='Say "hi"' name="description" />
+    `;
+    const meta = extractOgMetadata(html, "example.com");
+    expect(meta.title).toBe("It's here");
+    expect(meta.description).toBe('Say "hi"');
+  });
+
+  it("decodes numeric and named HTML entities exactly once", () => {
+    expect(decodeHtmlEntities("Charlene&#8217;s &#x2014; Blog")).toBe(
+      "Charlene\u2019s \u2014 Blog",
+    );
+    expect(decodeHtmlEntities("a &amp;lt; b &unknown;")).toBe("a &lt; b &unknown;");
   });
 
   it("reuses cache entries younger than 30 days", () => {

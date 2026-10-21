@@ -124,3 +124,11 @@
     animation: none;
   }
 }
+
+/* Prerendered typewriter text waits for the animation instead of flashing in full
+   first. Shown at once with reduced motion, and by a <noscript> rule in index.html. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-typewriter-pending] {
+    visibility: hidden;
+  }
+}

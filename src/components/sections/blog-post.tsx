@@ -16,7 +16,8 @@ export function BlogPostSection({ slug }: { slug: string }) {
 
   return (
     <SectionShell comment={t(site.ui.sections.blog.comment)}>
-      <article className="flex flex-col gap-8">
+      {/* A post shown in the fallback language keeps its own `lang` for screen readers and fonts. */}
+      <article lang={post.lang === lang ? undefined : post.lang} className="flex flex-col gap-8">
         <header className="flex flex-col gap-4 border-b border-rule pb-6">
           <Link
             to="/$lang/blog/"

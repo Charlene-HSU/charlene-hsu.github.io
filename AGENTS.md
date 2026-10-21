@@ -112,7 +112,7 @@ The site is a set of static pages, not one long page. Each page is its own route
 ## Markdown
 
 - Render all Markdown through the shared `<Markdown>` component (`react-markdown` + `remark-gfm`). Front matter is parsed with `front-matter`.
-- Supported: GFM (tables, task lists, strikethrough), links, images, headings with anchors, code blocks, and a standalone URL on its own line, which becomes a link card (implemented by overriding the `p` component).
+- Supported: GFM (tables, task lists, strikethrough), links, images, headings with anchors, code blocks, and a standalone URL on its own line, which becomes a link card (implemented by overriding the `p` component). Links: `http(s)://` and `mailto:` open in a new tab, `#anchor` stays on the page, a site path such as `/en/blog/hello-world/` goes to that page (the deploy base path is added automatically), and anything else goes home. Heading anchor ids are set by a small local rehype step in `markdown.tsx` (not a package); repeated headings get `-2`, `-3`, ….
 - **Raw HTML is not supported.** Never enable `rehype-raw` or `dangerouslySetInnerHTML` for content.
 - External links get `target="_blank"` and `rel="noopener noreferrer"` plus an external-link icon. Internal links use `<Link>`.
 - Relative images resolve against `src/assets/` (project covers, `blog/<slug>/`) and use the `?responsive` pipeline.
@@ -152,8 +152,8 @@ The blog has two kinds of page: the list (`/$lang/blog/`) and one page per post 
 - Embed kinds:
   - `card`: link card. YAML fields win; missing title or description come from the link-preview cache.
   - `youtube`: `youtube-nocookie.com` iframe loaded only after the visitor clicks a thumbnail.
-  - `iframe`: supported by the code but **disabled**: `embedAllowlist` in `site.yaml` is empty. Add a domain only when the owner approves it, and keep the CSP `frame-src` in sync. Iframes use `sandbox`, `loading="lazy"` and `referrerpolicy`.
-  - `ratio` is an enum (`video`, `wide`, `square`) mapped to existing tokens. If an embed cannot load, fall back to a link card.
+  - `iframe`: supported by the code but **disabled**: `embedAllowlist` in `site.yaml` is empty. Add a domain only when the owner approves it, and keep the CSP `frame-src` in sync (the content tests check both `https://<domain>` and `https://*.<domain>`). Iframes use `sandbox`, `loading="lazy"` and `referrerpolicy`.
+  - `ratio` is an enum (`video`, `wide`, `square`) mapped to existing tokens. A YouTube URL without a valid video id, or an `iframe` URL outside `embedAllowlist`, renders as a link card. Browsers do not report cross-origin iframe load failures, so there is no runtime fallback.
 - `scripts/fetch-og.mjs` runs before `pnpm build` and fetches Open Graph data (title, description, site name) for `card` embeds, project `links`, and standalone URLs in Markdown. Rules:
   - Cache in `src/content/.generated/og.json`, keyed by normalized URL with a fetch time. Reuse entries younger than 30 days.
   - A failed fetch never fails the build: fall back to the cache, then to the domain name.
@@ -320,7 +320,7 @@ GitHub Pages has no single-page-app fallback and no custom response headers or r
 - `scripts/prerender.mjs` renders `/`, `/en/` and `/zh-TW/` from the real React routes into static HTML. Pages must contain their headings, copy and links before JavaScript runs. Blog posts are part of the home page and are rendered with it. Keep rendering code free of browser-only calls outside effects, and use a fixed timezone (`Asia/Taipei`) for any time-dependent output so the HTML matches the client.
 - The `/` language redirect happens in the browser. The prerendered `/` shell carries the fallback links described under [Internationalization](#internationalization).
 - Set the router's trailing-slash behavior to match the Pages output (`/en/`) so canonical URLs match real URLs; check the TanStack Router docs for the option.
-- The build writes `404.html` (a copy of `index.html`); GitHub Pages serves it from the site root.
+- The build writes `404.html`, a bilingual not-found page; GitHub Pages serves it from the site root for any unknown path. Its root carries `data-hydrate="false"`, so `main.tsx` renders it fresh for the requested URL instead of hydrating HTML rendered for another path.
 - The Content Security Policy is a `<meta http-equiv="Content-Security-Policy">` tag. `frame-src` allows only `https://www.youtube-nocookie.com`. Meta CSP does not support every directive (for example `frame-ancestors`).
 - `scripts/build-sitemap.mjs` generates `sitemap.xml` from the public page list and production canonicals; do not maintain a separate XML file in `public/`.
 

@@ -56,7 +56,6 @@ export type EmbedProps = WithClassName<{
 export function Embed({ embed, className }: EmbedProps) {
   const { t, tf } = useI18n();
   const [youtubeLoaded, setYoutubeLoaded] = useState(false);
-  const [iframeFailed, setIframeFailed] = useState(false);
 
   const resolvedTitle = embed.title ? t(embed.title) : undefined;
   const resolvedDescription = embed.description ? t(embed.description) : undefined;
@@ -133,7 +132,9 @@ export function Embed({ embed, className }: EmbedProps) {
     );
   }
 
-  if (!isDomainAllowed(embed.url, site.embedAllowlist) || iframeFailed) {
+  // Browsers do not report cross-origin iframe failures, so only the allowlist decides.
+  // Every allowlisted domain must also be in the `frame-src` CSP in index.html (checked by tests).
+  if (!isDomainAllowed(embed.url, site.embedAllowlist)) {
     return (
       <LinkCard
         url={embed.url}
@@ -158,7 +159,6 @@ export function Embed({ embed, className }: EmbedProps) {
         loading="lazy"
         referrerPolicy="no-referrer"
         sandbox="allow-scripts allow-same-origin"
-        onError={() => setIframeFailed(true)}
         className="size-full border-0"
       />
     </div>

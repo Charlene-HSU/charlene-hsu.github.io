@@ -12,9 +12,9 @@ export function ContactSection() {
 
   const handleCopyEmail = async () => {
     try {
-      if (typeof navigator !== "undefined" && navigator.clipboard) {
-        await navigator.clipboard.writeText(contact.email);
-      }
+      // Only confirm a copy that actually happened.
+      if (typeof navigator === "undefined" || !navigator.clipboard) return;
+      await navigator.clipboard.writeText(contact.email);
       toastManager.add({
         title: t(site.ui.toast.copiedTitle),
         description: tf(site.ui.toast.copiedDescription, { value: contact.email }),

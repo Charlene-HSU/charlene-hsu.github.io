@@ -63,7 +63,11 @@ export function parseBlogFilename(filePath: string): { slug: string; lang: Lang 
   return null;
 }
 
+let blogEntriesCache: BlogPost[] | undefined;
+
+/** Every blog file, parsed once (the files are bundled, so they never change at runtime). */
 export function getAllBlogEntries(): BlogPost[] {
+  if (blogEntriesCache) return blogEntriesCache;
   const entries: BlogPost[] = [];
   for (const [filePath, raw] of Object.entries(blogModules)) {
     const meta = parseBlogFilename(filePath);
@@ -81,12 +85,17 @@ export function getAllBlogEntries(): BlogPost[] {
       body: parsed.body.trim(),
     });
   }
+  blogEntriesCache = entries;
   return entries;
 }
 
 type BlogVariants = Partial<Record<Lang, BlogPost>>;
 
+const groupedCache = new Map<boolean, Map<string, BlogVariants>>();
+
 function groupBlogEntries(includeDrafts: boolean): Map<string, BlogVariants> {
+  const cached = groupedCache.get(includeDrafts);
+  if (cached) return cached;
   const bySlug = new Map<string, BlogVariants>();
   for (const entry of getAllBlogEntries()) {
     if (!includeDrafts && entry.draft) continue;
@@ -94,6 +103,7 @@ function groupBlogEntries(includeDrafts: boolean): Map<string, BlogVariants> {
     existing[entry.lang] = entry;
     bySlug.set(entry.slug, existing);
   }
+  groupedCache.set(includeDrafts, bySlug);
   return bySlug;
 }
 

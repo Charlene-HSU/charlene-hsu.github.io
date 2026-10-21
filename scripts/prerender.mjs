@@ -74,11 +74,11 @@ function languageRedirectScript(cleanBase) {
   return `<script>(function(){try{var s=localStorage.getItem("site_lang");var l=(s==="en"||s==="zh-TW")?s:null;if(!l){var nav=navigator.languages||[navigator.language||"en"];for(var i=0;i<nav.length;i++){var t=String(nav[i]).toLowerCase();if(t.indexOf("zh")===0){l="zh-TW";break;}if(t.indexOf("en")===0){l="en";break;}}}l=l||"en";var b=${JSON.stringify(cleanBase)};location.replace(b+"/"+l+"/"+location.search+location.hash);}catch(e){}})();</script>`;
 }
 
-function fillTemplate(templateHtml, { lang, title, headTags, appHtml }) {
+function fillTemplate(templateHtml, { lang, title, headTags, appHtml, rootAttrs = "" }) {
   return templateHtml
     .replace(/<html lang="[^"]*"/, `<html lang="${lang}"`)
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(title)}</title>\n    ${headTags}`)
-    .replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`);
+    .replace('<div id="root"></div>', `<div id="root"${rootAttrs}>${appHtml}</div>`);
 }
 
 function writePage(urlPath, html) {
@@ -140,6 +140,8 @@ async function runPrerender() {
   }
 
   // 404.html: bilingual not-found page, served by GitHub Pages for unknown paths.
+  // Its HTML was rendered for NOT_FOUND_RENDER_PATH, not the URL the visitor asked for,
+  // so `data-hydrate="false"` tells main.tsx to render it fresh instead of hydrating.
   {
     const title = info.notFoundTitle;
     const headTags = buildHeadTags({
@@ -154,7 +156,13 @@ async function runPrerender() {
     const appHtml = await renderRoute(NOT_FOUND_RENDER_PATH, basePath);
     fs.writeFileSync(
       path.join(DIST_DIR, "404.html"),
-      fillTemplate(templateHtml, { lang: "en", title, headTags, appHtml }),
+      fillTemplate(templateHtml, {
+        lang: "en",
+        title,
+        headTags,
+        appHtml,
+        rootAttrs: ' data-hydrate="false"',
+      }),
       "utf-8",
     );
   }
