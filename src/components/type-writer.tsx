@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useHydrated } from "@/lib/use-hydrated";
 import { cn, type WithClassName } from "@/lib/utils";
 
@@ -11,7 +11,9 @@ export function TypeWriter({ text, speedMs = 32, className }: TypeWriterProps) {
   const [displayed, setDisplayed] = useState(text);
   const hydrated = useHydrated();
 
-  useEffect(() => {
+  // A layout effect clears the text before the browser paints, so a client-side visit
+  // or a language switch never shows the full new text for a frame first.
+  useLayoutEffect(() => {
     if (typeof window === "undefined") {
       return;
     }

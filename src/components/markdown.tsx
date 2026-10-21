@@ -9,29 +9,44 @@ import { getMarkdownAsset } from "@/lib/content";
 import { useI18n, type Lang } from "@/lib/i18n";
 import { cn, type WithClassName } from "@/lib/utils";
 
-function textOf(children: ReactNode): string {
-  return Children.toArray(children)
-    .map((child) => {
-      if (typeof child === "string" || typeof child === "number") return String(child);
-      if (isValidElement<{ children?: ReactNode }>(child)) return textOf(child.props.children);
-      return "";
-    })
-    .join("");
+/** The parts of a hast (HTML syntax tree) node that heading ids need. */
+interface HastNode {
+  type: string;
+  tagName?: string;
+  value?: string;
+  properties?: Record<string, unknown>;
+  children?: HastNode[];
 }
 
-function slugifyHeading(children: ReactNode): string {
-  const raw = textOf(children).trim().toLowerCase();
+function hastText(node: HastNode): string {
+  if (node.type === "text") return node.value ?? "";
+  return (node.children ?? []).map(hastText).join("");
+}
+
+function slugifyHeading(text: string): string {
+  const raw = text.trim().toLowerCase();
   return raw.replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "section";
 }
 
-/** Returns a heading-id generator that adds `-2`, `-3`, … to repeated slugs. */
-function createHeadingIds(): (children: ReactNode) => string {
-  const seen = new Map<string, number>();
-  return (children) => {
-    const base = slugifyHeading(children);
-    const count = (seen.get(base) ?? 0) + 1;
-    seen.set(base, count);
-    return count === 1 ? base : `${base}-${count}`;
+/**
+ * Rehype plugin: gives h1–h3 an id from their text (including code and link text),
+ * adding `-2`, `-3`, … to repeats. It runs once per parse, so the ids stay the same
+ * however often React renders the headings.
+ */
+function rehypeHeadingIds() {
+  return (tree: HastNode) => {
+    const seen = new Map<string, number>();
+    const visit = (node: HastNode) => {
+      if (node.type === "element" && /^h[1-3]$/.test(node.tagName ?? "")) {
+        const base = slugifyHeading(hastText(node));
+        const count = (seen.get(base) ?? 0) + 1;
+        seen.set(base, count);
+        node.properties = { ...node.properties, id: count === 1 ? base : `${base}-${count}` };
+        return;
+      }
+      node.children?.forEach(visit);
+    };
+    visit(tree);
   };
 }
 
@@ -158,29 +173,19 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
     );
   }
 
-  const headingId = createHeadingIds();
   const components: Components = {
-    h1: ({ children }) => (
-      <h2
-        id={headingId(children)}
-        className="pt-4 font-mono text-h1 font-bold text-foreground first:pt-0"
-      >
+    h1: ({ id, children }) => (
+      <h2 id={id} className="pt-4 font-mono text-h1 font-bold text-foreground first:pt-0">
         {children}
       </h2>
     ),
-    h2: ({ children }) => (
-      <h3
-        id={headingId(children)}
-        className="pt-3 font-mono text-h2 font-bold text-foreground first:pt-0"
-      >
+    h2: ({ id, children }) => (
+      <h3 id={id} className="pt-3 font-mono text-h2 font-bold text-foreground first:pt-0">
         {children}
       </h3>
     ),
-    h3: ({ children }) => (
-      <h4
-        id={headingId(children)}
-        className="pt-2 font-mono text-lead font-bold text-foreground first:pt-0"
-      >
+    h3: ({ id, children }) => (
+      <h4 id={id} className="pt-2 font-mono text-lead font-bold text-foreground first:pt-0">
         {children}
       </h4>
     ),
@@ -265,7 +270,11 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
 
   return (
     <div className={cn("flex flex-col gap-4", className)}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeHeadingIds]}
+        components={components}
+      >
         {content}
       </ReactMarkdown>
     </div>
