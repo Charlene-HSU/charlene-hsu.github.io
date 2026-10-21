@@ -1,0 +1,44 @@
+groups:
+  - name:
+      en: Languages
+      zh-TW: 程式語言
+    items:
+      - TypeScript
+      - JavaScript
+      - Python
+      - Go
+  - name:
+      en: Frontend
+      zh-TW: 前端開發
+    items:
+      - React
+      - Tailwind CSS
+      - Vite
+      - TanStack Router
+      - Base UI
+  - name:
+      en: Backend
+      zh-TW: 後端與架構
+    items:
+      - Node.js
+      - PostgreSQL
+      - REST API
+      - GraphQL
+  - name:
+      en: Tools
+      zh-TW: 開發工具
+    items:
+      - Git
+      - Docker
+      - Linux
+      - pnpm
+      - GitHub Actions
+marquee:
+  - TypeScript
+  - React
+  - Vite
+  - Tailwind CSS
+  - TanStack Router
+  - Base UI
+  - pnpm
+  - Linux

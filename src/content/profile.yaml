@@ -1,0 +1,32 @@
+# TODO: Replace placeholder profile details with your own information
+name: Your Name
+title:
+  en: Software Engineer
+  zh-TW: 軟體工程師
+location:
+  en: Taipei, Taiwan
+  zh-TW: 台灣・台北
+timezone: Asia/Taipei
+tagline:
+  en: Building reliable things for the web.
+  zh-TW: 打造可靠的網路產品。
+status:
+  state: open
+  text:
+    en: Open to work
+    zh-TW: 開放工作機會
+stats:
+  - value: 6
+    label:
+      en: Years
+      zh-TW: 年資
+  - value: 20
+    label:
+      en: Projects
+      zh-TW: 專案
+  - value: 300
+    label:
+      en: Commits / yr
+      zh-TW: 年度 Commits
+primaryCta: projects
+about: about

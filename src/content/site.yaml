@@ -1,0 +1,300 @@
+# TODO: Update meta.url, meta.repoUrl, and meta.siteName with your production domain and identity
+meta:
+  siteName:
+    en: Your Name
+    zh-TW: Your Name
+  title:
+    en: Your Name — Software Engineer
+    zh-TW: Your Name — 軟體工程師
+  description:
+    en: Software engineer building reliable things for the web.
+    zh-TW: 軟體工程師，打造可靠的網路產品。
+  url: https://charlene-hsu.github.io
+  repoUrl: https://github.com/Charlene-HSU/Charlene-HSU.github.io
+
+nav:
+  - id: about
+    type: hash
+    icon: User
+    label:
+      en: About
+      zh-TW: 關於我
+  - id: skills
+    type: hash
+    icon: Braces
+    label:
+      en: Skills
+      zh-TW: 技能
+  - id: experience
+    type: hash
+    icon: Briefcase
+    label:
+      en: Experience
+      zh-TW: 經歷
+  - id: projects
+    type: hash
+    icon: FolderGit2
+    label:
+      en: Projects
+      zh-TW: 專案
+  - id: blog
+    type: hash
+    icon: PenLine
+    label:
+      en: Blog
+      zh-TW: 部落格
+  - id: friends
+    type: hash
+    icon: Users
+    label:
+      en: Friends
+      zh-TW: 友站
+  - id: contact
+    type: hash
+    icon: Mail
+    label:
+      en: Contact
+      zh-TW: 聯絡
+
+embedAllowlist: []
+
+ui:
+  brand: "~/"
+  brandAriaLabel:
+    en: Back to top
+    zh-TW: 回到頂部
+  mainNavAriaLabel:
+    en: Main navigation
+    zh-TW: 主要導覽
+  mobileMenuAriaLabel:
+    en: Open navigation menu
+    zh-TW: 開啟導覽選單
+  langSwitchAriaLabel:
+    en: Switch language
+    zh-TW: 切換語言
+  githubAriaLabel:
+    en: View GitHub profile
+    zh-TW: 前往 GitHub 個人頁
+  languages:
+    en: English
+    zh-TW: 繁體中文
+  redirect:
+    message:
+      en: Redirecting to your preferred language...
+      zh-TW: 正在導向您偏好的語言版本…
+    chooseLanguage:
+      en: Select a language
+      zh-TW: 請選擇語言
+  hero:
+    prompt: "$ whoami"
+    metaTemplate:
+      en: "{title} · {location}"
+      zh-TW: "{title} · {location}"
+  status:
+    statusEyebrow:
+      en: "// current_status"
+      zh-TW: "// 目前狀態"
+    clockEyebrow:
+      en: "// local_time"
+      zh-TW: "// 當地時間"
+    timezoneTemplate:
+      en: "Timezone: {tz}"
+      zh-TW: "時區：{tz}"
+    marqueeAriaLabel:
+      en: Tech stack highlights
+      zh-TW: 技術棧重點
+    states:
+      open:
+        en: Available
+        zh-TW: 開放機會
+      busy:
+        en: Focused
+        zh-TW: 專注開發中
+      away:
+        en: Away
+        zh-TW: 暫時離開
+  sections:
+    about:
+      comment:
+        en: "// about"
+        zh-TW: "// 關於我"
+      title:
+        en: About
+        zh-TW: 關於我
+      terminalTitle: "~/about.md"
+    skills:
+      comment:
+        en: "// skills"
+        zh-TW: "// 技能"
+      title:
+        en: Skills
+        zh-TW: 技能
+      tabsAriaLabel:
+        en: Skill categories
+        zh-TW: 技能分類
+    experience:
+      comment:
+        en: "// experience"
+        zh-TW: "// 經歷"
+      title:
+        en: Experience
+        zh-TW: 經歷
+      present:
+        en: Present
+        zh-TW: 至今
+      ended:
+        en: Ended
+        zh-TW: 已結束
+      periodTemplate:
+        en: "{start} — {end}"
+        zh-TW: "{start} — {end}"
+      highlightsToggle:
+        en: "Highlights ({count})"
+        zh-TW: "重點紀錄 ({count})"
+    projects:
+      comment:
+        en: "// projects"
+        zh-TW: "// 專案"
+      title:
+        en: Projects
+        zh-TW: 專案
+      prompt: "> ls projects"
+      listAriaLabel:
+        en: Project list
+        zh-TW: 專案列表
+      terminalTitleTemplate: "~/projects/{id}"
+      coverAltTemplate:
+        en: "Cover image for {name}"
+        zh-TW: "{name} 專案封面圖"
+      statuses:
+        active:
+          en: Active
+          zh-TW: 維護中
+        wip:
+          en: WIP
+          zh-TW: 開發中
+        archived:
+          en: Archived
+          zh-TW: 已封存
+      linkTypes:
+        github:
+          en: Source Code
+          zh-TW: 原始碼
+        demo:
+          en: Live Demo
+          zh-TW: 線上預覽
+        docs:
+          en: Documentation
+          zh-TW: 說明文件
+    blog:
+      comment:
+        en: "// blog"
+        zh-TW: "// 部落格"
+      title:
+        en: Blog
+        zh-TW: 部落格
+      empty:
+        en: No posts published yet.
+        zh-TW: 目前尚無文章。
+    friends:
+      comment:
+        en: "// friends"
+        zh-TW: "// 友站"
+      title:
+        en: Friends
+        zh-TW: 友站
+      avatarAltTemplate:
+        en: "{name} avatar"
+        zh-TW: "{name} 頭像"
+      badgeAltTemplate:
+        en: "{name} 88x31 badge"
+        zh-TW: "{name} 88x31 小圖章"
+      exchangeTitle:
+        en: Link Exchange
+        zh-TW: 友站申請資訊
+      exchangeSubtitle:
+        en: Copy my site details below to add a link.
+        zh-TW: 歡迎交換友站連結，可一鍵複製以下本站資訊。
+      fields:
+        name:
+          en: Name
+          zh-TW: 名稱
+        url:
+          en: URL
+          zh-TW: 網址
+        description:
+          en: Description
+          zh-TW: 簡介
+        avatar:
+          en: Avatar
+          zh-TW: 頭像
+        badge:
+          en: 88×31 Badge
+          zh-TW: 88×31 小圖章
+      copyFieldAriaLabel:
+        en: "Copy {field}"
+        zh-TW: "複製{field}"
+      copyBadgeHtml:
+        en: Copy 88×31 HTML
+        zh-TW: 複製 88×31 HTML
+      rulesTitle:
+        en: Exchange Rules
+        zh-TW: 申請須知
+      applyCta:
+        en: Apply for Link Exchange
+        zh-TW: 申請交換連結
+    contact:
+      comment:
+        en: "// contact"
+        zh-TW: "// 聯絡"
+      title:
+        en: Get in Touch
+        zh-TW: 與我聯絡
+      lead:
+        en: Have a question, project idea, or just want to say hi? Drop me an email.
+        zh-TW: 有任何問題、合作想法或想打聲招呼？歡迎寫信給我。
+      copyEmail:
+        en: "Copy Email ({email})"
+        zh-TW: "複製信箱 ({email})"
+      sendEmail:
+        en: Send Email
+        zh-TW: 寄送郵件
+  embed:
+    playYoutubeAriaLabel:
+      en: "Play YouTube video: {title}"
+      zh-TW: "播放 YouTube 影片：{title}"
+    youtubeThumbnailAlt:
+      en: YouTube video thumbnail
+      zh-TW: YouTube 影片縮圖
+    youtubeDefaultTitle:
+      en: YouTube video player
+      zh-TW: YouTube 影片播放器
+    externalLinkAriaLabel:
+      en: Opens in a new tab
+      zh-TW: 於新分頁開啟
+  toast:
+    copiedTitle:
+      en: Copied to clipboard
+      zh-TW: 已複製到剪貼簿
+    copiedDescription:
+      en: "{value}"
+      zh-TW: "{value}"
+    closeAriaLabel:
+      en: Dismiss notification
+      zh-TW: 關閉通知
+  footer:
+    navHeading:
+      en: Navigation
+      zh-TW: 導覽
+    friendsHeading:
+      en: Friends
+      zh-TW: 友站
+    socialHeading:
+      en: Social
+      zh-TW: 社群
+    license:
+      en: Code licensed under MIT.
+      zh-TW: 程式碼以 MIT 授權釋出。
+    sourceLink:
+      en: Source Code
+      zh-TW: 原始碼

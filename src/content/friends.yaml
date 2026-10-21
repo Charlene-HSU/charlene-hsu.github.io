@@ -1,0 +1,31 @@
+# TODO: Update friend links and your own site exchange details
+intro:
+  en: Sites by people I like reading.
+  zh-TW: 一些我喜歡閱讀的朋友的網站。
+items:
+  - name: "Alice's Blog"
+    url: https://alice.example.com
+    description:
+      en: Notes on frontend and design.
+      zh-TW: 前端與設計筆記。
+    avatar: alice.webp
+    badge: alice-88x31.gif
+    tags:
+      - blog
+      - frontend
+exchange:
+  name: Your Name
+  url: https://charlene-hsu.github.io
+  description:
+    en: Software engineer. Building reliable things for the web.
+    zh-TW: 軟體工程師，打造可靠的網路產品。
+  avatar: https://charlene-hsu.github.io/avatar.png
+  badge: https://charlene-hsu.github.io/badge-88x31.png
+  apply: mailto:you@example.com
+  rules:
+    en: |
+      - Original content with regular updates
+      - Please add a link to this site before applying
+    zh-TW: |
+      - 內容原創、持續更新
+      - 請先放上本站連結再來申請
