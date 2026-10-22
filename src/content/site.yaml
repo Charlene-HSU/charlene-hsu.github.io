@@ -144,7 +144,7 @@ ui:
     zh-TW: 切換語言
   githubAriaLabel:
     en: View GitHub profile
-    zh-TW: 前往 GitHub 個人頁
+    zh-TW: 前往 GitHub 
   languages:
     en: English
     zh-TW: 繁體中文
@@ -180,7 +180,7 @@ ui:
       zh-TW: "目前狀態"
     clockEyebrow:
       en: "local_time"
-      zh-TW: "當地時間"
+      zh-TW: "時間"
     timezoneTemplate:
       en: "Timezone: {tz}"
       zh-TW: "時區：{tz}"
@@ -200,6 +200,9 @@ ui:
       away:
         en: Away
         zh-TW: 快爆掉了:((
+      sleep:
+        en: I Need Sleep!!!!
+        zh-TW: 睡死了
   sections:
     about:
       comment:

@@ -11,10 +11,12 @@ tagline:
   en: I want to learn all the cool things
   zh-TW: 什麼酷東西我也想學
 status:
-  state: open
+  state: sleep
   text:
-    en: Trying hard to become a person who are good at programming
-    zh-TW: 努力變強
+    # en: Trying hard to become a person who are good at programming
+    # zh-TW: 努力變強
+    en: I Need Sleep!!!
+    zh-TW: 小祥說熬夜對身體不好
 stats:
   #  - value: 6
   #    label:
