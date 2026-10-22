@@ -11,6 +11,15 @@ items:
     avatar: 87399369.png
     tags:
       - 特選電神
+  - name: "baihu"
+    url: https://baihu-tw.com/
+    description:
+      en: 鹹魚翻身了還是鹹魚
+      zh-TW: 鹹魚翻身了還是鹹魚
+    avatar: baihu.png
+    tags:
+      - 特選電神
+  
 exchange:
   name: wow肯德基爺爺欸
   url: https://charlene-hsu.github.io
