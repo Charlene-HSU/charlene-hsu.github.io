@@ -125,11 +125,16 @@ describe("Content schemas and references", () => {
     for (const friend of friends.items) {
       if (friend.avatar) {
         const avatarPath = path.join(ASSETS_DIR, "friends", friend.avatar);
-        expect(fs.existsSync(avatarPath)).toBe(true);
+        expect(fs.existsSync(avatarPath), `avatar "${friend.avatar}" in src/assets/friends/`).toBe(
+          true,
+        );
       }
       if (friend.badge) {
         const badgePath = path.join(ASSETS_DIR, "friends/badges", friend.badge);
-        expect(fs.existsSync(badgePath)).toBe(true);
+        expect(
+          fs.existsSync(badgePath),
+          `badge "${friend.badge}" in src/assets/friends/badges/ (an 88×31 image, not the avatar)`,
+        ).toBe(true);
       }
     }
   });
