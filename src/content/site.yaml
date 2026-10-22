@@ -194,15 +194,15 @@ ui:
       busy:
         en: Focused
         zh-TW: 專注開發中
-      distribute:
-        en: not available to distribute.
-        zh-Tw: 別吵我
+#      distribute:
+#        en: not available to distribute.
+#        zh-Tw: 別吵我
       away:
         en: Away
         zh-TW: 快爆掉了:((
-      sleep:
-        en: I Need Sleep!!!!
-        zh-TW: 睡死了
+#      sleep:
+#        en: I Need Sleep!!!!
+#        zh-TW: 睡死了
   sections:
     about:
       comment:
