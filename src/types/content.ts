@@ -288,6 +288,11 @@ export const SiteContentSchema = z.object({
     footer: z.object({
       navHeading: BilingualObjectSchema,
       license: BilingualObjectSchema,
+      licenseTooltip: BilingualObjectSchema,
+      licenseUrl: HttpsUrlSchema,
+      wordCount: BilingualObjectSchema,
+      pageViews: BilingualObjectSchema,
+      pageViewsPending: BilingualObjectSchema,
     }),
   }),
 });

@@ -403,6 +403,21 @@ ui:
     navHeading:
       en: Navigation
       zh-TW: 導覽
+    # Bottom-left notice; hovering or focusing it shows `licenseTooltip`, and it links to `licenseUrl`.
     license:
-      en: Code licensed under MIT.
-      zh-TW: 程式碼以 MIT 授權釋出。
+      en: wow肯德基爺爺 — some rights reserved.
+      zh-TW: wow肯德基爺爺保留部分權利。
+    licenseTooltip:
+      en: "Content is licensed under CC BY 4.0: you may share and adapt it, even commercially, as long as you credit the author. Code is MIT."
+      zh-TW: 本站內容採用 CC BY 4.0 授權：只要標示作者，即可自由分享、改作，包括商業用途。程式碼以 MIT 授權。
+    licenseUrl: https://creativecommons.org/licenses/by/4.0/
+    wordCount:
+      en: "{count} words on this site"
+      zh-TW: 全站總字數 {count} 字
+    pageViews:
+      en: "{count} page views"
+      zh-TW: 總瀏覽量 {count} 次
+    # Shown in place of the page-view number while it loads or if the counter is unreachable.
+    pageViewsPending:
+      en: "—"
+      zh-TW: "—"

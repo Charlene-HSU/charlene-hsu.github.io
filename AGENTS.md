@@ -106,7 +106,7 @@ The site is a set of static pages, not one long page. Each page is its own route
 ## Navigation and icons
 
 - `site.yaml` `nav` is the single source for the pages and the navbar; the footer picks from it. Every page except Home has one entry: `id` (also the route segment, so `projects` → `/$lang/projects/`), `icon`, localized `label` and localized `description`. Adding a page means adding one entry, one route file and one section component.
-- The footer is configured in `site.yaml` `footer`: `links` (nav ids, in order), `columns` (1–4; phones show at most two) and `bottomLink` (`page`, a nav id, or `url`, `https://` or `mailto:`, plus a localized `label`). Its bottom-left text is `ui.footer.license`. It has no friends or social columns.
+- The footer is configured in `site.yaml` `footer`: `links` (nav ids, in order), `columns` (1–4; phones show at most two) and `bottomLink` (`page`, a nav id, or `url`, `https://` or `mailto:`, plus a localized `label`). Its bottom-left row is `ui.footer.license` (a link to `licenseUrl` with `licenseTooltip` on hover or focus), the site word count (`ui.footer.wordCount`, all Markdown in the current language, from `src/lib/word-count.ts`) and the page views (`ui.footer.pageViews`). It has no friends or social columns.
 - The navbar brand shows `ui.brand` followed by `ui.brandHome` (for example `~/HOME`) and links to Home; it is highlighted on Home only.
 - Navbar links use `<Link>` and mark the current page with `aria-current="page"` and an active style (TanStack Router's `activeProps`, or `data-status="active"`). Blog post pages count as the Blog page. The brand link goes Home.
 - The hero has no page buttons; the navbar is the way to the other pages.
@@ -313,7 +313,7 @@ Fonts are self-hosted (OFL). Never load fonts from a CDN. Noto Sans TC is large,
 ## Security and privacy
 
 - Markdown never renders raw HTML. Iframes are sandboxed and limited to `embedAllowlist`.
-- No runtime requests to third-party origins except an iframe the visitor chose to load (YouTube after a click). Fonts, avatars, badges and link previews are all local or fetched at build time.
+- No runtime requests to third-party origins except an iframe the visitor chose to load (YouTube after a click) and the owner-approved 不蒜子 (busuanzi) page-view counter: `src/lib/page-views.ts` loads one JSONP script from `https://busuanzi.ibruce.info` per page visited, and CSP `script-src` allows only that origin. The footer shows `ui.footer.pageViewsPending` until it answers. Fonts, avatars, badges and link previews are all local or fetched at build time.
 - Do not add analytics, trackers or third-party scripts without the owner's approval.
 - Do not commit secrets. The site needs none.
 

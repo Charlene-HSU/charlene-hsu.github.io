@@ -1,10 +1,19 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
+import {
+  TooltipPopup,
+  TooltipPortal,
+  TooltipPositioner,
+  TooltipRoot,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { profile, site } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { NavIcon } from "@/lib/icons";
 import { pageRoutes } from "@/lib/pages";
+import { useSitePageViews } from "@/lib/page-views";
 import { cn } from "@/lib/utils";
+import { getSiteWordCount } from "@/lib/word-count";
 import type { FooterContent } from "@/types/content";
 
 // Static class names so Tailwind generates them; phones show at most two columns.
@@ -43,6 +52,49 @@ function FooterBottomLink() {
       <span>{text}</span>
       {isExternal ? <ExternalLink className="size-3 shrink-0" aria-hidden="true" /> : null}
     </a>
+  );
+}
+
+function FooterLicense() {
+  const { t } = useI18n();
+  const { license, licenseTooltip, licenseUrl } = site.ui.footer;
+
+  return (
+    <TooltipRoot>
+      <TooltipTrigger
+        render={
+          <a
+            href={licenseUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(linkClassName, "text-caption")}
+          />
+        }
+      >
+        {t(license)}
+      </TooltipTrigger>
+      <TooltipPortal>
+        <TooltipPositioner side="top">
+          <TooltipPopup className="max-w-80 font-sans">{t(licenseTooltip)}</TooltipPopup>
+        </TooltipPositioner>
+      </TooltipPortal>
+    </TooltipRoot>
+  );
+}
+
+function FooterStats() {
+  const { lang, t, tf, formatNumber } = useI18n();
+  const { pathname } = useLocation();
+  const views = useSitePageViews(pathname);
+  const { wordCount, pageViews, pageViewsPending } = site.ui.footer;
+
+  return (
+    <>
+      <span>{tf(wordCount, { count: formatNumber(getSiteWordCount(lang)) })}</span>
+      <span>
+        {tf(pageViews, { count: views === null ? t(pageViewsPending) : formatNumber(views) })}
+      </span>
+    </>
   );
 }
 
@@ -88,7 +140,10 @@ export function Footer() {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-rule pt-6 font-mono text-caption text-gray">
-          <span>{t(site.ui.footer.license)}</span>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <FooterLicense />
+            <FooterStats />
+          </div>
           <FooterBottomLink />
         </div>
       </div>

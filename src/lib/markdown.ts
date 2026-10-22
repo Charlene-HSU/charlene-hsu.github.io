@@ -46,6 +46,15 @@ export function getMarkdownContent(key: string, lang: Lang): string {
   return parseMarkdownRaw(raw).body;
 }
 
+/** Bodies of every Markdown page in one language: About, projects and published blog posts. */
+export function getMarkdownBodies(lang: Lang): string[] {
+  const pages = Object.entries(mdModules)
+    .filter(([filePath]) => filePath.endsWith(`.${lang}.md`))
+    .map(([, raw]) => parseMarkdownRaw(raw).body);
+  const posts = getBlogPosts(lang, false).map((post) => post.body);
+  return [...pages, ...posts];
+}
+
 export function parseBlogFilename(filePath: string): { slug: string; lang: Lang } | null {
   const filename = filePath.split("/").pop();
   if (!filename || !filename.endsWith(".md")) {
