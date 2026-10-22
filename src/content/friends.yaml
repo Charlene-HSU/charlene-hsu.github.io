@@ -3,17 +3,14 @@ intro:
   en: Sites by people I like reading.
   zh-TW: 一些我覺得很電的網站。
 items:
-#
-#  - name: "Alice's Blog"
-#    url: https://alice.example.com
-#    description:
-#      en: Notes on frontend and design.
-#      zh-TW: 前端與設計筆記。
-#    avatar: alice.webp
-#    badge: alice-88x31.gif
-#    tags:
-#      - blog
-#      - frontend
+
+  - name: "Raymond Weng"
+    url: https://raymondweng.dev/
+    description:
+      en: Notes on frontend and design.
+      zh-TW: 什麼都沾一點的怪人
+    avatar: 87399369.png
+    badge: 87399369.png
 exchange:
   name: wow肯德基爺爺欸
   url: https://charlene-hsu.github.io
