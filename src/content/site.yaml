@@ -144,7 +144,7 @@ ui:
     zh-TW: 切換語言
   githubAriaLabel:
     en: View GitHub profile
-    zh-TW: 前往 GitHub 
+    zh-TW: 前往 GitHub
   languages:
     en: English
     zh-TW: 繁體中文
@@ -194,15 +194,15 @@ ui:
       busy:
         en: Focused
         zh-TW: 專注開發中
-      distribute:
-        en: not available to distribute.
-        zh-Tw: 別吵我
+      #      distribute:
+      #        en: not available to distribute.
+      #        zh-Tw: 別吵我
       away:
         en: Away
         zh-TW: 快爆掉了:((
-      sleep:
-        en: I Need Sleep!!!!
-        zh-TW: 睡死了
+  #      sleep:
+  #        en: I Need Sleep!!!!
+  #        zh-TW: 睡死了
   sections:
     about:
       comment:
