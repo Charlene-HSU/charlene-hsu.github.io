@@ -11,12 +11,12 @@ tagline:
   en: I want to learn all the cool things
   zh-TW: 什麼酷東西我也想學
 status:
-  state: sleep
+  state: Focused
   text:
     # en: Trying hard to become a person who are good at programming
     # zh-TW: 努力變強
-    en: I Need Sleep!!!
-    zh-TW: 小祥說熬夜對身體不好
+    en: Gameing or Studing? Nah I call this focus.
+    zh-TW: 不要管我是認真打遊戲還是讀書
 stats:
   #  - value: 6
   #    label:
