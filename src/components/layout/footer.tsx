@@ -1,4 +1,4 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 import {
   TooltipPopup,
@@ -11,7 +11,6 @@ import { profile, site } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { NavIcon } from "@/lib/icons";
 import { pageRoutes } from "@/lib/pages";
-import { useSitePageViews } from "@/lib/page-views";
 import { cn } from "@/lib/utils";
 import { getSiteWordCount } from "@/lib/word-count";
 import type { FooterContent } from "@/types/content";
@@ -83,18 +82,10 @@ function FooterLicense() {
 }
 
 function FooterStats() {
-  const { lang, t, tf, formatNumber } = useI18n();
-  const { pathname } = useLocation();
-  const views = useSitePageViews(pathname);
-  const { wordCount, pageViews, pageViewsPending } = site.ui.footer;
+  const { lang, tf, formatNumber } = useI18n();
 
   return (
-    <>
-      <span>{tf(wordCount, { count: formatNumber(getSiteWordCount(lang)) })}</span>
-      <span>
-        {tf(pageViews, { count: views === null ? t(pageViewsPending) : formatNumber(views) })}
-      </span>
-    </>
+    <span>{tf(site.ui.footer.wordCount, { count: formatNumber(getSiteWordCount(lang)) })}</span>
   );
 }
 

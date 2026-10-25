@@ -187,22 +187,6 @@ ui:
     marqueeAriaLabel:
       en: Tech stack highlights
       zh-TW: 技術棧
-    states:
-      open:
-        en: Available
-        zh-TW: 我很好
-      busy:
-        en: Focused
-        zh-TW: 專注開發中
-      #      distribute:
-      #        en: not available to distribute.
-      #        zh-Tw: 別吵我
-      away:
-        en: Away
-        zh-TW: 快爆掉了:((
-  #      sleep:
-  #        en: I Need Sleep!!!!
-  #        zh-TW: 睡死了
   sections:
     about:
       comment:
@@ -417,10 +401,3 @@ ui:
     wordCount:
       en: "{count} words on this site"
       zh-TW: 全站總字數 {count} 字
-    pageViews:
-      en: "{count} page views"
-      zh-TW: 總瀏覽量 {count} 次
-    # Shown in place of the page-view number while it loads or if the counter is unreachable.
-    pageViewsPending:
-      en: "—"
-      zh-TW: "—"

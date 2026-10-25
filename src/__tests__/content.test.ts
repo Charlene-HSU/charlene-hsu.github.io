@@ -83,9 +83,11 @@ describe("Content schemas and references", () => {
     expect(Array.isArray(skills.marquee)).toBe(true);
   });
 
-  it("validates experience.yaml and ensures unique item IDs", () => {
+  it("validates experience.yaml and ensures unique group and item IDs", () => {
     const experience = ExperienceContentSchema.parse(loadYaml("experience.yaml"));
-    const ids = experience.items.map((item) => item.id);
+    const groupIds = experience.groups.map((group) => group.id);
+    expect(new Set(groupIds).size).toBe(groupIds.length);
+    const ids = experience.groups.flatMap((group) => group.items.map((item) => item.id));
     expect(new Set(ids).size).toBe(ids.length);
   });
 

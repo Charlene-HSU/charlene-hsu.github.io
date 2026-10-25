@@ -189,11 +189,6 @@ export const SiteContentSchema = z.object({
       clockEyebrow: BilingualObjectSchema,
       timezoneTemplate: BilingualObjectSchema,
       marqueeAriaLabel: BilingualObjectSchema,
-      states: z.object({
-        open: BilingualObjectSchema,
-        busy: BilingualObjectSchema,
-        away: BilingualObjectSchema,
-      }),
     }),
     sections: z.object({
       about: z.object({
@@ -291,16 +286,32 @@ export const SiteContentSchema = z.object({
       licenseTooltip: BilingualObjectSchema,
       licenseUrl: HttpsUrlSchema,
       wordCount: BilingualObjectSchema,
-      pageViews: BilingualObjectSchema,
-      pageViewsPending: BilingualObjectSchema,
     }),
   }),
 });
 
 export type SiteContent = z.infer<typeof SiteContentSchema>;
 
-export const ProfileStateSchema = z.enum(["open", "busy", "away"]);
-export type ProfileState = z.infer<typeof ProfileStateSchema>;
+export const StatusColorSchema = z.enum(["green", "yellow", "red", "gray"]);
+export type StatusColor = z.infer<typeof StatusColorSchema>;
+
+export const StatusPresetSchema = z.object({
+  color: StatusColorSchema,
+  label: BilingualObjectSchema,
+  text: BilingualObjectSchema,
+});
+export type StatusPreset = z.infer<typeof StatusPresetSchema>;
+
+/** `presets` holds every saved status; `enable` names the one shown on the home page. */
+export const ProfileStatusSchema = z
+  .object({
+    enable: z.string().min(1),
+    presets: z.record(z.string(), StatusPresetSchema),
+  })
+  .refine((status) => status.enable in status.presets, {
+    message: "status.enable must name one of the keys under status.presets",
+    path: ["enable"],
+  });
 
 export const ProfileContentSchema = z.object({
   name: LocalizedSchema,
@@ -308,10 +319,7 @@ export const ProfileContentSchema = z.object({
   location: BilingualObjectSchema,
   timezone: z.string().min(1),
   tagline: BilingualObjectSchema,
-  status: z.object({
-    state: ProfileStateSchema,
-    text: BilingualObjectSchema,
-  }),
+  status: ProfileStatusSchema,
   stats: yamlList(
     z.object({
       value: z.number(),
@@ -345,8 +353,17 @@ export const ExperienceItemSchema = z.object({
 
 export type ExperienceItem = z.infer<typeof ExperienceItemSchema>;
 
-export const ExperienceContentSchema = z.object({
+/** One titled block on the Experience page (e.g. education, competitions, communities). */
+export const ExperienceGroupSchema = z.object({
+  id: z.string().min(1),
+  title: BilingualObjectSchema,
   items: yamlList(ExperienceItemSchema),
+});
+
+export type ExperienceGroup = z.infer<typeof ExperienceGroupSchema>;
+
+export const ExperienceContentSchema = z.object({
+  groups: yamlList(ExperienceGroupSchema),
 });
 
 export type ExperienceContent = z.infer<typeof ExperienceContentSchema>;

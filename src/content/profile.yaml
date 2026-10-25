@@ -10,13 +10,51 @@ timezone: Asia/Taipei
 tagline:
   en: I want to learn all the cool things
   zh-TW: 什麼酷東西我也想學
+# Status card on the home page. Set `enable` to the name of one preset below.
+# Add as many presets as you like. `color` is one of: green | yellow | red | gray
 status:
-  state: busy
-  text:
-    # en: Trying hard to become a person who are good at programming
-    # zh-TW: 努力變強
-    en: Gameing or Studing? Nah I call this focus.
-    zh-TW: 不要管我是認真打遊戲還是讀書
+  enable: focus
+  presets:
+    open:
+      color: green
+      label:
+        en: Available
+        zh-TW: 我很好
+      text:
+        en: Trying hard to become a person who is good at programming
+        zh-TW: 努力變強
+    focus:
+      color: yellow
+      label:
+        en: Focused
+        zh-TW: 專注開發中
+      text:
+        en: Gaming or studying? Nah, I call this focus.
+        zh-TW: 不要管我是認真打遊戲還是讀書
+    away:
+      color: gray
+      label:
+        en: Away
+        zh-TW: 快爆掉了:((
+      text:
+        en: Be right back.
+        zh-TW: 等等回來
+    sleep:
+      color: gray
+      label:
+        en: Sleeping
+        zh-TW: 睡死了
+      text:
+        en: I Need Sleep!!!
+        zh-TW: 小祥說熬夜對身體不好
+    busy:
+      color: red
+      label:
+        en: Do not disturb
+        zh-TW: 別吵我
+      text:
+        en: Not available right now.
+        zh-TW: 別吵我
 stats:
   #  - value: 6
   #    label:

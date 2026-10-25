@@ -1,33 +1,124 @@
-# TODO: Update experience items with your actual work and study history
-items:
-  - id: FJU_student
-    company:
-      en: Fu Jen Catholic University
-      zh-TW: 天主教輔仁大學
-    role:
-      en: Medical Informatics and Innovative Applications Student
-      zh-TW: 醫學資訊與創新應用學士學位學程 學生
-    period:
-      start: "2026-09"
-      end: null
-    highlights:
-      - en: nothing now
-        zh-TW: 啥都沒有
+# The Experience page shows each group below as its own block, in this order.
+# Add, rename, reorder or remove groups freely. A group with no items is hidden.
+#
+# Each item:
+#   company: where (school, event, community)
+#   role: what you did (student, award, organizer...)
+#   period: start and end (YYYY-MM or YYYY-MM-DD). `end: null` means Present.
+#           For a one-day event, set end to the same value as start; it shows one date.
+#   highlights: bullet points (optional)
+groups:
+  - id: education
+    title:
+      en: Education
+      zh-TW: 學歷
+    items:
+      - id: FJU_student
+        company:
+          en: Fu Jen Catholic University
+          zh-TW: 天主教輔仁大學
+        role:
+          en: Medical Informatics and Innovative Applications Student
+          zh-TW: 醫學資訊與創新應用學士學位學程 學生
+        period:
+          start: "2026-09"
+          end: null
+        highlights:
+          - en: nothing now
+            zh-TW: 啥都沒有
 
-  - id: dtsh_student
-    company:
-      en: Taipei Municipal Datong High School
-      zh-TW: 臺北市立大同高級中學
-    role:
-      en: studied in dtsh
-      zh-TW: 曾就讀大同高中
-    period:
-      start: "2023-06"
-      end: "2026-06"
-    highlights:
-      - en: Served as the 33rd Leader of the Computer Science Club
-        zh-TW: 擔任33屆資訊社社長
-      - en: Participated in 2025 Taiwan International Fair
-        zh-TW: 2025台灣國際科學展覽會
-      - en: APCS 5 4
-        zh-TW: APCS 5 4
+      - id: dtsh_student
+        company:
+          en: Taipei Municipal Datong High School
+          zh-TW: 臺北市立大同高級中學
+        role:
+          en: studied in dtsh
+          zh-TW: 曾就讀大同高中
+        period:
+          start: "2023-06"
+          end: "2026-06"
+        highlights:
+          - en: Served as the 33rd Leader of the Computer Science Club
+            zh-TW: 擔任33屆資訊社社長
+          - en: Participated in 2025 Taiwan International Fair
+            zh-TW: 2025台灣國際科學展覽會
+          - en: APCS 5 4
+            zh-TW: APCS 5 4
+
+  - id: competitions
+    title:
+      en: Competitions & Communities
+      zh-TW: 比賽與社群
+    items:
+      # - id:
+      #   company:
+      #     en:
+      #     zh-TW:
+      #   role:
+      #     en:
+      #     zh-TW:
+      #   period:
+      #     start: ""
+      #     end: ""
+      #   highlights:
+      #     - en:
+      #       zh-TW:
+      - id: 113tisfprogram
+        company:
+          en: 113 Young Scientists Development Program
+          zh-TW: 113青少年科學人才培育計畫
+        role:
+          en: Participant
+          zh-TW: 參與者
+        period:
+          start: "2024-03"
+          end: "2024-10"
+        highlights:
+          - en: The Study of Energy Efficiency in Server Setup for Sandbox-Based Game Learning Platforms-A Case Study of Minecraft
+            zh-TW: 沙盒類遊戲式學習平台系統伺服器架設節能效率研究:以Minecraft為例
+      - id: dtech
+        company:
+          en: DTECH
+          zh-TW: 大同高中資訊社
+        role:
+          en: Leader of the club
+          zh-TW: 社長
+        period:
+          start: "2024-06"
+          end: "2025-06"
+      - id: sitcon_2025
+        company:
+          en: SITCON 2025
+          zh-TW: SITCON 2025年會
+        role:
+          en: Participants
+          zh-TW: 會眾
+        period:
+          start: "2025-03"
+          end: "2025-03"
+      - id: tisf_2025
+        company:
+          en: 2025 Taiwan International Science Fair
+          zh-TW: 2025 臺灣國際科學展覽會
+        role:
+          en: Participant
+          zh-TW: 參賽者
+        period:
+          start: "2025-02"
+          end: "2025-02"
+        highlights:
+          - en: Honorable mention
+            zh-TW: 優勝作品
+      - id: 114tisfprogram
+        company:
+          en: 114 Young Scientists Development Program
+          zh-TW: 114青少年科學人才培育計畫
+        role:
+          en: Participant
+          zh-TW: 參與者
+        period:
+          start: "2025-03"
+          end: "2025-10"
+        highlights:
+          - en: A Machine Learning-Based Study on Server Load Prediction for Enhancing Energy Efficiency-A Case Study of Minecraft
+            zh-TW: 基於機器學習之伺服器負載預測輔助節能效率研究:以Minecraft為例

@@ -3,18 +3,21 @@ import { Badge } from "@/components/ui/badge";
 import { profile, site, skills } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import type { ProfileState } from "@/types/content";
+import type { BadgeVariant } from "@/components/ui/badge";
+import type { StatusColor } from "@/types/content";
 
-const stateDotColor: Record<ProfileState, string> = {
-  open: "bg-green",
-  busy: "bg-yellow",
-  away: "bg-gray",
+const statusDotColor: Record<StatusColor, string> = {
+  green: "bg-green",
+  yellow: "bg-yellow",
+  red: "bg-red",
+  gray: "bg-gray",
 };
 
-const stateBadgeVariant: Record<ProfileState, "green" | "yellow" | "default"> = {
-  open: "green",
-  busy: "yellow",
-  away: "default",
+const statusBadgeVariant: Record<StatusColor, BadgeVariant> = {
+  green: "green",
+  yellow: "yellow",
+  red: "red",
+  gray: "default",
 };
 
 function formatClockTime(date: Date, lang: string, timeZone: string): string {
@@ -43,7 +46,7 @@ export function StatusSection() {
     };
   }, [lang]);
 
-  const state = profile.status.state;
+  const status = profile.status.presets[profile.status.enable];
 
   return (
     <section className="w-full pb-16">
@@ -55,16 +58,14 @@ export function StatusSection() {
               <span className="font-mono text-body text-gray">
                 {t(site.ui.status.statusEyebrow)}
               </span>
-              <Badge variant={stateBadgeVariant[state]}>{t(site.ui.status.states[state])}</Badge>
+              <Badge variant={statusBadgeVariant[status.color]}>{t(status.label)}</Badge>
             </div>
             <div className="flex items-center gap-3">
               <span
-                className={cn("size-3 shrink-0 rounded-full", stateDotColor[state])}
+                className={cn("size-3 shrink-0 rounded-full", statusDotColor[status.color])}
                 aria-hidden="true"
               />
-              <span className="font-mono text-h2 font-bold text-foreground">
-                {t(profile.status.text)}
-              </span>
+              <span className="font-mono text-h2 font-bold text-foreground">{t(status.text)}</span>
             </div>
           </div>
 
