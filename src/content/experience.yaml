@@ -47,8 +47,8 @@ groups:
 
   - id: competitions
     title:
-      en: Competitions & Communities
-      zh-TW: 比賽與社群
+      en: Competitions
+      zh-TW: 比賽與培訓
     items:
       # - id:
       #   company:
@@ -86,16 +86,6 @@ groups:
         period:
           start: "2024-06"
           end: "2025-06"
-      - id: sitcon_2025
-        company:
-          en: SITCON 2025
-          zh-TW: SITCON 2025年會
-        role:
-          en: Participants
-          zh-TW: 會眾
-        period:
-          start: "2025-03"
-          end: "2025-03"
       - id: tisf_2025
         company:
           en: 2025 Taiwan International Science Fair
@@ -122,3 +112,52 @@ groups:
         highlights:
           - en: A Machine Learning-Based Study on Server Load Prediction for Enhancing Energy Efficiency-A Case Study of Minecraft
             zh-TW: 基於機器學習之伺服器負載預測輔助節能效率研究:以Minecraft為例
+
+  - id: Communities
+    title:
+      en: Communities
+      zh-TW: 社群
+    items:
+      # - id:
+      #   company:
+      #     en:
+      #     zh-TW:
+      #   role:
+      #     en:
+      #     zh-TW:
+      #   period:
+      #     start: ""
+      #     end: ""
+      #   highlights:
+      #     - en:
+      #       zh-TW:
+      - id: sitcon_2025
+        company:
+          en: SITCON 2025
+          zh-TW: SITCON 2025年會
+        role:
+          en: Participants
+          zh-TW: 會眾
+        period:
+          start: "2025-03"
+          end: "2025-03"
+      - id: sitcon_camp_2026
+        company:
+          en: SITCON CAMP 2026
+          zh-TW: SITCON 2026 夏令營
+        role:
+          en: Activity group member
+          zh-TW: 課活組 組員
+        period:
+          start: "2026-04"
+          end: "2026-07"
+      - id: sitcon_2027
+        company:
+          en: SITCON 2027
+          zh-TW: SITCON 2027年會
+        role:
+          en: Site Management group member
+          zh-TW: 場務組 組員
+        period:
+          start: "2026-09"
+          end: null
