@@ -242,7 +242,12 @@ export function Markdown({ content, inline = false, blogSlug, className }: Markd
     },
     table: ({ children }) => (
       <div className="overflow-x-auto rounded-md border border-rule">
-        <table className="w-full border-collapse text-left font-sans text-body">{children}</table>
+        {/* Fixed layout with the same column shares everywhere, so tables on one page
+            line up: a narrow first column (dates), a fixed last column (place, role)
+            when there are 3+ columns, and the rest for the middle. */}
+        <table className="w-full table-fixed border-collapse text-left font-sans text-body [&_th:first-child]:w-1/5 [&_th:last-child:nth-child(n+3)]:w-1/3">
+          {children}
+        </table>
       </div>
     ),
     th: ({ children }) => (
