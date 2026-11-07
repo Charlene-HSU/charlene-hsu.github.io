@@ -62,3 +62,40 @@ describe("Markdown images", () => {
     expect(render("![caption](missing.jpg)")).not.toContain("<p");
   });
 });
+
+describe("Table of contents headings", () => {
+  it("uses the same ids as the rendered headings", async () => {
+    const { getHeadings } = await import("@/lib/headings");
+    const source = [
+      "# Setup",
+      "## Install `pnpm`",
+      "```md",
+      "# not a heading",
+      "```",
+      "## ==Marked== and [link](https://example.com)",
+      "# Setup",
+    ].join("\n\n");
+    const headings = getHeadings(source);
+    expect(headings.map((h) => h.id)).toEqual([
+      "setup",
+      "install-pnpm",
+      "marked-and-link",
+      "setup-2",
+    ]);
+    const html = render(source);
+    for (const { id } of headings) expect(html).toContain(`id="${id}"`);
+  });
+
+  it("matches every heading in every blog post", async () => {
+    const { getHeadings } = await import("@/lib/headings");
+    const { getBlogSlugs, getBlogPost } = await import("@/lib/markdown");
+    for (const slug of getBlogSlugs(true)) {
+      for (const lang of ["en", "zh-TW"] as const) {
+        const post = getBlogPost(slug, lang, true);
+        if (!post) continue;
+        const html = render(post.body);
+        for (const { id } of getHeadings(post.body)) expect(html).toContain(`id="${id}"`);
+      }
+    }
+  });
+});

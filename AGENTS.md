@@ -155,7 +155,8 @@ The blog has two kinds of page: the list (`/$lang/blog/`) and one page per post 
 - An `<article>` with: a back link to the list, the title as `<h1>`, the date (`<time dateTime>`), tags as links to `/$lang/blog/?tag=<id>`, then the body through `<Markdown>`. Markdown headings inside a post start at `<h2>`.
 - An unknown or (in production) draft slug throws `notFound()` in the route's `beforeLoad`.
 - Images for a post live in `src/assets/blog/<slug>/` and are referenced relatively from the Markdown.
-- Do not add tables of contents, reading time, covers, pagination, previous/next links, RSS, comments or search unless the owner asks.
+- From `xl` up, a post with two or more headings shows a sticky table of contents on the right: it starts under the navbar's GitHub button and reaches past the `max-w-content` column, and the post leaves room with `xl:pr-26` (`src/components/table-of-contents.tsx`, title `ui.sections.blog.tocTitle`); it lists the top-level headings, and each one's subheadings sit in a `Collapsible` that starts closed (arrow label `ui.sections.blog.tocExpandAriaLabel`). The section the reader is in is highlighted. Heading ids come from `getHeadings()` in `src/lib/headings.ts`, which must match the ids `markdown.tsx` sets (a test checks every post).
+- Do not add reading time, covers, pagination, previous/next links, RSS, comments or search unless the owner asks.
 
 ## Projects, embeds and link previews
 

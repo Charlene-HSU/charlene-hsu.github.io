@@ -303,6 +303,14 @@ ui:
       backToList:
         en: All posts
         zh-TW: 所有文章
+      # Title of the table of contents beside a post (wide screens only).
+      tocTitle:
+        en: On this page
+        zh-TW: 文章目錄
+      # Arrow button that opens the ### headings under one ## heading.
+      tocExpandAriaLabel:
+        en: "Show subsections of {title}"
+        zh-TW: "展開「{title}」的小節"
     friends:
       empty:
         en: No friend sites listed yet.

@@ -239,6 +239,8 @@ export const SiteContentSchema = z.object({
         tagFilterAriaLabel: BilingualObjectSchema,
         postTagsAriaLabel: BilingualObjectSchema,
         backToList: BilingualObjectSchema,
+        tocTitle: BilingualObjectSchema,
+        tocExpandAriaLabel: BilingualObjectSchema,
       }),
       friends: z.object({
         empty: BilingualObjectSchema,

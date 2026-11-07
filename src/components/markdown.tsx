@@ -15,6 +15,7 @@ import { LinkCard } from "@/components/link-card";
 import { MermaidDiagram } from "@/components/mermaid-diagram";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { getMarkdownAsset, site } from "@/lib/content";
+import { slugifyHeading } from "@/lib/headings";
 import { t, useI18n, type Lang } from "@/lib/i18n";
 import { cn, type WithClassName } from "@/lib/utils";
 
@@ -30,11 +31,6 @@ interface HastNode {
 function hastText(node: HastNode): string {
   if (node.type === "text") return node.value ?? "";
   return (node.children ?? []).map(hastText).join("");
-}
-
-function slugifyHeading(text: string): string {
-  const raw = text.trim().toLowerCase();
-  return raw.replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "section";
 }
 
 /**
