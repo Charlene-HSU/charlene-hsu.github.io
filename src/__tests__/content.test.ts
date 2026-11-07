@@ -203,9 +203,14 @@ describe("Content schemas and references", () => {
       for (const match of parsed.body.matchAll(imageRegex)) {
         const imgSrc = match[1].trim();
         if (!imgSrc.startsWith("https://")) {
-          const cleanImg = imgSrc.replace(/^\.\//, "");
-          const assetPath = path.join(ASSETS_DIR, "blog", slug, cleanImg);
-          expect(fs.existsSync(assetPath)).toBe(true);
+          // Case-insensitive like getMarkdownAsset(), so `IMG_1.jpg` finds `IMG_1.JPG` on
+          // Linux CI too (macOS file systems ignore case, Linux does not).
+          const cleanImg = imgSrc.replace(/^\.\//, "").toLowerCase();
+          const assetDir = path.join(ASSETS_DIR, "blog", slug, path.dirname(cleanImg));
+          const names = fs.existsSync(assetDir)
+            ? fs.readdirSync(assetDir).map((name) => name.toLowerCase())
+            : [];
+          expect(names, `image "${imgSrc}" in ${file}`).toContain(path.basename(cleanImg));
         }
       }
     }
