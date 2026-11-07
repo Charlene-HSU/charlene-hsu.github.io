@@ -4,11 +4,11 @@ import { describe, expect, it } from "vitest";
 import { Markdown } from "@/components/markdown";
 import { I18nProvider } from "@/lib/i18n";
 
-function render(content: string): string {
+function render(content: string, inline = false): string {
   return renderToString(
     <StrictMode>
       <I18nProvider lang="en">
-        <Markdown content={content} />
+        <Markdown content={content} inline={inline} />
       </I18nProvider>
     </StrictMode>,
   );
@@ -97,5 +97,68 @@ describe("Table of contents headings", () => {
         for (const { id } of getHeadings(post.body)) expect(html).toContain(`id="${id}"`);
       }
     }
+  });
+});
+
+describe("Markdown safety and links", () => {
+  it("never renders raw HTML from content", () => {
+    const html = render('<script>alert(1)</script>\n\n<b onclick="x()">bold</b>\n\nok');
+    // The tags may show up as escaped text, never as elements or attributes.
+    expect(html).not.toMatch(/<script|<b[ >]/);
+    expect(html).not.toMatch(/<[a-z][^>]*\sonclick=/);
+  });
+
+  it("opens external and mailto links in a new tab with noopener", () => {
+    for (const href of ["https://example.com/x", "mailto:me@example.com"]) {
+      const html = render(`See [here](${href}) now.`);
+      expect(html).toContain(`href="${href}"`);
+      expect(html).toContain('target="_blank"');
+      expect(html).toContain('rel="noopener noreferrer"');
+    }
+  });
+
+  it("turns a standalone https URL into a link card, but not a URL inside a sentence", () => {
+    const card = render("https://example.com/page");
+    // The card is the block itself: an <a> straight inside the Markdown wrapper, not in a <p>.
+    expect(card).toMatch(/^<div[^>]*><a href="https:\/\/example\.com\/page"/);
+    expect(render("Read https://example.com/page today.")).toMatch(/^<div[^>]*><p/);
+  });
+});
+
+describe("Markdown inline mode", () => {
+  it("keeps only bold, links, code, lists and highlights", () => {
+    const html = render("# Title\n\n**bold** `code` ==mark== ![img](x.png)\n\n> quote", true);
+    expect(html).toContain("<strong");
+    expect(html).toContain("<code");
+    expect(html).toContain("<mark");
+    expect(html).not.toMatch(/<h\d|<img|<blockquote|<p[ >]/);
+  });
+});
+
+describe("Markdown alert kinds", () => {
+  it("renders every kind, in any case, with its title", () => {
+    for (const [marker, title] of [
+      ["NOTE", "Note"],
+      ["tip", "Tip"],
+      ["Important", "Important"],
+      ["WARNING", "Warning"],
+      ["CAUTION", "Caution"],
+    ]) {
+      const html = render(`> [!${marker}]\n> Body text.`);
+      expect(html, marker).toContain(title);
+      expect(html, marker).toContain("Body text.");
+      expect(html, marker).not.toContain("<blockquote");
+    }
+  });
+
+  it("leaves an unknown kind as a normal quote", () => {
+    const html = render("> [!NOTEE]\n> Body text.");
+    expect(html).toContain("<blockquote");
+    expect(html).toContain("[!NOTEE]");
+  });
+
+  it("highlights inside bold and inside callouts", () => {
+    expect(render("**==both==**")).toMatch(/<strong[^>]*><mark[^>]*>both<\/mark><\/strong>/);
+    expect(render("> [!TIP]\n> =={green}yes==")).toContain(">yes</mark>");
   });
 });

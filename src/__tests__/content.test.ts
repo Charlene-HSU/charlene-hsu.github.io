@@ -16,10 +16,26 @@ import {
   SkillsContentSchema,
   languages,
 } from "@/types/content";
+import { resolveBrandIcon } from "@/lib/brand-icons";
+import { getFriendAvatarAsset, getFriendBadgeAsset, getProjectCoverAsset } from "@/lib/content";
 
 const ROOT = path.resolve(__dirname, "../..");
 const CONTENT_DIR = path.join(ROOT, "src/content");
-const ASSETS_DIR = path.join(ROOT, "src/assets");
+
+/**
+ * Whether a file exists with exactly this spelling. `fs.existsSync` ignores case on macOS
+ * (and Windows) but not on Linux, where CI and the deploy build run, so a reference that
+ * only differs in case would pass locally and break the build.
+ */
+function existsExactCase(fullPath: string): boolean {
+  const relative = path.relative(ROOT, fullPath);
+  let dir = ROOT;
+  for (const segment of relative.split(path.sep)) {
+    if (!fs.existsSync(dir) || !fs.readdirSync(dir).includes(segment)) return false;
+    dir = path.join(dir, segment);
+  }
+  return true;
+}
 
 function loadYaml(filename: string): unknown {
   const fullPath = path.join(CONTENT_DIR, filename);
@@ -63,7 +79,7 @@ describe("Content schemas and references", () => {
     for (const item of site.nav) {
       const flat = path.join(routesDir, `${item.id}.tsx`);
       const nested = path.join(routesDir, item.id, "index.tsx");
-      expect(fs.existsSync(flat) || fs.existsSync(nested), `route for "${item.id}"`).toBe(true);
+      expect(existsExactCase(flat) || existsExactCase(nested), `route for "${item.id}"`).toBe(true);
     }
   });
 
@@ -72,7 +88,7 @@ describe("Content schemas and references", () => {
 
     for (const lang of languages) {
       const mdPath = path.join(CONTENT_DIR, "md", `${profile.about}.${lang}.md`);
-      expect(fs.existsSync(mdPath)).toBe(true);
+      expect(existsExactCase(mdPath), `src/content/md/${profile.about}.${lang}.md`).toBe(true);
     }
   });
 
@@ -97,14 +113,17 @@ describe("Content schemas and references", () => {
     expect(new Set(ids).size).toBe(ids.length);
 
     for (const item of projects.items) {
+      // Ask the site's own lookup, so a wrong case or an unsupported format fails here too.
       if (item.cover) {
-        const coverPath = path.join(ASSETS_DIR, "projects", item.cover);
-        expect(fs.existsSync(coverPath)).toBe(true);
+        expect(
+          getProjectCoverAsset(item.cover),
+          `cover "${item.cover}" of "${item.id}" in src/assets/projects/ (webp, png, jpg, jpeg)`,
+        ).toBeDefined();
       }
       if (item.body) {
         for (const lang of languages) {
           const mdPath = path.join(CONTENT_DIR, "md", `${item.body}.${lang}.md`);
-          expect(fs.existsSync(mdPath)).toBe(true);
+          expect(existsExactCase(mdPath), `src/content/md/${item.body}.${lang}.md`).toBe(true);
         }
       }
     }
@@ -119,24 +138,23 @@ describe("Content schemas and references", () => {
     for (const url of [friends.exchange?.avatar, friends.exchange?.badge]) {
       if (url?.startsWith(`${origin}/`)) {
         const file = path.join(ROOT, "public", url.slice(origin.length + 1));
-        expect(fs.existsSync(file), `${url} needs public/${url.slice(origin.length + 1)}`).toBe(
+        expect(existsExactCase(file), `${url} needs public/${url.slice(origin.length + 1)}`).toBe(
           true,
         );
       }
     }
     for (const friend of friends.items) {
       if (friend.avatar) {
-        const avatarPath = path.join(ASSETS_DIR, "friends", friend.avatar);
-        expect(fs.existsSync(avatarPath), `avatar "${friend.avatar}" in src/assets/friends/`).toBe(
-          true,
-        );
+        expect(
+          getFriendAvatarAsset(friend.avatar),
+          `avatar "${friend.avatar}" in src/assets/friends/ (webp, png, jpg, jpeg)`,
+        ).toBeDefined();
       }
       if (friend.badge) {
-        const badgePath = path.join(ASSETS_DIR, "friends/badges", friend.badge);
         expect(
-          fs.existsSync(badgePath),
-          `badge "${friend.badge}" in src/assets/friends/badges/ (an 88×31 image, not the avatar)`,
-        ).toBe(true);
+          getFriendBadgeAsset(friend.badge),
+          `badge "${friend.badge}" in src/assets/friends/badges/ (an 88×31 gif, png, webp or svg)`,
+        ).toBeDefined();
       }
     }
   });
@@ -145,19 +163,11 @@ describe("Content schemas and references", () => {
     const contact = ContactContentSchema.parse(loadYaml("contact.yaml"));
 
     // Icons are file names in src/assets/brands/, with or without the extension.
-    const brandFiles = fs
-      .readdirSync(path.join(ASSETS_DIR, "brands"))
-      .filter((f) => /\.(svg|png|webp|jpe?g)$/i.test(f))
-      .map((f) => f.toLowerCase());
-    const brandNames = new Set([
-      ...brandFiles,
-      ...brandFiles.map((f) => f.replace(/\.[^.]+$/, "")),
-    ]);
     for (const link of contact.links) {
       expect(
-        brandNames.has(link.icon.toLowerCase()),
+        resolveBrandIcon(link.icon),
         `icon "${link.icon}" in src/assets/brands/`,
-      ).toBe(true);
+      ).toBeDefined();
     }
   });
 
@@ -199,20 +209,7 @@ describe("Content schemas and references", () => {
       }
       tagsBySlug.set(slug, tagKey);
 
-      const imageRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
-      for (const match of parsed.body.matchAll(imageRegex)) {
-        const imgSrc = match[1].trim();
-        if (!imgSrc.startsWith("https://")) {
-          // Case-insensitive like getMarkdownAsset(), so `IMG_1.jpg` finds `IMG_1.JPG` on
-          // Linux CI too (macOS file systems ignore case, Linux does not).
-          const cleanImg = imgSrc.replace(/^\.\//, "").toLowerCase();
-          const assetDir = path.join(ASSETS_DIR, "blog", slug, path.dirname(cleanImg));
-          const names = fs.existsSync(assetDir)
-            ? fs.readdirSync(assetDir).map((name) => name.toLowerCase())
-            : [];
-          expect(names, `image "${imgSrc}" in ${file}`).toContain(path.basename(cleanImg));
-        }
-      }
+      // Images, links and syntax inside posts are checked in markdown-content.test.ts.
     }
   });
 });
@@ -234,18 +231,85 @@ describe("Codebase architectural guardrails", () => {
     return out;
   }
 
-  it("forbids arbitrary Tailwind size/color values, root-relative URLs, and raw HTML in components", () => {
-    const files = walkSrcFiles(path.join(ROOT, "src"));
-    const arbitraryTailwindRegex =
-      /\b(?:bg|text|rounded|h|w|p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|gap|leading|font)-\[(?:#|\d|\.|')[^\]]+\]/;
-    const rootRelativeAttrRegex = /\b(?:href|src)=["']\/[^"']*["']/;
+  const sourceFiles = walkSrcFiles(path.join(ROOT, "src"));
+  const relative = (file: string) => path.relative(ROOT, file);
 
-    for (const file of files) {
+  it("forbids arbitrary Tailwind values, root-relative URLs, and raw HTML in components", () => {
+    // Any utility with an arbitrary size or color: `h-[59px]`, `max-h-[30rem]`, `bg-[#fff]`, `font-['X']`.
+    const arbitraryValue = /(?<![\w-])-?[a-z][a-z0-9-]*-\[(?:#|\d|\.|')[^\]]*\]/;
+    // Arbitrary properties: `[box-decoration-break:clone]`.
+    const arbitraryProperty = /["'`\s]\[[a-z-]+:[^\]\s]+\]/;
+    const rootRelativeAttr = /\b(?:href|src)=["']\/[^"']*["']/;
+
+    for (const file of sourceFiles) {
       const code = fs.readFileSync(file, "utf-8");
-      expect(code).not.toMatch(arbitraryTailwindRegex);
-      expect(code).not.toMatch(rootRelativeAttrRegex);
-      expect(code).not.toContain("dangerouslySetInnerHTML");
-      expect(code).not.toContain("rehype-raw");
+      expect(code, relative(file)).not.toMatch(arbitraryValue);
+      expect(code, relative(file)).not.toMatch(arbitraryProperty);
+      expect(code, relative(file)).not.toMatch(rootRelativeAttr);
+      expect(code, relative(file)).not.toContain("dangerouslySetInnerHTML");
+      expect(code, relative(file)).not.toContain("rehype-raw");
     }
+  });
+
+  it("only uses Tailwind classes that exist after the token reset", () => {
+    // The default palette, type scale and extra font weights are removed in src/index.css,
+    // so these classes silently do nothing.
+    const resetClasses = [
+      /(?<![\w-])(?:bg|text|border|fill|stroke|ring|outline)-(?:white|slate|zinc|neutral|stone|gray|red|green|blue|yellow|amber|orange|emerald|sky|indigo|violet|purple|pink|rose)-\d{2,3}\b/,
+      /(?<![\w-])(?:bg|text|border)-white\b/,
+      /(?<![\w-])text-(?:xs|sm|base|lg|xl|[2-9]xl)\b/,
+      /(?<![\w-])font-(?:thin|extralight|light|medium|semibold|extrabold|black)\b/,
+    ];
+    for (const file of sourceFiles) {
+      const code = fs.readFileSync(file, "utf-8");
+      for (const pattern of resetClasses) {
+        expect(code, relative(file)).not.toMatch(pattern);
+      }
+    }
+  });
+
+  it("builds interactive controls on Base UI, not raw elements", () => {
+    const rawControl = /<(?:button|input|select|textarea|dialog)[\s>]/;
+    for (const file of sourceFiles) {
+      if (file.includes(`${path.sep}components${path.sep}ui${path.sep}`)) continue;
+      expect(fs.readFileSync(file, "utf-8"), relative(file)).not.toMatch(rawControl);
+    }
+  });
+
+  it("imports Lucide icons by name and keeps localStorage in the i18n module", () => {
+    for (const file of sourceFiles) {
+      const code = fs.readFileSync(file, "utf-8");
+      expect(code, relative(file)).not.toMatch(
+        /import\s+\*\s+as\s+\w+\s+from\s+["']lucide-react["']/,
+      );
+      if (!file.endsWith(path.join("lib", "i18n.ts"))) {
+        expect(code, `${relative(file)}: localStorage belongs in src/lib/i18n.ts`).not.toContain(
+          "localStorage",
+        );
+      }
+    }
+  });
+
+  it("does not add smooth scrolling", () => {
+    const css = fs.readFileSync(path.join(ROOT, "src/index.css"), "utf-8");
+    expect(css).not.toMatch(/scroll-behavior\s*:\s*smooth/);
+    for (const file of sourceFiles) {
+      expect(fs.readFileSync(file, "utf-8"), relative(file)).not.toMatch(/\bscroll-smooth\b/);
+    }
+  });
+
+  it("only uses approved Markdown plugins and no third-party scripts", () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf-8")) as {
+      dependencies?: Record<string, string>;
+      devDependencies?: Record<string, string>;
+    };
+    const deps = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies });
+    // Adding another remark/rehype plugin needs the owner's approval (see AGENTS.md).
+    const approved = new Set(["remark-gfm"]);
+    for (const dep of deps.filter((d) => /^(?:remark|rehype)-/.test(d))) {
+      expect(approved.has(dep), `Markdown plugin "${dep}" is not approved`).toBe(true);
+    }
+    const indexHtml = fs.readFileSync(path.join(ROOT, "index.html"), "utf-8");
+    expect(indexHtml).not.toMatch(/<script[^>]+src=["']https?:/);
   });
 });

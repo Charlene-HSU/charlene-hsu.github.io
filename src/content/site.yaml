@@ -116,7 +116,8 @@ footer:
 shortcuts:
   recentDays: 30
   limit: 4
-  # Self-introduction (md/about.<lang>.md) under your name on the home page. `false` hides it.
+  # Short introduction (profile.yaml `intro`) and a button to About under your name on the
+  # home page. `false` hides it.
   about: true
 
 embedAllowlist: []
@@ -183,6 +184,11 @@ ui:
     pinned:
       en: Pinned
       zh-TW: 置頂
+  aboutIntro:
+    # The large button under the short introduction on the home page.
+    more:
+      en: More about me
+      zh-TW: 更多關於我
   status:
     statusEyebrow:
       en: "current_status"

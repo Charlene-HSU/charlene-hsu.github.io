@@ -73,3 +73,14 @@ stats:
       en: Competitions
       zh-TW: 參與競賽
 about: about
+# Short introduction on the home page, two or three sentences (bold, links and `code` work).
+# The full self-introduction is md/about.<lang>.md on the About page.
+intro:
+  en: >-
+    I study Medical Informatics and Innovative Applications at Fu Jen Catholic University and love
+    everything about software engineering (though so far I'm best at chatting with AI). I used to
+    build Minecraft plugins and mods; lately I'm grinding LeetCode and showing up at more tech
+    community events.
+  zh-TW: >-
+    我目前就讀輔大醫學資訊與創新應用學士學位學程，熱愛軟體工程的一切（雖然目前除了跟 AI
+    聊天以外都不太擅長）。曾經專注於 Minecraft plugins、mods 開發，最近在刷 LeetCode，也開始多參加社群活動。

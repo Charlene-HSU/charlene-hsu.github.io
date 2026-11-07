@@ -1,41 +1,48 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Markdown } from "@/components/markdown";
+import { buttonVariants } from "@/components/ui/button";
 import { profile, site } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { NavIcon } from "@/lib/icons";
-import { getMarkdownContent } from "@/lib/markdown";
+import { cn } from "@/lib/utils";
 
 /**
- * Home: the full self-introduction from `md/about.<lang>.md`, right under the
- * hero, with a link to the About page. `site.yaml` `shortcuts.about: false` hides it.
+ * Home: a short self-introduction (`profile.yaml` `intro`) under the hero, with a large
+ * button to the About page for the full story. `site.yaml` `shortcuts.about: false` hides it.
  */
 export function AboutIntroSection() {
   const { lang, t } = useI18n();
   if (!site.shortcuts.about) return null;
 
-  const body = getMarkdownContent(profile.about, lang);
-  if (!body) return null;
+  const intro = profile.intro ? t(profile.intro) : "";
   const entry = site.nav.find((item) => item.id === "about");
 
   return (
     <section aria-labelledby="about-intro-heading" className="w-full px-6 pb-16">
       <div className="mx-auto flex w-full max-w-content flex-col gap-4 rounded-lg border border-rule bg-surface p-6">
-        <h2 id="about-intro-heading" className="font-mono text-paragraph font-bold">
-          <Link
-            to="/$lang/about/"
-            params={{ lang }}
-            className="group inline-flex items-center gap-2 text-green transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue"
-          >
-            {entry ? <NavIcon name={entry.icon} /> : null}
-            <span>{entry ? t(entry.label) : null}</span>
-            <ArrowRight
-              className="size-4 transition-transform group-hover:translate-x-1"
-              aria-hidden="true"
-            />
-          </Link>
+        <h2
+          id="about-intro-heading"
+          className="inline-flex items-center gap-2 font-mono text-paragraph font-bold text-green"
+        >
+          {entry ? <NavIcon name={entry.icon} /> : null}
+          <span>{entry ? t(entry.label) : null}</span>
         </h2>
-        <Markdown content={body} />
+        {intro ? <Markdown content={intro} inline className="text-foreground/90" /> : null}
+        <Link
+          to="/$lang/about/"
+          params={{ lang }}
+          className={cn(
+            buttonVariants({ variant: "primary", size: "lg" }),
+            "group mt-2 w-full md:w-fit",
+          )}
+        >
+          <span>{t(site.ui.aboutIntro.more)}</span>
+          <ArrowRight
+            className="size-5 transition-transform group-hover:translate-x-1 motion-reduce:transition-none"
+            aria-hidden="true"
+          />
+        </Link>
       </div>
     </section>
   );

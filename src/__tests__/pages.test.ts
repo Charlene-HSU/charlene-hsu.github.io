@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { site } from "@/lib/content";
 import { languages } from "@/lib/i18n";
-import { getBlogSlugs, getBlogPosts } from "@/lib/markdown";
+import { getBlogPost, getBlogSlugs, getBlogPosts } from "@/lib/markdown";
 import { getPublicPages, pagePath } from "@/lib/pages";
 
 describe("public page list", () => {
@@ -40,6 +40,23 @@ describe("public page list", () => {
 });
 
 describe("blog posts", () => {
+  it("keeps drafts out of the published list, pages and sitemap input", () => {
+    const published = new Set(getBlogSlugs(false));
+    const paths = new Set(getPublicPages().map((page) => page.path));
+    for (const slug of getBlogSlugs(true)) {
+      const isDraft = languages.every((lang) => getBlogPost(slug, lang, true)?.draft);
+      expect(published.has(slug), `"${slug}" published`).toBe(!isDraft);
+      for (const lang of languages) {
+        expect(paths.has(pagePath({ kind: "post", slug }, lang)), `${slug} (${lang})`).toBe(
+          !isDraft,
+        );
+      }
+    }
+    for (const lang of languages) {
+      expect(getBlogPosts(lang, false).every((post) => !post.draft)).toBe(true);
+    }
+  });
+
   it("lists posts newest first", () => {
     for (const lang of languages) {
       const dates = getBlogPosts(lang, false).map((post) => post.date);

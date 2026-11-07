@@ -1,4 +1,7 @@
+import fs from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
+import YAML from "yaml";
 import {
   formatDate,
   formatNumber,
@@ -48,5 +51,36 @@ describe("i18n utilities", () => {
     expect(formatDate("2026-10-21", "en")).toContain("2026");
     expect(formatDate("2025-03", "zh-TW")).toContain("2025");
     expect(formatNumber(1234, "en")).toBe("1,234");
+  });
+});
+
+describe("translations in YAML content", () => {
+  // Every { en, zh-TW } pair in the content files, with where it was found.
+  function collectPairs(value: unknown, where: string, out: [string, string, string][]) {
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => collectPairs(item, `${where}[${index}]`, out));
+    } else if (value && typeof value === "object") {
+      const record = value as Record<string, unknown>;
+      if (typeof record.en === "string" && typeof record["zh-TW"] === "string") {
+        out.push([where, record.en, record["zh-TW"]]);
+      }
+      for (const [key, child] of Object.entries(record))
+        collectPairs(child, `${where}.${key}`, out);
+    }
+  }
+
+  const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
+
+  it("uses the same {placeholders} in both languages", () => {
+    const dir = path.resolve(__dirname, "../content");
+    const pairs: [string, string, string][] = [];
+    for (const file of fs.readdirSync(dir).filter((name) => name.endsWith(".yaml"))) {
+      collectPairs(YAML.parse(fs.readFileSync(path.join(dir, file), "utf-8")), file, pairs);
+    }
+    expect(pairs.length).toBeGreaterThan(0);
+    for (const [where, en, zh] of pairs) {
+      // A placeholder missing in one language would show up as raw `{name}` text, or not at all.
+      expect(placeholders(zh), `${where}: zh-TW "${zh}" vs en "${en}"`).toEqual(placeholders(en));
+    }
   });
 });

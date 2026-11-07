@@ -184,6 +184,9 @@ export const SiteContentSchema = z.object({
       }),
       pinned: BilingualObjectSchema,
     }),
+    aboutIntro: z.object({
+      more: BilingualObjectSchema,
+    }),
     status: z.object({
       statusEyebrow: BilingualObjectSchema,
       clockEyebrow: BilingualObjectSchema,
@@ -339,6 +342,8 @@ export const ProfileContentSchema = z.object({
     }),
   ),
   about: z.string().min(1),
+  // Short self-introduction on the home page (inline Markdown); the full text is on About.
+  intro: yamlOptional(LocalizedSchema),
 });
 
 export type ProfileContent = z.infer<typeof ProfileContentSchema>;
