@@ -113,13 +113,20 @@ const friendBadgeModules = import.meta.glob<string>(
   },
 );
 
-const blogImageModules = import.meta.glob<ResponsiveImageOutput | string>(
-  "/src/assets/blog/**/*.{webp,png,jpg,jpeg}",
-  {
-    query: "?responsive",
-    import: "default",
-    eager: true,
-  },
+// Keys are lowercased so `![…](IMG_1234.jpg)` finds `IMG_1234.JPG`: phone photos often
+// have upper-case extensions, and the file name in Markdown should not have to match case.
+const blogImageModules: Record<string, ResponsiveImageOutput | string> = Object.fromEntries(
+  Object.entries({
+    ...import.meta.glob<ResponsiveImageOutput | string>(
+      "/src/assets/blog/**/*.{webp,png,jpg,jpeg,WEBP,PNG,JPG,JPEG}",
+      { query: "?responsive", import: "default", eager: true },
+    ),
+    // SVGs skip the ?responsive pipeline and render as a plain <img>.
+    ...import.meta.glob<string>("/src/assets/blog/**/*.{svg,SVG}", {
+      import: "default",
+      eager: true,
+    }),
+  }).map(([key, value]) => [key.toLowerCase(), value]),
 );
 
 export function getProjectCoverAsset(
@@ -147,7 +154,7 @@ export function getMarkdownAsset(
 ): ResponsiveImageOutput | string | undefined {
   const cleanSrc = src.replace(/^\.\//, "");
   if (blogSlug) {
-    const blogKey = `/src/assets/blog/${blogSlug}/${cleanSrc}`;
+    const blogKey = `/src/assets/blog/${blogSlug}/${cleanSrc}`.toLowerCase();
     if (blogImageModules[blogKey]) {
       return blogImageModules[blogKey];
     }
@@ -156,7 +163,7 @@ export function getMarkdownAsset(
   if (projectCoverModules[projectKey]) {
     return projectCoverModules[projectKey];
   }
-  const directBlogKey = `/src/assets/blog/${cleanSrc}`;
+  const directBlogKey = `/src/assets/blog/${cleanSrc}`.toLowerCase();
   if (blogImageModules[directBlogKey]) {
     return blogImageModules[directBlogKey];
   }

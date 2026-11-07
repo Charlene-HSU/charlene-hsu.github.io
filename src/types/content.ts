@@ -274,6 +274,16 @@ export const SiteContentSchema = z.object({
       youtubeThumbnailAlt: BilingualObjectSchema,
       youtubeDefaultTitle: BilingualObjectSchema,
       externalLinkAriaLabel: BilingualObjectSchema,
+      diagramAlt: BilingualObjectSchema,
+    }),
+    markdown: z.object({
+      alerts: z.object({
+        note: BilingualObjectSchema,
+        tip: BilingualObjectSchema,
+        important: BilingualObjectSchema,
+        warning: BilingualObjectSchema,
+        caution: BilingualObjectSchema,
+      }),
     }),
     toast: z.object({
       copiedTitle: BilingualObjectSchema,

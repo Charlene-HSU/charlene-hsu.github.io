@@ -68,4 +68,8 @@ stats:
     label:
       en: Communities
       zh-TW: 參與社群
+  - value: 7
+    label:
+      en: Competitions
+      zh-TW: 參與競賽
 about: about

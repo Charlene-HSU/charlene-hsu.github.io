@@ -9,7 +9,10 @@ export function countWords(markdown: string): number {
   const text = markdown
     .replace(/```[\s\S]*?```/g, " ")
     .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/https?:\/\/\S+/g, " ");
+    .replace(/https?:\/\/\S+/g, " ")
+    // Highlight colors (`=={red}…==`) and callout markers (`> [!NOTE]`) are syntax, not words.
+    .replace(/==\{[a-z]+\}/g, " ")
+    .replace(/\[![A-Za-z]+\]/g, " ");
   return text.match(wordPattern)?.length ?? 0;
 }
 

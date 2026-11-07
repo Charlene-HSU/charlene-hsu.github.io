@@ -80,6 +80,15 @@ blogTags:
   test:
     en: Test
     zh-TW: 測試
+  tisf:
+    en: TISF
+    zh-TW: 國際科展
+  high-school:
+    en: High school
+    zh-TW: 高中
+  minecraft-development:
+    en: Minecraft development
+    zh-TW: Minecraft 開發
 
 # Footer: which pages it lists, how many columns, and the link at the bottom right.
 footer:
@@ -376,6 +385,28 @@ ui:
     externalLinkAriaLabel:
       en: Opens in a new tab
       zh-TW: 於新分頁開啟
+    # Alt text for a Mermaid diagram that has no `accDescr` line.
+    diagramAlt:
+      en: Diagram
+      zh-TW: 圖表
+  markdown:
+    # Titles of the callout boxes written as `> [!NOTE]` … in Markdown.
+    alerts:
+      note:
+        en: Note
+        zh-TW: 備註
+      tip:
+        en: Tip
+        zh-TW: 小提示
+      important:
+        en: Important
+        zh-TW: 重要
+      warning:
+        en: Warning
+        zh-TW: 注意
+      caution:
+        en: Caution
+        zh-TW: 警告
   toast:
     copiedTitle:
       en: Copied to clipboard

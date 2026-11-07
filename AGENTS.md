@@ -33,6 +33,7 @@ React 19, Vite, Tailwind CSS v4, TypeScript, pnpm (npm, yarn and bun are blocked
 - `src/types/`: content types and `*.yaml` module declarations.
 - `src/components/ui/`: Base UI primitives. `src/components/`: site-level components. `src/routes/`: routes.
 - `src/index.css`: design tokens and shared CSS. `src/assets/`: imported artwork (`projects/`, `friends/`, `blog/`, `brands/`).
+- `docs/`: guides for the owner (`mermaid.md`, `markdown.md`). Not published on the site.
 - `fonts/`: self-hosted fonts. `public/`: files copied directly to the build output.
 - `scripts/`: `prerender.mjs`, `fetch-og.mjs`, `build-sitemap.mjs`.
 - `vite.config.ts`: base path, YAML plugin, font subsetting, image presets, router generation.
@@ -118,9 +119,11 @@ The site is a set of static pages, not one long page. Each page is its own route
 - Supported: GFM (tables, task lists, strikethrough), links, images, headings with anchors, code blocks, and a standalone URL on its own line, which becomes a link card (implemented by overriding the `p` component). Links: `http(s)://` and `mailto:` open in a new tab, `#anchor` stays on the page, a site path such as `/en/blog/hello-world/` goes to that page (the deploy base path is added automatically), and anything else goes home. Heading anchor ids are set by a small local rehype step in `markdown.tsx` (not a package); repeated headings get `-2`, `-3`, ….
 - **Raw HTML is not supported.** Never enable `rehype-raw` or `dangerouslySetInnerHTML` for content.
 - External links get `target="_blank"` and `rel="noopener noreferrer"` plus an external-link icon. Internal links use `<Link>`.
-- Relative images resolve against `src/assets/` (project covers, `blog/<slug>/`) and use the `?responsive` pipeline.
-- Phase 2 (add only when the owner asks): `remark-directive` for `::embed{kind="…" url="…"}` and `rehype-highlight` for code highlighting. Do not add other Markdown plugins without approval.
-- Inline Markdown fields in YAML (for example experience `highlights`, friend `rules`) render through `<Markdown inline>`, which only supports bold, links and inline code.
+- Relative images resolve against `src/assets/` (project covers, `blog/<slug>/`, file names matched case-insensitively) and use the `?responsive` pipeline. Each image renders as a centered `<figure>` capped at `max-h-120`; a non-empty alt is also shown as a `<figcaption>` (`aria-hidden`, since the alt already names the image). A paragraph of only images is not wrapped in `<p>`.
+- Diagrams: a fenced ` ```mermaid ` block renders as a [Mermaid](https://mermaid.js.org) diagram (`src/components/mermaid-diagram.tsx`, approved by the owner). Mermaid is loaded with a dynamic `import()` only on pages that have a diagram, uses `securityLevel: "strict"` and the colors from `src/index.css`, and the result is shown as an `<img>` with an SVG data URL, so no generated markup enters the page. The prerendered HTML (and an invalid diagram) shows the source as a code block. Write `accDescr: …` in the diagram for the alt text; without it the alt is `ui.embed.diagramAlt`. The owner's guide (Traditional Chinese) is `docs/mermaid.md`; keep it in sync with this behavior.
+- Highlights and callouts (local remark steps in `markdown.tsx`, approved by the owner): `==text==` renders as a `<mark>` (yellow), `=={green|blue|red}text==` picks another color; a blockquote starting with `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` or `[!CAUTION]` (GitHub alert syntax) renders as a callout titled from `ui.markdown.alerts`. Highlights also work in `<Markdown inline>`. The owner's guide is `docs/markdown.md`; keep it in sync.
+- Phase 2 (add only when the owner asks): `remark-directive` for `::embed{kind="…" url="…"}` and `rehype-highlight` for code highlighting. Do not add other Markdown plugins or renderers without approval.
+- Inline Markdown fields in YAML (for example experience `highlights`, friend `rules`) render through `<Markdown inline>`, which only supports bold, links, inline code and `==highlights==`.
 
 ### Home shortcuts
 

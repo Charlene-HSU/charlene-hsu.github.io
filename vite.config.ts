@@ -57,6 +57,8 @@ export default defineConfig({
     tailwindcss(),
     ViteYaml(),
     imagetools({
+      // Case-insensitive, so photos straight from a phone (`IMG_1234.JPG`) are processed too.
+      include: /^[^?]+\.(avif|gif|heif|jpeg|jpg|png|tiff|webp)(\?.*)?$/i,
       defaultDirectives: (url) => {
         if (url.searchParams.has("responsive")) {
           return new URLSearchParams({

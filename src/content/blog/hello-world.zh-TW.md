@@ -1,7 +1,7 @@
 ---
 title: Hello World?
 date: "2026-10-21"
-description: 新網站的第一篇文章 。
+description: 新網站的第一篇文章。
 tags:
   - test
 ---
