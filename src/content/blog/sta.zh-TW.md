@@ -7,4 +7,3 @@ tags:
   - high-school
 updated: "2026-11-10"
 ---
-
