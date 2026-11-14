@@ -89,6 +89,9 @@ blogTags:
   minecraft-development:
     en: Minecraft development
     zh-TW: Minecraft 開發
+  special-talent-application:
+    en: Special talent admission
+    zh-TW: 特殊選才
 
 # Footer: which pages it lists, how many columns, and the link at the bottom right.
 footer:

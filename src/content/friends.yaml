@@ -19,6 +19,14 @@ items:
     avatar: baihu.png
     tags:
       - 特選電神
+  - name: "青呱Gua"
+    url: https://guatw.net/
+    description:
+      en: 廢物一枚
+      zh-TW: 廢物一枚
+    avatar: IMG_9209.png
+    tags:
+      - 特選電神
 
 exchange:
   name: wow肯德基爺爺欸
