@@ -70,7 +70,39 @@ nav:
       en: How to reach me.
       zh-TW: 聯絡我的方式。
 
+# Blog sub-folders: a post in src/content/blog/<id>/ shows inside folder <id> on the blog list.
+blogFolders:
+  medical-informatics:
+    title:
+      en: Medical Information Management exam notes
+      zh-TW: 醫資管師考點筆記
+    description:
+      en: Chapter-by-chapter study notes and past-exam analysis (Traditional Chinese).
+      zh-TW: 14 章考點筆記、筆記總覽與歷屆考點分析。
+  medical-terminology:
+    title:
+      en: Medical terminology from past exams
+      zh-TW: 歷屆醫護術語拆解
+    description:
+      en: Word-part breakdowns of every terminology option in 13 past exam papers (Traditional Chinese).
+      zh-TW: 13 份歷屆試卷的醫護術語選項，逐字拆成字首、字根與字尾。
+
 blogTags:
+  medical-informatics:
+    en: Medical informatics
+    zh-TW: 醫資管師筆記
+  medical-terminology:
+    en: Medical terminology
+    zh-TW: 醫護術語
+  study-notes:
+    en: Study notes
+    zh-TW: 讀書心得
+  fju:
+    en: FJU
+    zh-TW: 輔仁大學
+  university:
+    en: University
+    zh-TW: 大學
   meta:
     en: Site news
     zh-TW: 網站消息
@@ -309,6 +341,14 @@ ui:
       postTagsAriaLabel:
         en: Post tags
         zh-TW: 文章標籤
+      # Number of posts in a blog folder.
+      folderCount:
+        en: "{count} posts"
+        zh-TW: "{count} 篇文章"
+      # Title of the folder list beside the blog list (wide screens only).
+      foldersTitle:
+        en: Folders
+        zh-TW: 文章資料夾
       backToList:
         en: All posts
         zh-TW: 所有文章

@@ -7,7 +7,7 @@ const mdModules = import.meta.glob<string>("/src/content/md/**/*.md", {
   eager: true,
 });
 
-const blogModules = import.meta.glob<string>("/src/content/blog/*.md", {
+const blogModules = import.meta.glob<string>("/src/content/blog/**/*.md", {
   query: "?raw",
   import: "default",
   eager: true,
@@ -55,8 +55,20 @@ export function getMarkdownBodies(lang: Lang): string[] {
   return [...pages, ...posts];
 }
 
-export function parseBlogFilename(filePath: string): { slug: string; lang: Lang } | null {
-  const filename = filePath.split("/").pop();
+/**
+ * Reads the slug, language and optional folder from a post's path:
+ * `blog/<slug>.<lang>.md` or `blog/<folder>/<slug>.<lang>.md` (one folder level only).
+ */
+export function parseBlogFilename(
+  filePath: string,
+): { slug: string; lang: Lang; folder?: string } | null {
+  const afterBlog = filePath.split("/content/blog/").pop() ?? filePath;
+  const parts = afterBlog.split("/");
+  if (parts.length > 2) {
+    return null;
+  }
+  const filename = parts.pop();
+  const folder = parts[0];
   if (!filename || !filename.endsWith(".md")) {
     return null;
   }
@@ -65,7 +77,7 @@ export function parseBlogFilename(filePath: string): { slug: string; lang: Lang 
     if (filename.endsWith(suffix)) {
       const slug = filename.slice(0, -suffix.length);
       if (slug.length > 0) {
-        return { slug, lang };
+        return folder ? { slug, lang, folder } : { slug, lang };
       }
     }
   }
@@ -86,6 +98,7 @@ export function getAllBlogEntries(): BlogPost[] {
     entries.push({
       slug: meta.slug,
       lang: meta.lang,
+      folder: meta.folder,
       title: frontmatter.title,
       date: frontmatter.date,
       description: frontmatter.description,

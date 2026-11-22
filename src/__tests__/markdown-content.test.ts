@@ -37,7 +37,7 @@ const markdownFiles: MarkdownFile[] = [
 ].map((full) => {
   const name = path.relative(ROOT, full);
   const body = fm(fs.readFileSync(full, "utf-8")).body;
-  const blogMatch = name.match(/blog[\\/]([a-z0-9-]+)\.[A-Za-z-]+\.md$/);
+  const blogMatch = name.match(/blog[\\/](?:[a-z0-9-]+[\\/])?([a-z0-9-]+)\.[A-Za-z-]+\.md$/);
   return { name, body, blogSlug: blogMatch?.[1] };
 });
 

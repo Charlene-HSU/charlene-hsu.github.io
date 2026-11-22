@@ -110,6 +110,13 @@ export const BlogSlugSchema = z
   .string()
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slugs are lowercase words joined by hyphens");
 
+export const BlogFolderSchema = z.object({
+  title: BilingualObjectSchema,
+  description: yamlOptional(BilingualObjectSchema),
+});
+
+export type BlogFolder = z.infer<typeof BlogFolderSchema>;
+
 export type NavItem = z.infer<typeof NavItemSchema>;
 
 export const FooterSchema = z.object({
@@ -139,6 +146,11 @@ export const SiteContentSchema = z.object({
   nav: z.array(NavItemSchema).min(1),
   blogTags: z
     .record(BlogTagIdSchema, BilingualObjectSchema)
+    .nullish()
+    .transform((value) => value ?? {}),
+  /** Labels for blog sub-folders (`src/content/blog/<id>/`), keyed by folder name. */
+  blogFolders: z
+    .record(BlogSlugSchema, BlogFolderSchema)
     .nullish()
     .transform((value) => value ?? {}),
   footer: FooterSchema,
@@ -241,6 +253,8 @@ export const SiteContentSchema = z.object({
         allTags: BilingualObjectSchema,
         tagFilterAriaLabel: BilingualObjectSchema,
         postTagsAriaLabel: BilingualObjectSchema,
+        folderCount: BilingualObjectSchema,
+        foldersTitle: BilingualObjectSchema,
         backToList: BilingualObjectSchema,
         tocTitle: BilingualObjectSchema,
         tocExpandAriaLabel: BilingualObjectSchema,
@@ -511,6 +525,8 @@ export type BlogFrontMatter = z.infer<typeof BlogFrontMatterSchema>;
 export interface BlogPost {
   slug: string;
   lang: Lang;
+  /** Sub-folder of `src/content/blog/` the post lives in, if any. */
+  folder?: string;
   title: string;
   date: string;
   description?: string;

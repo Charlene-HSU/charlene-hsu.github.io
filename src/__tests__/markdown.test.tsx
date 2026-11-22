@@ -1,15 +1,26 @@
 import { StrictMode } from "react";
 import { renderToString } from "react-dom/server";
+import { createMemoryHistory, createRouter, RouterContextProvider } from "@tanstack/react-router";
 import { describe, expect, it } from "vitest";
 import { Markdown } from "@/components/markdown";
 import { I18nProvider } from "@/lib/i18n";
+import { getBlogPosts, parseBlogFilename } from "@/lib/markdown";
+import { routeTree } from "@/routeTree.gen";
+
+const router = createRouter({
+  routeTree,
+  history: createMemoryHistory({ initialEntries: ["/en/"] }),
+  trailingSlash: "always",
+});
 
 function render(content: string, inline = false): string {
   return renderToString(
     <StrictMode>
-      <I18nProvider lang="en">
-        <Markdown content={content} inline={inline} />
-      </I18nProvider>
+      <RouterContextProvider router={router}>
+        <I18nProvider lang="en">
+          <Markdown content={content} inline={inline} />
+        </I18nProvider>
+      </RouterContextProvider>
     </StrictMode>,
   );
 }
@@ -117,6 +128,12 @@ describe("Markdown safety and links", () => {
     }
   });
 
+  it("keeps links between notes on this site in the same tab", () => {
+    const html = render("[筆記總覽](/zh-TW/blog/medical-informatics-notes/)");
+    expect(html).toContain('href="/zh-TW/blog/medical-informatics-notes/"');
+    expect(html).not.toContain('target="_blank"');
+  });
+
   it("turns a standalone https URL into a link card, but not a URL inside a sentence", () => {
     const card = render("https://example.com/page");
     // The card is the block itself: an <a> straight inside the Markdown wrapper, not in a <p>.
@@ -160,5 +177,25 @@ describe("Markdown alert kinds", () => {
   it("highlights inside bold and inside callouts", () => {
     expect(render("**==both==**")).toMatch(/<strong[^>]*><mark[^>]*>both<\/mark><\/strong>/);
     expect(render("> [!TIP]\n> =={green}yes==")).toContain(">yes</mark>");
+  });
+});
+
+describe("Blog folders", () => {
+  it("reads the folder from a post path and keeps the slug from the file name", () => {
+    expect(parseBlogFilename("/src/content/blog/hello-world.en.md")).toEqual({
+      slug: "hello-world",
+      lang: "en",
+    });
+    expect(parseBlogFilename("/src/content/blog/notes/ch-01.zh-TW.md")).toEqual({
+      slug: "ch-01",
+      lang: "zh-TW",
+      folder: "notes",
+    });
+    expect(parseBlogFilename("/src/content/blog/a/b/too-deep.en.md")).toBeNull();
+  });
+
+  it("loads posts from blog sub-folders", () => {
+    const folderPosts = getBlogPosts("zh-TW", false).filter((post) => post.folder);
+    expect(folderPosts.length).toBeGreaterThan(0);
   });
 });

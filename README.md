@@ -75,6 +75,8 @@ If `pnpm test` fails, its message names the file and the field to fix.
 
 Create `src/content/blog/<slug>.en.md` and/or `<slug>.zh-TW.md`. The slug is lowercase words joined by hyphens and becomes the URL: `/en/blog/<slug>/`.
 
+To group a series, put its posts in a folder: `src/content/blog/<folder>/<slug>.<lang>.md`, and give the folder a name in `site.yaml` `blogFolders`. The blog list shows the folder as one item that opens to list its posts; the post URLs stay `/en/blog/<slug>/`.
+
 ```markdown
 ---
 title: My first post

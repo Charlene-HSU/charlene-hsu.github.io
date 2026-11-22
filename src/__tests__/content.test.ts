@@ -181,18 +181,36 @@ describe("Content schemas and references", () => {
   it("validates blog posts frontmatter, filename conventions, tags, and referenced images", () => {
     const site = SiteContentSchema.parse(loadYaml("site.yaml"));
     const blogDir = path.join(CONTENT_DIR, "blog");
-    const files = fs.readdirSync(blogDir).filter((f) => f.endsWith(".md"));
+    // Posts sit in blog/ or one sub-folder deep (blog/<folder>/); each folder needs a label.
+    const files: string[] = [];
+    for (const entry of fs.readdirSync(blogDir, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        BlogSlugSchema.parse(entry.name);
+        expect(
+          site.blogFolders[entry.name],
+          `label for folder "${entry.name}" in site.yaml blogFolders`,
+        ).toBeDefined();
+        for (const inner of fs.readdirSync(path.join(blogDir, entry.name), {
+          withFileTypes: true,
+        })) {
+          expect(inner.isDirectory(), `nested folder blog/${entry.name}/${inner.name}`).toBe(false);
+          if (inner.name.endsWith(".md")) files.push(path.join(entry.name, inner.name));
+        }
+      } else if (entry.name.endsWith(".md")) {
+        files.push(entry.name);
+      }
+    }
 
     const seenSlugLang = new Set<string>();
     const tagsBySlug = new Map<string, string>();
     for (const file of files) {
       const matchedLang = languages.find((l) => file.endsWith(`.${l}.md`));
       expect(matchedLang, `language suffix of ${file}`).toBeDefined();
-      const slug = file.slice(0, -`.${matchedLang}.md`.length);
+      const slug = path.basename(file).slice(0, -`.${matchedLang}.md`.length);
       BlogSlugSchema.parse(slug);
 
       const key = `${slug}:${matchedLang}`;
-      expect(seenSlugLang.has(key)).toBe(false);
+      expect(seenSlugLang.has(key), `slug "${slug}" is unique across folders`).toBe(false);
       seenSlugLang.add(key);
 
       const raw = fs.readFileSync(path.join(blogDir, file), "utf-8");

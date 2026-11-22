@@ -49,7 +49,7 @@ React 19, Vite, Tailwind CSS v4, TypeScript, pnpm (npm, yarn and bun are blocked
 
 | File                 | Purpose                                                                                                                                                                                                |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `site.yaml`          | Metadata, `nav` (single source for pages and the navbar), `footer` (links, columns, bottom-right link), `blogTags`, UI strings, `embedAllowlist`                                                       |
+| `site.yaml`          | Metadata, `nav` (single source for pages and the navbar), `footer` (links, columns, bottom-right link), `blogTags`, `blogFolders`, UI strings, `embedAllowlist`                                        |
 | `profile.yaml`       | Name, title, location, timezone, tagline, status, stats, `about`, `intro`                                                                                                                              |
 | `skills.yaml`        | Skill groups and the marquee list                                                                                                                                                                      |
 | `experience.yaml`    | Experience page blocks (`groups`, e.g. education and competitions)                                                                                                                                     |
@@ -140,9 +140,10 @@ The blog has two kinds of page: the list (`/$lang/blog/`) and one page per post 
 **Posts**
 
 - Posts are `src/content/blog/<slug>.<lang>.md`. The slug is lowercase letters, digits and hyphens, and is shared by all translations of a post.
+- A post may sit one folder deep, `src/content/blog/<folder>/<slug>.<lang>.md`, to group a series. The folder does not change the URL (still `/$lang/blog/<slug>/`), so slugs stay unique across folders. Each folder needs an entry in `site.yaml` `blogFolders` (`<folder>: { title, description? }`, localized). Deeper nesting is not supported.
 - Front matter: `title` and `date` (`YYYY-MM-DD`) are required; `description` (one or two sentences, used in the list and in page metadata) and `tags` (list of tag ids) are optional; `draft: true` shows the post in development only.
 - Tags are language-neutral ids (lowercase, hyphenated, for example `frontend`). Their display labels live in `site.yaml` `blogTags` (`{ <id>: { en, zh-TW } }`), so a tag reads correctly in both languages. Every translation of a post lists the same tags.
-- Load posts with `import.meta.glob("/src/content/blog/*.md", { query: "?raw", import: "default", eager: true })` through `src/lib/markdown.ts`. Components never parse posts themselves.
+- Load posts with `import.meta.glob("/src/content/blog/**/*.md", { query: "?raw", import: "default", eager: true })` through `src/lib/markdown.ts`. Components never parse posts themselves.
 - If a post has no file for the current language, show the available one without a badge or notice. Its canonical URL and `hreflang` links point only to the languages that have a file.
 
 **List page (`/$lang/blog/`)**
@@ -150,6 +151,7 @@ The blog has two kinds of page: the list (`/$lang/blog/`) and one page per post 
 - At the top, one row of tag filters: an "All" option first, then every tag in use (sorted by post count, then label), each with its count. Build it with Base UI `ToggleGroup` (single selection, `Toggle` items styled like small badges). On narrow screens the row scrolls horizontally instead of wrapping into many lines.
 - The selected tag is a validated search param (`?tag=<id>`, `validateSearch`); unknown tags fall back to "All". Filtering happens in the browser on prerendered data. Prerender only the unfiltered list.
 - Below the row, posts newest first. Each item shows the date, title, description (if any) and tags, and the whole item is one `<Link>` to the post page. No excerpts generated from the body.
+- Posts in a folder collapse into one folder item (Base UI `Collapsible`, closed by default, opened while a tag filter is active), dated by its newest post and showing `ui.sections.blog.folderCount`. Inside it, pinned posts come first, then file-name order. The panel uses `hiddenUntilFound`, so its links stay in the prerendered HTML. From `xl` up, while the list still has posts outside folders, the folders leave the list and sit in a sticky side list placed like a post's table of contents (`src/components/blog-folder-nav.tsx`, title `ui.sections.blog.foldersTitle`). The side list sits in a flex row with the post list, not absolutely positioned, so an opened folder lengthens the page instead of covering the footer.
 - Empty states use `ui.sections.blog.empty` (no posts) and `ui.sections.blog.emptyTag` (no posts with the selected tag).
 
 **Post page (`/$lang/blog/$slug/`)**
