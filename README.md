@@ -1,6 +1,6 @@
 # charlene-hsu.github.io
 
-My bilingual (English / 繁體中文) personal site and blog, with a black-and-white terminal look. Live at **<https://charlene-hsu.github.io>**.
+My personal site and blog, with a black-and-white terminal look. Live at **<https://charlene-hsu.github.io>**.
 
 Built with React 19, Vite, Tailwind CSS v4, TypeScript, Base UI and TanStack Router, prerendered to static HTML and published on GitHub Pages.
 
@@ -8,7 +8,7 @@ Built with React 19, Vite, Tailwind CSS v4, TypeScript, Base UI and TanStack Rou
 - **Home:** name and tagline, the self-introduction, status and local clock, shortcuts to recently updated or pinned projects and posts, and a tech marquee.
 - **Content in plain files:** every word, link and image is set in YAML and Markdown under `src/content/`. You never need to touch React code to update the site.
 
-## Quick start
+## Allow anyone to fork this repo so there is a quick start (below is written by claude)
 
 ### 1. Install the tools (once)
 
