@@ -161,3 +161,13 @@ groups:
         period:
           start: "2026-09"
           end: null
+      - id: scaict_2027
+        company:
+          en: SCAICT 2027
+          zh-TW: SAICT 2027 寒訓
+        role:
+          en: Curriculum group member
+          zh-TW: 課程組 組員
+        period:
+          start: "2026-10"
+          end: null
