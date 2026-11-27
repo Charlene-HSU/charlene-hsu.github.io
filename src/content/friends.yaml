@@ -27,6 +27,14 @@ items:
     avatar: IMG_9209.png
     tags:
       - 特選電神
+  - name: "LWY"
+    url: https://lwy-dashboard.pages.dev/
+    description:
+      en: 08/INTP
+      zh-TW: 08/INTP
+    avatar: IMG_5297.jpg
+    tags:
+      - 特選電神
 
 exchange:
   name: wow肯德基爺爺欸
